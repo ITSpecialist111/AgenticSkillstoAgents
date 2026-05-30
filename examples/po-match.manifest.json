@@ -1,0 +1,56 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "finance/po-match",
+    "name": "Purchase Order Matcher",
+    "version": "0.9.1",
+    "description": "Matches extracted invoice fields against open purchase orders and flags 2-way/3-way match exceptions. Use after invoice fields are available.",
+    "owner": {
+      "handle": "b.builder",
+      "team": "Finance Automation",
+      "contact": "b.builder@example.com"
+    },
+    "skillType": "deterministic-tool",
+    "tags": ["finance", "ap", "matching"]
+  },
+  "capability": {
+    "summary": "Match invoice fields to purchase orders and flag exceptions",
+    "capabilityTags": ["invoice.match", "po.reconcile"],
+    "inputs": [
+      { "name": "fields", "type": "InvoiceFields", "required": true, "description": "Structured invoice fields." }
+    ],
+    "outputs": [
+      { "name": "matchResult", "type": "MatchResult", "required": true, "description": "Matched PO id or list of exceptions." }
+    ],
+    "preconditions": ["user.authenticated", "erp.reachable"],
+    "effects": ["match.recorded"]
+  },
+  "scoring": {
+    "determinism": "high",
+    "risk": "medium",
+    "reversible": true,
+    "rationale": "Writes a match record but does not post to the ledger; medium risk because an incorrect match can route a payment for review."
+  },
+  "dependencies": [
+    { "ref": "invoice.extract", "optional": false }
+  ],
+  "mcp": {
+    "server": "finance-tools",
+    "toolName": "po_match",
+    "namespace": "example-org",
+    "transport": "http"
+  },
+  "governance": {
+    "visibility": "org",
+    "rbac": ["finance.processor"],
+    "dataClassification": "confidential",
+    "cost": { "unit": "usd-per-1k-calls", "estimate": 1.5 },
+    "audit": { "logged": true, "retentionDays": 365 }
+  },
+  "lifecycle": {
+    "stage": "certified",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-05-20T14:05:00Z"
+  }
+}

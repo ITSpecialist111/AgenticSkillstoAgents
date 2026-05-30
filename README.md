@@ -79,11 +79,37 @@ and relationships, scoring determinism/risk, and detecting duplicate capabilitie
 
 | Doc | What it covers |
 |---|---|
-| [`docs/architecture.md`](docs/architecture.md) | Four-layer model, target platform, components |
-| [`docs/ontology-schema.md`](docs/ontology-schema.md) | Entity-relationship model for skills/capabilities/agents |
-| [`docs/ontology-builder-agent.md`](docs/ontology-builder-agent.md) | The agentic code that builds/maintains the ontology |
-| [`docs/technical-spec.md`](docs/technical-spec.md) | True technical spec: interfaces, manifest, APIs, build |
+| [`docs/architecture.md`](docs/architecture.md) | Four-layer model, the six-gate graduation pipeline, target platform, components |
+| [`docs/ontology-schema.md`](docs/ontology-schema.md) | Entity-relationship model for skills/capabilities/agents (IOPE) |
+| [`docs/ontology-builder-agent.md`](docs/ontology-builder-agent.md) | The agentic code that builds/maintains the ontology — and the measurable bet |
+| [`docs/technical-spec.md`](docs/technical-spec.md) | True technical spec: the canonical Manifest, state machine, APIs, build |
 | [`docs/roadmap.md`](docs/roadmap.md) | Phased graduation pipeline, milestones, success metrics |
+| [`docs/prior-art.md`](docs/prior-art.md) | What we learned from MCP / OWL-S / MLflow / RPA CoEs and how we differ |
+| [`docs/graduation-walkthrough.md`](docs/graduation-walkthrough.md) | A worked example: one skill traveling all six gates |
+
+## The construct (the repeatable chassis)
+
+The construct is delivered as **specifications + a canonical manifest + a worked example**
+— three nested parts:
+
+- **Part A — The Manifest:** one declarative spec every skill carries so the same unit
+  travels every stage unchanged. Schema:
+  [`schemas/skill-manifest.schema.json`](schemas/skill-manifest.schema.json); validated
+  examples: [`examples/`](examples).
+- **Part B — The Pipeline:** six fixed stage gates (Register → Certify → Publish →
+  Meaning-sync → Compose → Retire) identical for every skill. See
+  [`docs/architecture.md`](docs/architecture.md).
+- **Part C — The Ontology Builder Agent:** the load-bearing, **unproven** part — isolated
+  with a measurable contract behind a human gate. See
+  [`docs/ontology-builder-agent.md`](docs/ontology-builder-agent.md).
+
+## Prototype
+
+An executable reference implementation of the chassis (manifest validation, the
+six-gate pipeline state machine, and the Ontology Builder Agent contract) plus
+smoke tests lives in [`prototype/`](prototype). Run it with
+`cd prototype && pip install -r requirements.txt && python -m pytest -q`, or try
+`python -m chassis.cli walkthrough`.
 
 ## Status
 

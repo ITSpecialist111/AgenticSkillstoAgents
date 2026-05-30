@@ -1,0 +1,56 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "finance/ap-intake",
+    "name": "Accounts Payable Intake",
+    "version": "0.2.0",
+    "description": "Composite skill: takes an inbound invoice document, extracts its fields, matches it to a purchase order, and returns a payment-ready packet or an exception for human review. Demonstrates runtime composition from certified skills.",
+    "owner": {
+      "handle": "c.coe",
+      "team": "Center of Excellence",
+      "contact": "c.coe@example.com"
+    },
+    "skillType": "composite",
+    "tags": ["finance", "ap", "composite", "workflow"]
+  },
+  "capability": {
+    "summary": "End-to-end AP intake: document in, payment-ready packet or exception out",
+    "capabilityTags": ["ap.intake"],
+    "inputs": [
+      { "name": "document", "type": "InvoiceDocument", "required": true, "description": "Inbound invoice document." }
+    ],
+    "outputs": [
+      { "name": "packet", "type": "PaymentPacket", "required": false, "description": "Payment-ready packet when matched." },
+      { "name": "exception", "type": "ApException", "required": false, "description": "Exception detail when match fails." }
+    ],
+    "preconditions": ["user.authenticated", "erp.reachable", "document.readable"],
+    "effects": ["match.recorded"]
+  },
+  "scoring": {
+    "determinism": "medium",
+    "risk": "medium",
+    "reversible": true,
+    "rationale": "Inherits medium risk from po-match; orchestration adds variability so determinism is medium. No ledger posting."
+  },
+  "dependencies": [
+    { "ref": "invoice.extract", "optional": false },
+    { "ref": "invoice.match", "optional": false }
+  ],
+  "mcp": {
+    "server": "finance-tools",
+    "toolName": "ap_intake",
+    "namespace": "example-org",
+    "transport": "http"
+  },
+  "governance": {
+    "visibility": "team",
+    "rbac": ["finance.processor"],
+    "dataClassification": "confidential",
+    "cost": { "unit": "usd-per-1k-calls", "estimate": 6.0 },
+    "audit": { "logged": true, "retentionDays": 365 }
+  },
+  "lifecycle": {
+    "stage": "draft"
+  }
+}
