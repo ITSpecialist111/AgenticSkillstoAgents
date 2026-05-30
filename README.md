@@ -83,6 +83,7 @@ and relationships, scoring determinism/risk, and detecting duplicate capabilitie
 | [`docs/ontology-schema.md`](docs/ontology-schema.md) | Entity-relationship model for skills/capabilities/agents (IOPE) |
 | [`docs/ontology-builder-agent.md`](docs/ontology-builder-agent.md) | The agentic code that builds/maintains the ontology — and the measurable bet |
 | [`docs/technical-spec.md`](docs/technical-spec.md) | True technical spec: the canonical Manifest, state machine, APIs, build |
+| [`docs/intake.md`](docs/intake.md) | The intake layer: turning real `SKILL.md` folders into draft manifests (the on-ramp to Register) |
 | [`docs/roadmap.md`](docs/roadmap.md) | Phased graduation pipeline, milestones, success metrics |
 | [`docs/prior-art.md`](docs/prior-art.md) | What we learned from MCP / OWL-S / MLflow / RPA CoEs and how we differ |
 | [`docs/graduation-walkthrough.md`](docs/graduation-walkthrough.md) | A worked example: one skill traveling all six gates |
@@ -106,10 +107,12 @@ The construct is delivered as **specifications + a canonical manifest + a worked
 ## Prototype
 
 An executable reference implementation of the chassis (manifest validation, the
-six-gate pipeline state machine, and the Ontology Builder Agent contract) plus
+six-gate pipeline state machine, the Ontology Builder Agent contract, and the
+**intake** on-ramp that turns real `SKILL.md` folders into draft manifests) plus
 smoke tests lives in [`prototype/`](prototype). Run it with
 `cd prototype && pip install -r requirements.txt && python -m pytest -q`, or try
-`python -m chassis.cli walkthrough`.
+`python -m chassis.cli walkthrough` and
+`python -m chassis.cli intake <folder-of-skills>`.
 
 ## Status
 
