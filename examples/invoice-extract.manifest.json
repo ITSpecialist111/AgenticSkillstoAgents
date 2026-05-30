@@ -1,0 +1,54 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "finance/invoice-extract",
+    "name": "Invoice Field Extractor",
+    "version": "1.3.0",
+    "description": "Extracts structured fields (vendor, invoice number, line items, totals, dates) from a PDF or image invoice. Deterministic OCR + rules pipeline; use it when you need machine-readable invoice data.",
+    "owner": {
+      "handle": "a.maker",
+      "team": "Finance Automation",
+      "contact": "a.maker@example.com"
+    },
+    "skillType": "deterministic-tool",
+    "tags": ["finance", "ocr", "documents", "ap"]
+  },
+  "capability": {
+    "summary": "Extract structured fields from an invoice document",
+    "capabilityTags": ["invoice.extract", "document.parse"],
+    "inputs": [
+      { "name": "document", "type": "InvoiceDocument", "required": true, "description": "PDF or image of a single invoice." }
+    ],
+    "outputs": [
+      { "name": "fields", "type": "InvoiceFields", "required": true, "description": "Vendor, number, dates, line items, totals." }
+    ],
+    "preconditions": ["document.readable"],
+    "effects": []
+  },
+  "scoring": {
+    "determinism": "high",
+    "risk": "low",
+    "reversible": true,
+    "rationale": "Read-only extraction; no state changes. Output is verifiable against the source document."
+  },
+  "dependencies": [],
+  "mcp": {
+    "server": "finance-tools",
+    "toolName": "invoice_extract",
+    "namespace": "example-org",
+    "transport": "http"
+  },
+  "governance": {
+    "visibility": "org",
+    "rbac": ["finance.reader", "finance.processor"],
+    "dataClassification": "confidential",
+    "cost": { "unit": "usd-per-1k-calls", "estimate": 4.0 },
+    "audit": { "logged": true, "retentionDays": 365 }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-03-11T09:30:00Z"
+  }
+}
