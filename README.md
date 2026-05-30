@@ -103,6 +103,14 @@ The construct is delivered as **specifications + a canonical manifest + a worked
   with a measurable contract behind a human gate. See
   [`docs/ontology-builder-agent.md`](docs/ontology-builder-agent.md).
 
+## Prototype
+
+An executable reference implementation of the chassis (manifest validation, the
+six-gate pipeline state machine, and the Ontology Builder Agent contract) plus
+smoke tests lives in [`prototype/`](prototype). Run it with
+`cd prototype && pip install -r requirements.txt && python -m pytest -q`, or try
+`python -m chassis.cli walkthrough`.
+
 ## Status
 
 Concept / architecture phase. Targets Microsoft Fabric IQ (Ontology, Preview), OneLake,
