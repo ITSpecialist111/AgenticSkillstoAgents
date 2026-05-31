@@ -109,8 +109,9 @@ The smoke tests cover manifest validation, the six-gate state machine (including
 the duplicate-capability scan and dependency resolution at the Certify gate),
 the Ontology Builder Agent contract (entity/relationship proposals,
 duplicate + determinism/risk conflict flags, and the human-review queue), and the
-intake layer (discovery, `SKILL.md` parsing, asset classification, draft-manifest
-mapping, the content-hash watcher, and an end-to-end intake → six-gate path).
+intake layer (discovery, `SKILL.md` parsing, asset classification, the
+untrusted-input security scan, draft-manifest mapping, the content-hash watcher,
+and an end-to-end intake → six-gate path).
 
 ## Intake: from real skill folders to draft manifests
 

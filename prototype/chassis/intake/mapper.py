@@ -29,6 +29,7 @@ from typing import Any, Dict, List
 from ..manifest import Manifest, validate_manifest
 from .assets import AssetClassification, classify_assets
 from .discovery import SkillSource
+from .sanitize import scan_text
 from .skillmd import SkillMd, parse_skill_md
 
 API_VERSION = "skills.dev/v1"
@@ -48,7 +49,10 @@ class IntakeReport:
     The report is the transparency contract: ``inferred`` lists fields filled by
     heuristic, ``missing`` lists quality-critical fields a human must complete,
     ``schema_valid`` says whether the draft already passes the canonical schema,
-    and ``provenance`` records the source path + per-file SHA-256 for lineage.
+    ``provenance`` records the source path + per-file SHA-256 for lineage, and
+    ``security_flags`` records anything suspicious found while treating the
+    ``SKILL.md`` as untrusted input (embedded HTML, invisible/bidi characters,
+    prompt-injection phrases) for a human to review at the Certify gate.
     """
 
     skill_id: str
@@ -60,6 +64,7 @@ class IntakeReport:
     errors: List[str] = field(default_factory=list)
     assets: Dict[str, List[str]] = field(default_factory=dict)
     provenance: Dict[str, Any] = field(default_factory=dict)
+    security_flags: List[str] = field(default_factory=list)
 
 
 def _slug_segment(value: str) -> str:
@@ -178,7 +183,8 @@ def build_manifest(source: SkillSource) -> tuple[Manifest, IntakeReport]:
     raised, so callers can surface them to a human without crashing the scan.
     """
     with open(source.skill_md, "r", encoding="utf-8") as handle:
-        skill_md: SkillMd = parse_skill_md(handle.read())
+        raw_skill_md = handle.read()
+    skill_md: SkillMd = parse_skill_md(raw_skill_md)
     frontmatter = skill_md.frontmatter
     assets = classify_assets(
         [os.path.relpath(p, source.skill_dir).replace(os.sep, "/") for p in source.sidecars]
@@ -188,6 +194,8 @@ def build_manifest(source: SkillSource) -> tuple[Manifest, IntakeReport]:
     report = IntakeReport(skill_id=skill_id, source_path=source.skill_dir)
     report.assets = assets.as_dict()
     report.provenance = _build_provenance(source)
+    # Treat the SKILL.md (frontmatter + body) as untrusted input: flag, don't fix.
+    report.security_flags = scan_text(raw_skill_md)
 
     if not frontmatter.get("id"):
         report.inferred.append("identity.id")

@@ -72,6 +72,31 @@ Provenance (source path + per-file SHA-256 hashes) is recorded on the
 `IntakeReport`, **not** the manifest, because the manifest schema forbids extra
 properties. It gives the registry/ontology a lineage link back to the source files.
 
+## Security: untrusted `SKILL.md`
+
+A skill folder is authored by a maker (or another agent) and then **read by our
+agents**, so its `SKILL.md` is an attack surface. Even though we keep Markdown
+(for its simplicity and low token cost), Markdown can smuggle payloads that an
+LLM still reads:
+
+| Threat | Examples |
+|---|---|
+| **Embedded raw HTML** | `<script>`, `<style>`, `<iframe>`, inline `onerror=` handlers, auto-fetching `<img src>` (exfiltration via the request URL), `javascript:`/`data:` URIs |
+| **Invisible / bidi characters** | zero-width spaces/joiners, BOM, soft hyphen, RTL overrides — render as nothing yet hide instructions in plain sight |
+| **Prompt-injection phrases** | "ignore previous instructions", "reveal your system prompt", "you are now …" in either frontmatter or body |
+
+Intake treats the `SKILL.md` as untrusted and runs a **scan** over the whole
+document ([`chassis/intake/sanitize.py`](../prototype/chassis/intake/sanitize.py)).
+It is a **detector, not a sanitiser**: it never executes, fetches, or rewrites
+the maker's content. Findings are recorded as `IntakeReport.security_flags` (and
+printed under `security:` by `chassis intake`), so a human reviewer sees exactly
+what to inspect at the Certify gate.
+
+Consistent with the rest of intake, scanning **never hard-fails a draft** —
+propose, don't auto-merge. A flagged skill still produces a `draft` manifest;
+the flags travel on the report (not the manifest, whose schema forbids extra
+properties) for a human to adjudicate.
+
 ## CLI
 
 ```bash
@@ -104,6 +129,8 @@ interface without touching the mapper.
 - No OS filesystem-event daemon / service packaging yet (polling wrapper only).
 - No execution or sandboxing of discovered scripts — intake only *classifies and
   references* them; running them belongs to the Compose layer.
+- No content rewriting/quarantine — the security scan only *flags* untrusted
+  `SKILL.md` content for human review; it never edits, strips, or blocks it.
 - No git/GitHub webhook integration yet (the poller is the placeholder).
 
 ## Module map
@@ -113,5 +140,6 @@ interface without touching the mapper.
 | [`chassis/intake/discovery.py`](../prototype/chassis/intake/discovery.py) | Walk a tree, find skill folders + sidecars |
 | [`chassis/intake/skillmd.py`](../prototype/chassis/intake/skillmd.py) | Parse `SKILL.md` frontmatter + body |
 | [`chassis/intake/assets.py`](../prototype/chassis/intake/assets.py) | Classify sidecars into scripts/assets/knowledge |
+| [`chassis/intake/sanitize.py`](../prototype/chassis/intake/sanitize.py) | Scan untrusted `SKILL.md` for embedded HTML / invisible chars / injection phrases |
 | [`chassis/intake/mapper.py`](../prototype/chassis/intake/mapper.py) | Assemble + validate a draft manifest + `IntakeReport` |
 | [`chassis/intake/watcher.py`](../prototype/chassis/intake/watcher.py) | Content-hash poller that re-emits on change |

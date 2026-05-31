@@ -14,6 +14,7 @@ Layout (1:1 with the plan):
 * :mod:`chassis.intake.discovery` - walk a tree, find skill folders + sidecars.
 * :mod:`chassis.intake.skillmd`   - parse ``SKILL.md`` frontmatter + body.
 * :mod:`chassis.intake.assets`    - classify sidecars into scripts/assets/knowledge.
+* :mod:`chassis.intake.sanitize`  - scan untrusted SKILL.md for injection signals.
 * :mod:`chassis.intake.mapper`    - assemble + validate a draft manifest + report.
 * :mod:`chassis.intake.watcher`   - content-hash poller that re-emits on change.
 """
@@ -23,6 +24,7 @@ from __future__ import annotations
 from .assets import AssetClassification, classify_assets, classify_file
 from .discovery import SkillSource, discover
 from .mapper import IntakeReport, build_manifest
+from .sanitize import scan_text
 from .skillmd import SkillMd, parse_skill_md
 from .watcher import IntakeWatcher, hash_source
 
@@ -34,6 +36,7 @@ __all__ = [
     "discover",
     "IntakeReport",
     "build_manifest",
+    "scan_text",
     "SkillMd",
     "parse_skill_md",
     "IntakeWatcher",

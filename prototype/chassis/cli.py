@@ -185,6 +185,8 @@ def _print_intake_result(manifest, report, *, register: bool, registry) -> None:
         print(f"  needs human: {', '.join(report.missing)}")
     if report.warnings:
         print(f"  warnings: {'; '.join(report.warnings)}")
+    if report.security_flags:
+        print(f"  security: {'; '.join(report.security_flags)}")
     if report.errors:
         print(f"  schema errors: {'; '.join(report.errors)}")
     if register and registry is not None:
