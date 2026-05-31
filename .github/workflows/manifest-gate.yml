@@ -1,0 +1,40 @@
+name: Manifest Gate
+
+# Pipeline-as-CI: every change to a skill manifest must pass the automated
+# Register/Certify exit checks (schema validity, determinism/risk scored,
+# dependency resolution, duplicate-capability scan) before it can merge.
+#
+# This is the machine-checkable half of the Certify gate; the human half remains
+# the PR review itself (the reviewer is the certifier of record).
+
+on:
+  pull_request:
+    paths:
+      - "examples/**.manifest.json"
+      - "schemas/skill-manifest.schema.json"
+      - "prototype/chassis/**"
+  push:
+    paths:
+      - "examples/**.manifest.json"
+
+permissions:
+  contents: read
+
+jobs:
+  gate:
+    name: automated gate checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install chassis
+        working-directory: prototype
+        run: pip install -e .
+
+      - name: Run gate checks over all manifests
+        working-directory: prototype
+        run: chassis gate ../examples/*.manifest.json

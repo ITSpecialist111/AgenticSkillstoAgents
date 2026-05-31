@@ -28,13 +28,14 @@ Routes intentionally mirror the chassis verbs:
 
 from __future__ import annotations
 
+import os
 from typing import Any, Dict, List, Optional
 
 from .manifest import ManifestError
 from .matchmaking import Need, match
 from .mcp import published_catalog
 from .metrics import snapshot
-from .ontology import OntologyBuilderAgent
+from .ontology import CONFIDENCE_THRESHOLD, OntologyBuilderAgent
 from .registry import GateError, Registry
 
 try:  # pragma: no cover - exercised indirectly via create_app
@@ -59,7 +60,13 @@ def create_app(registry: Optional[Registry] = None) -> "FastAPI":
     """Build the FastAPI app around ``registry`` (in-memory if not supplied)."""
     _require_fastapi()
     registry = registry if registry is not None else Registry()
-    agent = OntologyBuilderAgent()
+    # The Ontology Builder Agent's confidence threshold is operator-tunable via
+    # env (surfaced in docker-compose) so meaning-sync strictness is config, not code.
+    try:
+        threshold = float(os.environ.get("CHASSIS_ONTOLOGY_CONFIDENCE", CONFIDENCE_THRESHOLD))
+    except ValueError:
+        threshold = CONFIDENCE_THRESHOLD
+    agent = OntologyBuilderAgent(confidence_threshold=threshold)
 
     app = FastAPI(
         title="AgenticSkillstoAgents - Skill Registry & Graduation Service",

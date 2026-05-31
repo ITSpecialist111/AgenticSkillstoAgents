@@ -14,27 +14,89 @@ It maps 1:1 onto the three parts of the construct:
 | **C — Ontology Builder Agent** | [`docs/ontology-builder-agent.md`](../docs/ontology-builder-agent.md) | [`chassis/ontology.py`](chassis/ontology.py) — `sync_meaning(manifests, ontology)` |
 | **Intake (on-ramp)** | [`docs/intake.md`](../docs/intake.md) | [`chassis/intake/`](chassis/intake) — `SKILL.md` folders → draft manifests + watcher |
 
+It is packaged as an **installable product** — a Skill Registry & Graduation
+service with a CLI, an optional HTTP/MCP API, and durable storage — without
+changing those contracts. The productization modules sit *behind* Parts A–C:
+
+| Concern | Module | What it adds |
+|---|---|---|
+| **Durable storage** | [`chassis/store.py`](chassis/store.py) | repository-pattern `SkillStore` with in-memory + SQLite backends |
+| **HTTP service** | [`chassis/api.py`](chassis/api.py) | FastAPI app driving the six gates over the wire (optional `api` extra) |
+| **MCP publish** | [`chassis/mcp.py`](chassis/mcp.py) | projects the published catalog into an MCP `tools/list` document |
+| **Matchmaking** | [`chassis/matchmaking.py`](chassis/matchmaking.py) | Exact/Plug-in/Partial/Fail capability matching for the Composition layer |
+| **Telemetry** | [`chassis/metrics.py`](chassis/metrics.py) | the roadmap's falsifiable program metrics, computed from registry state |
+| **Pipeline-as-CI** | [`chassis/gatecheck.py`](chassis/gatecheck.py) | headless Register/Certify checks for `chassis gate` and GitHub Actions |
+
 ## Install
 
 ```bash
 cd prototype
-pip install -r requirements.txt
+pip install -e .            # core CLI (validate / register / ... / walkthrough)
+pip install -e '.[api]'     # + the HTTP service (chassis serve)
+pip install -e '.[dev]'     # + test/lint tooling
 ```
+
+This installs a `chassis` console script (so `chassis ...` works anywhere) whose
+package major version tracks the manifest `apiVersion` (`skills.dev/v1`). The
+canonical schema is bundled as package data, so validation works even when the
+package is installed away from this repo. The legacy
+`pip install -r requirements.txt` still works for the dependency-light core.
 
 ## Run the CLI
 
 ```bash
 # Validate manifests against the canonical schema (Register gate)
-python -m chassis.cli validate ../examples/*.manifest.json
+chassis validate ../examples/*.manifest.json
+
+# Graduate one skill through the gates against a PERSISTENT registry.
+# --db accepts `memory` (default), `sqlite:///path.db`, or a bare file path.
+chassis register ../examples/invoice-extract.manifest.json --db sqlite:///registry.db
+chassis certify finance/invoice-extract --approver coe.reviewer --db sqlite:///registry.db
+chassis publish finance/invoice-extract --db sqlite:///registry.db
+chassis list --db sqlite:///registry.db          # state survives between invocations
+
+# Headless gate checks (the machine-checkable half of Certify) for CI:
+chassis gate ../examples/*.manifest.json
+
+# Program telemetry snapshot (the roadmap's falsifiable metrics):
+chassis metrics --db sqlite:///registry.db
 
 # Graduate the bundled example skills through all six gates + meaning-sync
-python -m chassis.cli walkthrough
+chassis walkthrough
 
 # Intake: turn a tree of real SKILL.md folders into draft manifests
 # (add --register to admit schema-valid drafts at the Register gate,
 #  or --watch to re-emit when a skill or its sidecar files change)
-python -m chassis.cli intake ../prototype/tests/fixtures/skills
+chassis intake ../prototype/tests/fixtures/skills
 ```
+
+## Run the HTTP / MCP service
+
+```bash
+pip install -e '.[api]'
+chassis serve --db sqlite:///registry.db        # http://127.0.0.1:8000
+
+# Drive the six gates over the wire:
+curl -X POST localhost:8000/skills -d @draft.manifest.json -H 'content-type: application/json'
+curl -X POST localhost:8000/skills/finance/invoice-extract/certify -d '{"approver":"coe.reviewer"}'
+curl -X POST localhost:8000/skills/finance/invoice-extract/publish
+
+# Discover published skills the MCP way, match a capability, read metrics:
+curl localhost:8000/mcp/tools
+curl 'localhost:8000/capabilities?tag=invoice.extract'
+curl localhost:8000/metrics
+```
+
+## Run it as a container
+
+```bash
+cd prototype
+docker compose up --build          # service on :8000, registry persisted to a volume
+```
+
+Configuration is env-driven (`CHASSIS_HOST`, `CHASSIS_PORT`, `CHASSIS_DB`,
+`CHASSIS_ONTOLOGY_CONFIDENCE`). Point `CHASSIS_DB` at a hosted backend later to
+swap SQLite for OneLake/Fabric IQ without touching the gate logic.
 
 ## Run the smoke tests
 

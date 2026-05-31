@@ -35,6 +35,13 @@ the baseline the agent must beat.
 - MCP-compatible publish step.
 - Ontology curated **by hand** — deliberately, to capture the baseline cost.
 
+> **Reference product:** the executable forms of these Phase 1 mechanisms now
+> ship in [`prototype/`](../prototype) — a persistent registry, the automated
+> gate checks (`chassis gate` + the `manifest-gate` CI workflow), and an
+> MCP-compatible publish surface (`chassis serve` → `GET /mcp/tools`). See
+> [`packaging.md`](packaging.md). The Phase 1 *exit gate* below (volume +
+> measured baseline) is what remains.
+
 **Exit gate:** ≥ 20 skills published; baseline **maintenance effort** (human minutes per
 100 skills) recorded.
 

@@ -1,0 +1,27 @@
+# Local-development stack for the Skill Registry & Graduation service.
+#
+#   docker compose up --build
+#   curl localhost:8000/healthz
+#   curl localhost:8000/mcp/tools
+#
+# Registry state persists in the named volume so it survives `compose down`.
+services:
+  registry:
+    build: .
+    image: agentic-chassis:latest
+    ports:
+      - "8000:8000"
+    environment:
+      CHASSIS_HOST: "0.0.0.0"
+      CHASSIS_PORT: "8000"
+      # Durable SQLite registry on the mounted volume. Point this at a hosted
+      # backend (e.g. a future OneLake/Fabric store DSN) for production.
+      CHASSIS_DB: "sqlite:////data/registry.db"
+      # Optional: surface a confidence threshold for the Ontology Builder Agent
+      # and an MCP endpoint hint for downstream consumers.
+      CHASSIS_ONTOLOGY_CONFIDENCE: "0.75"
+    volumes:
+      - registry-data:/data
+
+volumes:
+  registry-data:
