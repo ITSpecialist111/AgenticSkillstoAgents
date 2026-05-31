@@ -15,7 +15,33 @@ from jsonschema import Draft202012Validator
 
 # Repo layout: <repo>/prototype/chassis/manifest.py -> <repo>/schemas/...
 _REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-SCHEMA_PATH = os.path.join(_REPO_ROOT, "schemas", "skill-manifest.schema.json")
+# A copy of the canonical schema is bundled inside the package so the manifest
+# loader works when ``chassis`` is pip-installed away from the repo tree. The
+# packaged copy is kept byte-identical to ``schemas/skill-manifest.schema.json``
+# (enforced by a contract test) so there is a single source of truth.
+_PACKAGED_SCHEMA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "skill-manifest.schema.json")
+_REPO_SCHEMA = os.path.join(_REPO_ROOT, "schemas", "skill-manifest.schema.json")
+
+
+def _resolve_schema_path() -> str:
+    """Locate the manifest schema in an import-clean, overridable way.
+
+    Resolution order:
+
+    1. ``CHASSIS_SCHEMA_PATH`` environment variable (explicit override).
+    2. The copy packaged inside the installed ``chassis`` distribution.
+    3. The canonical ``schemas/`` file in a source checkout (dev fallback).
+    """
+    override = os.environ.get("CHASSIS_SCHEMA_PATH")
+    if override:
+        return override
+    if os.path.exists(_PACKAGED_SCHEMA):
+        return _PACKAGED_SCHEMA
+    return _REPO_SCHEMA
+
+
+# Backwards-compatible module attribute (some callers/tests read it directly).
+SCHEMA_PATH = _resolve_schema_path()
 
 Manifest = Dict[str, Any]
 
@@ -28,10 +54,10 @@ _validator: Draft202012Validator | None = None
 
 
 def _get_validator() -> Draft202012Validator:
-    """Return a cached validator built from the canonical repo schema."""
+    """Return a cached validator built from the canonical schema."""
     global _validator
     if _validator is None:
-        with open(SCHEMA_PATH, "r", encoding="utf-8") as handle:
+        with open(_resolve_schema_path(), "r", encoding="utf-8") as handle:
             schema = json.load(handle)
         Draft202012Validator.check_schema(schema)
         _validator = Draft202012Validator(schema)
