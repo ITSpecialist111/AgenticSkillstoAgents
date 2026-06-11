@@ -1,0 +1,278 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ITSpecialist111/AgenticSkillstoAgents/schemas/skill-manifest.schema.json",
+  "title": "Skill Manifest",
+  "description": "The canonical declarative unit that travels the graduation chassis unchanged. Every Skill carries exactly one manifest. This is the 'chassis frame' onto which registration, certification, publishing, meaning-sync and composition all bolt. See docs/technical-spec.md.",
+  "type": "object",
+  "required": [
+    "apiVersion",
+    "kind",
+    "identity",
+    "capability",
+    "scoring",
+    "governance",
+    "lifecycle"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "apiVersion": {
+      "type": "string",
+      "description": "Manifest schema version, e.g. 'skills.dev/v1'.",
+      "pattern": "^[a-z0-9.\\-]+/v[0-9]+([a-z0-9]+)?$"
+    },
+    "kind": {
+      "type": "string",
+      "const": "Skill",
+      "description": "Discriminator. Always 'Skill' for a skill manifest."
+    },
+    "identity": {
+      "type": "object",
+      "description": "Who and what this skill is. Stable identity used for lineage and de-duplication.",
+      "required": ["id", "name", "version", "owner"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Globally unique, immutable skill id (namespace/name).",
+          "pattern": "^[a-z0-9]([a-z0-9.\\-]*[a-z0-9])?/[a-z0-9]([a-z0-9.\\-]*[a-z0-9])?$"
+        },
+        "name": {
+          "type": "string",
+          "description": "Human-readable display name.",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "version": {
+          "type": "string",
+          "description": "Semantic version of this skill revision.",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z.\\-]+)?$"
+        },
+        "description": {
+          "type": "string",
+          "description": "One-paragraph statement of what the skill does and when to use it.",
+          "maxLength": 1024
+        },
+        "owner": {
+          "type": "object",
+          "description": "Accountable maker/team. Used for RBAC and graduation hand-off.",
+          "required": ["handle"],
+          "additionalProperties": false,
+          "properties": {
+            "handle": {
+              "type": "string",
+              "description": "GitHub/AAD identity of the accountable owner.",
+              "minLength": 1
+            },
+            "team": { "type": "string", "description": "Owning team or business unit." },
+            "contact": { "type": "string", "format": "email" }
+          }
+        },
+        "skillType": {
+          "type": "string",
+          "description": "Disambiguates the overloaded word 'Skill'. See docs/prior-art.md.",
+          "enum": ["anthropic-agent-skill", "mcp-tool", "copilot-skill", "deterministic-tool", "composite"],
+          "default": "deterministic-tool"
+        },
+        "tags": {
+          "type": "array",
+          "description": "Free-form discovery tags.",
+          "items": { "type": "string" },
+          "uniqueItems": true
+        }
+      }
+    },
+    "capability": {
+      "type": "object",
+      "description": "What the skill can do, described as IOPE (Inputs, Outputs, Preconditions, Effects) — borrowed from OWL-S so the Reasoning Layer can match and compose. See docs/ontology-schema.md.",
+      "required": ["summary", "inputs", "outputs"],
+      "additionalProperties": false,
+      "properties": {
+        "summary": {
+          "type": "string",
+          "description": "Capability statement, e.g. 'translate text between languages'.",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "capabilityTags": {
+          "type": "array",
+          "description": "Canonical capability identifiers used for matchmaking and duplicate detection, e.g. 'translate.text'.",
+          "items": { "type": "string", "pattern": "^[a-z0-9]+(\\.[a-z0-9]+)*$" },
+          "uniqueItems": true
+        },
+        "inputs": {
+          "type": "array",
+          "description": "Typed inputs (I in IOPE).",
+          "items": { "$ref": "#/$defs/parameter" }
+        },
+        "outputs": {
+          "type": "array",
+          "description": "Typed outputs (O in IOPE).",
+          "items": { "$ref": "#/$defs/parameter" }
+        },
+        "preconditions": {
+          "type": "array",
+          "description": "Conditions that must hold before execution (P in IOPE), e.g. 'user.authenticated'.",
+          "items": { "type": "string" }
+        },
+        "effects": {
+          "type": "array",
+          "description": "Side effects/state changes produced by execution (E in IOPE), e.g. 'record.created'.",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "scoring": {
+      "type": "object",
+      "description": "Determinism and risk scores. Computed/validated at the Certify gate and used by the Compose stage and Ontology Builder Agent.",
+      "required": ["determinism", "risk"],
+      "additionalProperties": false,
+      "properties": {
+        "determinism": {
+          "type": "string",
+          "description": "How deterministic the skill is. 'high' = pure deterministic tool; 'low' = LLM-orchestrated/variable.",
+          "enum": ["high", "medium", "low"]
+        },
+        "risk": {
+          "type": "string",
+          "description": "Blast radius if the skill misbehaves.",
+          "enum": ["low", "medium", "high", "critical"]
+        },
+        "reversible": {
+          "type": "boolean",
+          "description": "True if the skill's effects can be undone.",
+          "default": true
+        },
+        "rationale": {
+          "type": "string",
+          "description": "Short justification for the scores (audited at Certify)."
+        }
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "description": "Other skills/capabilities this skill composes or requires. Drives lineage and composition.",
+      "items": {
+        "type": "object",
+        "required": ["ref"],
+        "additionalProperties": false,
+        "properties": {
+          "ref": {
+            "type": "string",
+            "description": "Skill id or capability tag this skill depends on."
+          },
+          "versionRange": {
+            "type": "string",
+            "description": "Semver range constraint, e.g. '>=1.2.0 <2.0.0'."
+          },
+          "optional": { "type": "boolean", "default": false }
+        }
+      }
+    },
+    "mcp": {
+      "type": "object",
+      "description": "MCP-compatibility fields. The registry IS an MCP-compatible catalog; we ride MCP for storage/discovery/governance rather than rebuilding it. See docs/prior-art.md.",
+      "additionalProperties": false,
+      "properties": {
+        "server": {
+          "type": "string",
+          "description": "MCP server name/namespace that exposes this skill."
+        },
+        "toolName": {
+          "type": "string",
+          "description": "Name of the MCP tool that implements this skill, if applicable."
+        },
+        "namespace": {
+          "type": "string",
+          "description": "Verified MCP registry namespace (e.g. GitHub-verified)."
+        },
+        "transport": {
+          "type": "string",
+          "enum": ["stdio", "http", "sse"],
+          "description": "MCP transport used to reach the server."
+        }
+      }
+    },
+    "governance": {
+      "type": "object",
+      "description": "Trust metadata: identity, access, cost, audit. The third thing we centralise.",
+      "required": ["visibility"],
+      "additionalProperties": false,
+      "properties": {
+        "visibility": {
+          "type": "string",
+          "enum": ["private", "team", "org", "public"],
+          "description": "Who can discover/use this skill."
+        },
+        "rbac": {
+          "type": "array",
+          "description": "Roles permitted to invoke the skill.",
+          "items": { "type": "string" }
+        },
+        "dataClassification": {
+          "type": "string",
+          "enum": ["public", "internal", "confidential", "restricted"],
+          "description": "Sensitivity of data the skill may touch."
+        },
+        "cost": {
+          "type": "object",
+          "description": "Cost signal used by composition to choose between equivalent skills.",
+          "additionalProperties": false,
+          "properties": {
+            "unit": { "type": "string", "description": "e.g. 'usd-per-1k-calls', 'tokens-per-call'." },
+            "estimate": { "type": "number", "minimum": 0 }
+          }
+        },
+        "audit": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "logged": { "type": "boolean", "default": true },
+            "retentionDays": { "type": "integer", "minimum": 0 }
+          }
+        }
+      }
+    },
+    "lifecycle": {
+      "type": "object",
+      "description": "Where the skill sits on the graduation chassis. Mirrors MLflow registry stages + RPA-CoE gates. See docs/architecture.md.",
+      "required": ["stage"],
+      "additionalProperties": false,
+      "properties": {
+        "stage": {
+          "type": "string",
+          "description": "Current graduation stage.",
+          "enum": ["draft", "registered", "certified", "published", "deprecated", "retired"]
+        },
+        "certifiedBy": {
+          "type": "string",
+          "description": "Identity of the human approver at the Certify gate (human-in-the-loop is mandatory)."
+        },
+        "certifiedAt": { "type": "string", "format": "date-time" },
+        "supersedes": {
+          "type": "string",
+          "description": "Skill id+version this revision replaces (lineage)."
+        },
+        "supersededBy": {
+          "type": "string",
+          "description": "Skill id+version that replaces this revision (lineage)."
+        }
+      }
+    }
+  },
+  "$defs": {
+    "parameter": {
+      "type": "object",
+      "required": ["name", "type"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "type": {
+          "type": "string",
+          "description": "Logical/ontology type, e.g. 'text', 'Location', 'InvoiceDocument'. Ties into the Meaning Layer."
+        },
+        "required": { "type": "boolean", "default": true },
+        "description": { "type": "string" }
+      }
+    }
+  }
+}

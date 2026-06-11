@@ -1,0 +1,51 @@
+name: Manifest Gate
+
+# Pipeline-as-CI: every change to a skill manifest must pass the automated
+# Register/Certify exit checks (schema validity, determinism/risk scored,
+# dependency resolution, duplicate-capability scan) before it can merge.
+#
+# This is the machine-checkable half of the Certify gate; the human half remains
+# the PR review itself (the reviewer is the certifier of record).
+
+on:
+  pull_request:
+    paths:
+      - "examples/**.manifest.json"
+      - "schemas/skill-manifest.schema.json"
+      - "prototype/chassis/**"
+  push:
+    paths:
+      - "examples/**.manifest.json"
+
+permissions:
+  contents: read
+
+jobs:
+  gate:
+    name: automated gate checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install chassis
+        working-directory: prototype
+        run: pip install -e .
+
+      - name: Run gate checks over all manifests
+        working-directory: prototype
+        # Top-level examples plus the published volume catalog. The labelled
+        # evaluation fixtures (examples/evaluation/) are intentionally excluded:
+        # they carry duplicate capability tags as ground truth for the Phase 2
+        # duplicate-detection harness and are not meant to pass the gate.
+        run: chassis gate ../examples/*.manifest.json ../examples/catalog/*.manifest.json
+
+      - name: Score the Phase 2 exit gate over the labelled corpus
+        working-directory: prototype
+        # Falsifiable bet: the Ontology Builder Agent must hit the roadmap
+        # targets (acceptance, duplicate precision/recall, effort, drift)
+        # against the recorded Phase 1 baseline. A regressing agent fails here.
+        run: chassis evaluate ../examples/evaluation --labels ../examples/evaluation/labels.json

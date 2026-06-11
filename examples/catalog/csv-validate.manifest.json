@@ -1,0 +1,75 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "data/csv-validate",
+    "name": "CSV Schema Validator",
+    "version": "1.0.0",
+    "description": "Validates a CSV file against a declared column schema and returns a structured list of violations.",
+    "owner": {
+      "handle": "d.nguyen",
+      "team": "Data Platform"
+    },
+    "skillType": "deterministic-tool",
+    "tags": [
+      "data",
+      "validation",
+      "csv"
+    ]
+  },
+  "capability": {
+    "summary": "Validate a CSV file against a declared column schema",
+    "capabilityTags": [
+      "data.csv.validate"
+    ],
+    "inputs": [
+      {
+        "name": "file",
+        "type": "CsvFile",
+        "required": true
+      },
+      {
+        "name": "schema",
+        "type": "ColumnSchema",
+        "required": true
+      }
+    ],
+    "outputs": [
+      {
+        "name": "report",
+        "type": "ValidationReport",
+        "required": true
+      }
+    ],
+    "preconditions": [],
+    "effects": []
+  },
+  "scoring": {
+    "determinism": "high",
+    "risk": "low",
+    "reversible": true,
+    "rationale": "Read-only validation; deterministic and side-effect free."
+  },
+  "dependencies": [],
+  "governance": {
+    "visibility": "org",
+    "rbac": [
+      "data.engineer",
+      "data.reader"
+    ],
+    "dataClassification": "internal",
+    "cost": {
+      "unit": "usd-per-1k-calls",
+      "estimate": 0.1
+    },
+    "audit": {
+      "logged": true,
+      "retentionDays": 90
+    }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-01T09:00:00Z"
+  }
+}

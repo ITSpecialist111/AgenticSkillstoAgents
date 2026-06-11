@@ -1,0 +1,61 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "eval/transcribe-a",
+    "name": "Audio Transcriber A",
+    "version": "1.0.0",
+    "description": "Audio Transcriber A (evaluation fixture).",
+    "owner": {
+      "handle": "eval.fixture",
+      "team": "Evaluation"
+    },
+    "skillType": "deterministic-tool",
+    "tags": [
+      "evaluation",
+      "fixture"
+    ]
+  },
+  "capability": {
+    "summary": "Audio Transcriber A",
+    "capabilityTags": [
+      "audio.transcribe"
+    ],
+    "inputs": [
+      {
+        "name": "audio",
+        "type": "Audio",
+        "required": true
+      }
+    ],
+    "outputs": [
+      {
+        "name": "transcript",
+        "type": "Transcript",
+        "required": true
+      }
+    ],
+    "preconditions": [],
+    "effects": []
+  },
+  "scoring": {
+    "determinism": "high",
+    "risk": "low",
+    "reversible": true,
+    "rationale": "Evaluation fixture for the Phase 2 duplicate-detection harness."
+  },
+  "dependencies": [],
+  "governance": {
+    "visibility": "team",
+    "dataClassification": "internal",
+    "audit": {
+      "logged": true,
+      "retentionDays": 30
+    }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-01T09:00:00Z"
+  }
+}

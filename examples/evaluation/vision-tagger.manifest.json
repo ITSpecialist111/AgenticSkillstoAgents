@@ -1,0 +1,62 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "eval/vision-tagger",
+    "name": "Vision Tagger",
+    "version": "1.0.0",
+    "description": "Vision Tagger (evaluation fixture).",
+    "owner": {
+      "handle": "eval.fixture",
+      "team": "Evaluation"
+    },
+    "skillType": "deterministic-tool",
+    "tags": [
+      "evaluation",
+      "fixture"
+    ]
+  },
+  "capability": {
+    "summary": "Vision Tagger",
+    "capabilityTags": [
+      "image.classify",
+      "vision.tag"
+    ],
+    "inputs": [
+      {
+        "name": "image",
+        "type": "Image",
+        "required": true
+      }
+    ],
+    "outputs": [
+      {
+        "name": "labels",
+        "type": "Labels",
+        "required": true
+      }
+    ],
+    "preconditions": [],
+    "effects": []
+  },
+  "scoring": {
+    "determinism": "high",
+    "risk": "low",
+    "reversible": true,
+    "rationale": "Evaluation fixture for the Phase 2 duplicate-detection harness."
+  },
+  "dependencies": [],
+  "governance": {
+    "visibility": "team",
+    "dataClassification": "internal",
+    "audit": {
+      "logged": true,
+      "retentionDays": 30
+    }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-01T09:00:00Z"
+  }
+}

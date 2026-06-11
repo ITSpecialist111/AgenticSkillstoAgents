@@ -1,0 +1,80 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "finance/currency-convert",
+    "name": "Currency Converter",
+    "version": "2.1.0",
+    "description": "Converts an amount between currencies using the dated reference rate; returns the converted amount and rate used.",
+    "owner": {
+      "handle": "f.kim",
+      "team": "Finance Automation"
+    },
+    "skillType": "deterministic-tool",
+    "tags": [
+      "finance",
+      "fx",
+      "currency"
+    ]
+  },
+  "capability": {
+    "summary": "Convert an amount between currencies at a dated rate",
+    "capabilityTags": [
+      "finance.currency.convert"
+    ],
+    "inputs": [
+      {
+        "name": "amount",
+        "type": "Money",
+        "required": true
+      },
+      {
+        "name": "target",
+        "type": "CurrencyCode",
+        "required": true
+      },
+      {
+        "name": "asOf",
+        "type": "Date",
+        "required": true
+      }
+    ],
+    "outputs": [
+      {
+        "name": "converted",
+        "type": "Money",
+        "required": true
+      }
+    ],
+    "preconditions": [],
+    "effects": []
+  },
+  "scoring": {
+    "determinism": "high",
+    "risk": "low",
+    "reversible": true,
+    "rationale": "Pure arithmetic over a published rate table; fully deterministic."
+  },
+  "dependencies": [],
+  "governance": {
+    "visibility": "org",
+    "rbac": [
+      "finance.reader",
+      "finance.processor"
+    ],
+    "dataClassification": "internal",
+    "cost": {
+      "unit": "usd-per-1k-calls",
+      "estimate": 0.05
+    },
+    "audit": {
+      "logged": true,
+      "retentionDays": 365
+    }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-01T09:00:00Z"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "$comment": "Phase 1 hand-curation baseline (docs/roadmap.md exit gate). This is the cost the Ontology Builder Agent must beat in Phase 2. See docs/phase1-baseline.md for how it was measured and how to re-record it.",
+  "phase": "1",
+  "metric": "maintenance_effort",
+  "unit": "human-minutes-per-100-skills",
+  "value": 210.0,
+  "skills_curated": 24,
+  "method": "hand-curation",
+  "recorded_at": "2026-06-11",
+  "minutes_per_review_action": 3.0,
+  "provenance": "Timed manual ontology curation of the 24 published skills in examples/ and examples/catalog/: entity/relationship entry, determinism/risk cross-checks, and duplicate review, normalised to 100 skills."
+}

@@ -1,0 +1,70 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "ops/shipment-track",
+    "name": "Shipment Tracker",
+    "version": "1.0.0",
+    "description": "Returns the current status and ETA for a shipment from the carrier's tracking feed.",
+    "owner": {
+      "handle": "o.silva",
+      "team": "Operations"
+    },
+    "skillType": "mcp-tool",
+    "tags": [
+      "ops",
+      "logistics",
+      "tracking"
+    ]
+  },
+  "capability": {
+    "summary": "Return current status and ETA for a shipment",
+    "capabilityTags": [
+      "ops.shipment.track"
+    ],
+    "inputs": [
+      {
+        "name": "trackingId",
+        "type": "TrackingId",
+        "required": true
+      }
+    ],
+    "outputs": [
+      {
+        "name": "status",
+        "type": "ShipmentStatus",
+        "required": true
+      }
+    ],
+    "preconditions": [],
+    "effects": []
+  },
+  "scoring": {
+    "determinism": "high",
+    "risk": "low",
+    "reversible": true,
+    "rationale": "Read-only carrier lookup; no state change."
+  },
+  "dependencies": [],
+  "governance": {
+    "visibility": "org",
+    "rbac": [
+      "ops.planner",
+      "support.agent"
+    ],
+    "dataClassification": "internal",
+    "cost": {
+      "unit": "usd-per-1k-calls",
+      "estimate": 0.2
+    },
+    "audit": {
+      "logged": true,
+      "retentionDays": 90
+    }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-01T09:00:00Z"
+  }
+}

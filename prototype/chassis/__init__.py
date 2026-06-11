@@ -25,8 +25,16 @@ from .manifest import (
 )
 from .ontology import Ontology, OntologyBuilderAgent, SyncResult
 from .registry import GateError, Registry, Stage
+from .store import InMemoryStore, SkillStore, SqliteStore, open_store
+
+# The package major version tracks the manifest ``apiVersion`` (skills.dev/v1):
+# any breaking change to the canonical manifest bumps both in lock-step.
+__version__ = "1.0.0"
+API_VERSION = "skills.dev/v1"
 
 __all__ = [
+    "__version__",
+    "API_VERSION",
     "Manifest",
     "ManifestError",
     "iope_signature",
@@ -38,4 +46,8 @@ __all__ = [
     "GateError",
     "Registry",
     "Stage",
+    "SkillStore",
+    "InMemoryStore",
+    "SqliteStore",
+    "open_store",
 ]

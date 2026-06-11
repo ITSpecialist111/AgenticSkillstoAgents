@@ -1,0 +1,72 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "sales/lead-score",
+    "name": "Lead Scoring",
+    "version": "1.2.0",
+    "description": "Scores an inbound lead 0-100 using firmographic and engagement signals via a deterministic rules model.",
+    "owner": {
+      "handle": "s.lopez",
+      "team": "Revenue Ops"
+    },
+    "skillType": "deterministic-tool",
+    "tags": [
+      "sales",
+      "scoring",
+      "crm"
+    ]
+  },
+  "capability": {
+    "summary": "Score an inbound sales lead from firmographic + engagement signals",
+    "capabilityTags": [
+      "sales.lead.score"
+    ],
+    "inputs": [
+      {
+        "name": "lead",
+        "type": "Lead",
+        "required": true
+      }
+    ],
+    "outputs": [
+      {
+        "name": "score",
+        "type": "LeadScore",
+        "required": true
+      }
+    ],
+    "preconditions": [
+      "user.authenticated"
+    ],
+    "effects": []
+  },
+  "scoring": {
+    "determinism": "high",
+    "risk": "low",
+    "reversible": true,
+    "rationale": "Pure scoring function over supplied features; deterministic and reversible."
+  },
+  "dependencies": [],
+  "governance": {
+    "visibility": "org",
+    "rbac": [
+      "sales.rep",
+      "sales.ops"
+    ],
+    "dataClassification": "confidential",
+    "cost": {
+      "unit": "usd-per-1k-calls",
+      "estimate": 0.6
+    },
+    "audit": {
+      "logged": true,
+      "retentionDays": 365
+    }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-01T09:00:00Z"
+  }
+}

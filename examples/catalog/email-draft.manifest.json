@@ -1,0 +1,69 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "marketing/email-draft",
+    "name": "Marketing Email Drafter",
+    "version": "1.0.0",
+    "description": "Drafts a marketing email body from a campaign brief and brand voice guide.",
+    "owner": {
+      "handle": "m.osei",
+      "team": "Marketing"
+    },
+    "skillType": "copilot-skill",
+    "tags": [
+      "marketing",
+      "email",
+      "content"
+    ]
+  },
+  "capability": {
+    "summary": "Draft a marketing email from a campaign brief",
+    "capabilityTags": [
+      "marketing.email.draft"
+    ],
+    "inputs": [
+      {
+        "name": "brief",
+        "type": "CampaignBrief",
+        "required": true
+      }
+    ],
+    "outputs": [
+      {
+        "name": "draft",
+        "type": "EmailDraft",
+        "required": true
+      }
+    ],
+    "preconditions": [],
+    "effects": []
+  },
+  "scoring": {
+    "determinism": "low",
+    "risk": "low",
+    "reversible": true,
+    "rationale": "Generative draft for human review; advisory output only."
+  },
+  "dependencies": [],
+  "governance": {
+    "visibility": "org",
+    "rbac": [
+      "marketing.author"
+    ],
+    "dataClassification": "internal",
+    "cost": {
+      "unit": "tokens-per-call",
+      "estimate": 0.0
+    },
+    "audit": {
+      "logged": true,
+      "retentionDays": 90
+    }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-01T09:00:00Z"
+  }
+}

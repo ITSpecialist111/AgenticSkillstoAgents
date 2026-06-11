@@ -35,8 +35,21 @@ the baseline the agent must beat.
 - MCP-compatible publish step.
 - Ontology curated **by hand** — deliberately, to capture the baseline cost.
 
+> **Reference product:** the executable forms of these Phase 1 mechanisms now
+> ship in [`prototype/`](../prototype) — a persistent registry, the automated
+> gate checks (`chassis gate` + the `manifest-gate` CI workflow), and an
+> MCP-compatible publish surface (`chassis serve` → `GET /mcp/tools`). See
+> [`packaging.md`](packaging.md). The Phase 1 *exit gate* below (volume +
+> measured baseline) is addressed by the published volume catalog in
+> [`../examples/catalog/`](../examples/catalog) (≥ 20 published, gate-clean) and
+> the recorded hand-curation baseline in
+> [`phase1-baseline.md`](phase1-baseline.md).
+
 **Exit gate:** ≥ 20 skills published; baseline **maintenance effort** (human minutes per
 100 skills) recorded.
+
+- [x] ≥ 20 published skills — [`../examples/catalog/`](../examples/catalog) (21 published) plus the worked examples.
+- [x] Hand-curation **maintenance-effort baseline** recorded — [`phase1-baseline.md`](phase1-baseline.md) / [`../prototype/chassis/data/phase1-baseline.json`](../prototype/chassis/data/phase1-baseline.json).
 
 ## Phase 2 — Ontology Builder Agent (the experiment)
 
@@ -45,6 +58,16 @@ against the Phase 1 baseline.
 
 - Agent proposes entities/relationships + confidence + duplicate/conflict flags.
 - Human-in-the-loop review queue; low-risk/high-confidence auto-merge only.
+
+> **Reference product:** the scorecard that turns this phase's targets into
+> pass/fail numbers ships as [`chassis evaluate`](../prototype/chassis/evaluation.py).
+> It runs the Ontology Builder Agent over a corpus, compares its
+> duplicate flags against a human-labelled ground truth
+> ([`../examples/evaluation/`](../examples/evaluation)), and scores acceptance,
+> duplicate precision/recall, maintenance effort (vs the recorded baseline) and
+> drift against the targets below. Because the agent is a replaceable component,
+> this harness is how a candidate (heuristic, LLM or hybrid) is judged before it
+> passes the Meaning-sync gate.
 
 **Exit gate (the falsifiable bet):**
 
@@ -95,6 +118,9 @@ failed).
 
 ## Status
 
-Concept / architecture phase (Phase 0 complete). Targets Microsoft Fabric IQ (Ontology,
-Preview), OneLake, MCP registries, and Copilot Studio custom engine agents, with GitHub as
-the skill system-of-record.
+Concept / architecture phase. Phase 0 complete; the Phase 1 exit gate is met (≥ 20
+published skills in [`../examples/catalog/`](../examples/catalog) and a recorded
+hand-curation baseline, [`phase1-baseline.md`](phase1-baseline.md)), and the Phase 2
+scorecard (`chassis evaluate`) is in place to judge the Ontology Builder Agent against
+its targets. Targets Microsoft Fabric IQ (Ontology, Preview), OneLake, MCP registries,
+and Copilot Studio custom engine agents, with GitHub as the skill system-of-record.

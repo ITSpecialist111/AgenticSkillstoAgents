@@ -1,0 +1,25 @@
+# Python bytecode / caches
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+
+# Build artifacts
+build/
+dist/
+*.whl
+
+# Local virtualenvs
+.venv/
+venv/
+
+# Local registry databases (chassis --db sqlite:///...)
+*.db
+*.sqlite
+*.sqlite3
+
+# Test / tooling caches
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/

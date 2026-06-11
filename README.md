@@ -83,6 +83,9 @@ and relationships, scoring determinism/risk, and detecting duplicate capabilitie
 | [`docs/ontology-schema.md`](docs/ontology-schema.md) | Entity-relationship model for skills/capabilities/agents (IOPE) |
 | [`docs/ontology-builder-agent.md`](docs/ontology-builder-agent.md) | The agentic code that builds/maintains the ontology — and the measurable bet |
 | [`docs/technical-spec.md`](docs/technical-spec.md) | True technical spec: the canonical Manifest, state machine, APIs, build |
+| [`docs/intake.md`](docs/intake.md) | The intake layer: turning real `SKILL.md` folders into draft manifests (the on-ramp to Register) |
+| [`docs/phase1-baseline.md`](docs/phase1-baseline.md) | The recorded hand-curation baseline (Phase 1 exit gate) and how `chassis evaluate` scores Phase 2 against it |
+| [`docs/packaging.md`](docs/packaging.md) | How the prototype is packaged into an installable, persistent, deployable product (CLI + API + storage + CI/CD) |
 | [`docs/roadmap.md`](docs/roadmap.md) | Phased graduation pipeline, milestones, success metrics |
 | [`docs/prior-art.md`](docs/prior-art.md) | What we learned from MCP / OWL-S / MLflow / RPA CoEs and how we differ |
 | [`docs/graduation-walkthrough.md`](docs/graduation-walkthrough.md) | A worked example: one skill traveling all six gates |
@@ -106,12 +109,25 @@ The construct is delivered as **specifications + a canonical manifest + a worked
 ## Prototype
 
 An executable reference implementation of the chassis (manifest validation, the
-six-gate pipeline state machine, and the Ontology Builder Agent contract) plus
-smoke tests lives in [`prototype/`](prototype). Run it with
-`cd prototype && pip install -r requirements.txt && python -m pytest -q`, or try
-`python -m chassis.cli walkthrough`.
+six-gate pipeline state machine, the Ontology Builder Agent contract, and the
+**intake** on-ramp that turns real `SKILL.md` folders into draft manifests) plus
+smoke tests lives in [`prototype/`](prototype). It is packaged as an installable
+product — a **Skill Registry & Graduation service** with a `chassis` CLI, durable
+storage (SQLite), an optional HTTP/MCP API, container deployment, and CI — built
+*behind* the stable Manifest / six-gate / Ontology-Builder contracts. See
+[`docs/packaging.md`](docs/packaging.md). Quick start:
+
+```bash
+cd prototype
+pip install -e '.[dev]' && python -m pytest -q     # install + test
+chassis walkthrough                                 # six-gate demo
+chassis register ../examples/invoice-extract.manifest.json --db sqlite:///registry.db
+chassis evaluate ../examples/evaluation --labels ../examples/evaluation/labels.json  # Phase 2 scorecard
+chassis serve --db sqlite:///registry.db            # HTTP/MCP API (needs the api extra)
+```
 
 ## Status
 
-Concept / architecture phase. Targets Microsoft Fabric IQ (Ontology, Preview), OneLake,
-and Copilot Studio custom engine agents, with GitHub as the skill system-of-record.
+Concept / architecture phase, with an installable reference product. Targets
+Microsoft Fabric IQ (Ontology, Preview), OneLake, and Copilot Studio custom
+engine agents, with GitHub as the skill system-of-record.

@@ -1,0 +1,69 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "devtools/log-summarize",
+    "name": "Log Summarizer",
+    "version": "1.0.0",
+    "description": "Summarizes a batch of application log lines into a ranked list of likely failure causes.",
+    "owner": {
+      "handle": "d.fischer",
+      "team": "Developer Experience"
+    },
+    "skillType": "copilot-skill",
+    "tags": [
+      "devtools",
+      "logs",
+      "triage"
+    ]
+  },
+  "capability": {
+    "summary": "Summarize application logs into likely failure causes",
+    "capabilityTags": [
+      "devtools.log.summarize"
+    ],
+    "inputs": [
+      {
+        "name": "logs",
+        "type": "LogBatch",
+        "required": true
+      }
+    ],
+    "outputs": [
+      {
+        "name": "summary",
+        "type": "LogSummary",
+        "required": true
+      }
+    ],
+    "preconditions": [],
+    "effects": []
+  },
+  "scoring": {
+    "determinism": "low",
+    "risk": "low",
+    "reversible": true,
+    "rationale": "Generative summary for human triage; advisory output only."
+  },
+  "dependencies": [],
+  "governance": {
+    "visibility": "org",
+    "rbac": [
+      "developer"
+    ],
+    "dataClassification": "internal",
+    "cost": {
+      "unit": "tokens-per-call",
+      "estimate": 0.0
+    },
+    "audit": {
+      "logged": true,
+      "retentionDays": 30
+    }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-01T09:00:00Z"
+  }
+}

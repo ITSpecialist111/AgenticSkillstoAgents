@@ -1,0 +1,76 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "ops/inventory-reorder",
+    "name": "Inventory Reorder Planner",
+    "version": "1.2.0",
+    "description": "Computes reorder quantities for SKUs below their reorder point using demand and lead-time inputs.",
+    "owner": {
+      "handle": "o.silva",
+      "team": "Operations"
+    },
+    "skillType": "deterministic-tool",
+    "tags": [
+      "ops",
+      "inventory",
+      "planning"
+    ]
+  },
+  "capability": {
+    "summary": "Compute reorder quantities for low-stock SKUs",
+    "capabilityTags": [
+      "ops.inventory.reorder"
+    ],
+    "inputs": [
+      {
+        "name": "stock",
+        "type": "StockSnapshot",
+        "required": true
+      },
+      {
+        "name": "policy",
+        "type": "ReorderPolicy",
+        "required": true
+      }
+    ],
+    "outputs": [
+      {
+        "name": "plan",
+        "type": "ReorderPlan",
+        "required": true
+      }
+    ],
+    "preconditions": [
+      "user.authenticated"
+    ],
+    "effects": []
+  },
+  "scoring": {
+    "determinism": "high",
+    "risk": "medium",
+    "reversible": true,
+    "rationale": "Deterministic planning; produces a draft plan, no purchase orders raised."
+  },
+  "dependencies": [],
+  "governance": {
+    "visibility": "org",
+    "rbac": [
+      "ops.planner"
+    ],
+    "dataClassification": "internal",
+    "cost": {
+      "unit": "usd-per-1k-calls",
+      "estimate": 0.4
+    },
+    "audit": {
+      "logged": true,
+      "retentionDays": 180
+    }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-01T09:00:00Z"
+  }
+}
