@@ -1,0 +1,77 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "hr/leave-balance",
+    "name": "Leave Balance Lookup",
+    "version": "1.0.0",
+    "description": "Returns an employee's remaining leave balance by type (annual, sick, carry-over) for a given date. Read-only lookup against the HR system.",
+    "owner": {
+      "handle": "h.rivera",
+      "team": "People Ops"
+    },
+    "skillType": "deterministic-tool",
+    "tags": [
+      "hr",
+      "leave",
+      "self-service"
+    ]
+  },
+  "capability": {
+    "summary": "Look up an employee's remaining leave balance",
+    "capabilityTags": [
+      "hr.leave.balance"
+    ],
+    "inputs": [
+      {
+        "name": "employeeId",
+        "type": "EmployeeId",
+        "required": true
+      },
+      {
+        "name": "asOf",
+        "type": "Date",
+        "required": true
+      }
+    ],
+    "outputs": [
+      {
+        "name": "balance",
+        "type": "LeaveBalance",
+        "required": true
+      }
+    ],
+    "preconditions": [
+      "user.authenticated"
+    ],
+    "effects": []
+  },
+  "scoring": {
+    "determinism": "high",
+    "risk": "low",
+    "reversible": true,
+    "rationale": "Read-only query; no state change. Output verifiable against the HR ledger."
+  },
+  "dependencies": [],
+  "governance": {
+    "visibility": "org",
+    "rbac": [
+      "hr.reader",
+      "employee.self"
+    ],
+    "dataClassification": "confidential",
+    "cost": {
+      "unit": "usd-per-1k-calls",
+      "estimate": 0.5
+    },
+    "audit": {
+      "logged": true,
+      "retentionDays": 365
+    }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-01T09:00:00Z"
+  }
+}

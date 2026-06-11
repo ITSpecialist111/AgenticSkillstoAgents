@@ -37,4 +37,15 @@ jobs:
 
       - name: Run gate checks over all manifests
         working-directory: prototype
-        run: chassis gate ../examples/*.manifest.json
+        # Top-level examples plus the published volume catalog. The labelled
+        # evaluation fixtures (examples/evaluation/) are intentionally excluded:
+        # they carry duplicate capability tags as ground truth for the Phase 2
+        # duplicate-detection harness and are not meant to pass the gate.
+        run: chassis gate ../examples/*.manifest.json ../examples/catalog/*.manifest.json
+
+      - name: Score the Phase 2 exit gate over the labelled corpus
+        working-directory: prototype
+        # Falsifiable bet: the Ontology Builder Agent must hit the roadmap
+        # targets (acceptance, duplicate precision/recall, effort, drift)
+        # against the recorded Phase 1 baseline. A regressing agent fails here.
+        run: chassis evaluate ../examples/evaluation --labels ../examples/evaluation/labels.json

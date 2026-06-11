@@ -1,0 +1,61 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "eval/json-to-csv",
+    "name": "JSON to CSV Converter",
+    "version": "1.0.0",
+    "description": "JSON to CSV Converter (evaluation fixture).",
+    "owner": {
+      "handle": "eval.fixture",
+      "team": "Evaluation"
+    },
+    "skillType": "deterministic-tool",
+    "tags": [
+      "evaluation",
+      "fixture"
+    ]
+  },
+  "capability": {
+    "summary": "JSON to CSV Converter",
+    "capabilityTags": [
+      "data.convert"
+    ],
+    "inputs": [
+      {
+        "name": "json",
+        "type": "Json",
+        "required": true
+      }
+    ],
+    "outputs": [
+      {
+        "name": "csv",
+        "type": "Csv",
+        "required": true
+      }
+    ],
+    "preconditions": [],
+    "effects": []
+  },
+  "scoring": {
+    "determinism": "high",
+    "risk": "low",
+    "reversible": true,
+    "rationale": "Evaluation fixture for the Phase 2 duplicate-detection harness."
+  },
+  "dependencies": [],
+  "governance": {
+    "visibility": "team",
+    "dataClassification": "internal",
+    "audit": {
+      "logged": true,
+      "retentionDays": 30
+    }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-01T09:00:00Z"
+  }
+}

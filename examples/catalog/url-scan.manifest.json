@@ -1,0 +1,69 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "security/url-scan",
+    "name": "URL Reputation Scanner",
+    "version": "1.1.0",
+    "description": "Scans a URL against reputation feeds and returns a risk verdict with contributing signals.",
+    "owner": {
+      "handle": "s.haddad",
+      "team": "Security"
+    },
+    "skillType": "deterministic-tool",
+    "tags": [
+      "security",
+      "url",
+      "reputation"
+    ]
+  },
+  "capability": {
+    "summary": "Scan a URL against reputation feeds for a risk verdict",
+    "capabilityTags": [
+      "security.url.scan"
+    ],
+    "inputs": [
+      {
+        "name": "url",
+        "type": "Url",
+        "required": true
+      }
+    ],
+    "outputs": [
+      {
+        "name": "verdict",
+        "type": "RiskVerdict",
+        "required": true
+      }
+    ],
+    "preconditions": [],
+    "effects": []
+  },
+  "scoring": {
+    "determinism": "high",
+    "risk": "medium",
+    "reversible": true,
+    "rationale": "Read-only reputation lookup; advisory verdict, no enforcement action."
+  },
+  "dependencies": [],
+  "governance": {
+    "visibility": "org",
+    "rbac": [
+      "security.analyst"
+    ],
+    "dataClassification": "internal",
+    "cost": {
+      "unit": "usd-per-1k-calls",
+      "estimate": 0.3
+    },
+    "audit": {
+      "logged": true,
+      "retentionDays": 365
+    }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-01T09:00:00Z"
+  }
+}

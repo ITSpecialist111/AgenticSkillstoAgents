@@ -25,6 +25,7 @@ changing those contracts. The productization modules sit *behind* Parts A–C:
 | **MCP publish** | [`chassis/mcp.py`](chassis/mcp.py) | projects the published catalog into an MCP `tools/list` document |
 | **Matchmaking** | [`chassis/matchmaking.py`](chassis/matchmaking.py) | Exact/Plug-in/Partial/Fail capability matching for the Composition layer |
 | **Telemetry** | [`chassis/metrics.py`](chassis/metrics.py) | the roadmap's falsifiable program metrics, computed from registry state |
+| **Phase 2 scorecard** | [`chassis/evaluation.py`](chassis/evaluation.py) | scores an agent run against the roadmap Phase 2 exit-gate targets vs the recorded baseline (`chassis evaluate`) |
 | **Pipeline-as-CI** | [`chassis/gatecheck.py`](chassis/gatecheck.py) | headless Register/Certify checks for `chassis gate` and GitHub Actions |
 
 ## Install
@@ -60,6 +61,12 @@ chassis gate ../examples/*.manifest.json
 
 # Program telemetry snapshot (the roadmap's falsifiable metrics):
 chassis metrics --db sqlite:///registry.db
+
+# Score the Phase 2 exit gate (the falsifiable bet) over a labelled corpus:
+#   acceptance, duplicate precision/recall, maintenance effort vs the recorded
+#   Phase 1 baseline, and ontology drift. Exit code is non-zero if the gate is
+#   not met. --labels supplies the ground-truth duplicate pairs.
+chassis evaluate ../examples/evaluation --labels ../examples/evaluation/labels.json
 
 # Graduate the bundled example skills through all six gates + meaning-sync
 chassis walkthrough

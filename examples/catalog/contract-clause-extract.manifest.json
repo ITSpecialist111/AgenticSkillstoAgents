@@ -1,0 +1,71 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "legal/contract-clause-extract",
+    "name": "Contract Clause Extractor",
+    "version": "1.0.0",
+    "description": "Extracts named clauses (termination, liability, governing-law) from a contract document into a structured map.",
+    "owner": {
+      "handle": "l.gray",
+      "team": "Legal Ops"
+    },
+    "skillType": "deterministic-tool",
+    "tags": [
+      "legal",
+      "contracts",
+      "extraction"
+    ]
+  },
+  "capability": {
+    "summary": "Extract named clauses from a contract document",
+    "capabilityTags": [
+      "legal.contract.clause"
+    ],
+    "inputs": [
+      {
+        "name": "contract",
+        "type": "ContractDocument",
+        "required": true
+      }
+    ],
+    "outputs": [
+      {
+        "name": "clauses",
+        "type": "ClauseMap",
+        "required": true
+      }
+    ],
+    "preconditions": [
+      "document.readable"
+    ],
+    "effects": []
+  },
+  "scoring": {
+    "determinism": "high",
+    "risk": "low",
+    "reversible": true,
+    "rationale": "Read-only extraction; output verifiable against the source contract."
+  },
+  "dependencies": [],
+  "governance": {
+    "visibility": "org",
+    "rbac": [
+      "legal.reviewer"
+    ],
+    "dataClassification": "confidential",
+    "cost": {
+      "unit": "usd-per-1k-calls",
+      "estimate": 2.0
+    },
+    "audit": {
+      "logged": true,
+      "retentionDays": 365
+    }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-01T09:00:00Z"
+  }
+}

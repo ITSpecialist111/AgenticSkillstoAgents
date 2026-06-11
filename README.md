@@ -84,6 +84,7 @@ and relationships, scoring determinism/risk, and detecting duplicate capabilitie
 | [`docs/ontology-builder-agent.md`](docs/ontology-builder-agent.md) | The agentic code that builds/maintains the ontology — and the measurable bet |
 | [`docs/technical-spec.md`](docs/technical-spec.md) | True technical spec: the canonical Manifest, state machine, APIs, build |
 | [`docs/intake.md`](docs/intake.md) | The intake layer: turning real `SKILL.md` folders into draft manifests (the on-ramp to Register) |
+| [`docs/phase1-baseline.md`](docs/phase1-baseline.md) | The recorded hand-curation baseline (Phase 1 exit gate) and how `chassis evaluate` scores Phase 2 against it |
 | [`docs/packaging.md`](docs/packaging.md) | How the prototype is packaged into an installable, persistent, deployable product (CLI + API + storage + CI/CD) |
 | [`docs/roadmap.md`](docs/roadmap.md) | Phased graduation pipeline, milestones, success metrics |
 | [`docs/prior-art.md`](docs/prior-art.md) | What we learned from MCP / OWL-S / MLflow / RPA CoEs and how we differ |
@@ -121,6 +122,7 @@ cd prototype
 pip install -e '.[dev]' && python -m pytest -q     # install + test
 chassis walkthrough                                 # six-gate demo
 chassis register ../examples/invoice-extract.manifest.json --db sqlite:///registry.db
+chassis evaluate ../examples/evaluation --labels ../examples/evaluation/labels.json  # Phase 2 scorecard
 chassis serve --db sqlite:///registry.db            # HTTP/MCP API (needs the api extra)
 ```
 

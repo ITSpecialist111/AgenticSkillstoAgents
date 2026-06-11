@@ -1,0 +1,71 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "legal/nda-check",
+    "name": "NDA Compliance Check",
+    "version": "1.0.0",
+    "description": "Checks a draft NDA against the approved clause library and flags non-standard or missing clauses.",
+    "owner": {
+      "handle": "l.gray",
+      "team": "Legal Ops"
+    },
+    "skillType": "deterministic-tool",
+    "tags": [
+      "legal",
+      "nda",
+      "compliance"
+    ]
+  },
+  "capability": {
+    "summary": "Check a draft NDA against the approved clause library",
+    "capabilityTags": [
+      "legal.nda.check"
+    ],
+    "inputs": [
+      {
+        "name": "nda",
+        "type": "ContractDocument",
+        "required": true
+      }
+    ],
+    "outputs": [
+      {
+        "name": "findings",
+        "type": "ComplianceFindings",
+        "required": true
+      }
+    ],
+    "preconditions": [
+      "document.readable"
+    ],
+    "effects": []
+  },
+  "scoring": {
+    "determinism": "high",
+    "risk": "medium",
+    "reversible": true,
+    "rationale": "Advisory compliance check; produces findings, no document mutation."
+  },
+  "dependencies": [],
+  "governance": {
+    "visibility": "org",
+    "rbac": [
+      "legal.reviewer"
+    ],
+    "dataClassification": "confidential",
+    "cost": {
+      "unit": "usd-per-1k-calls",
+      "estimate": 1.5
+    },
+    "audit": {
+      "logged": true,
+      "retentionDays": 365
+    }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-01T09:00:00Z"
+  }
+}

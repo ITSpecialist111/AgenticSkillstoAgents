@@ -1,0 +1,71 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "data/pii-redact",
+    "name": "PII Redactor",
+    "version": "1.1.0",
+    "description": "Detects and redacts personally identifiable information from a text document, returning a masked copy.",
+    "owner": {
+      "handle": "d.nguyen",
+      "team": "Data Platform"
+    },
+    "skillType": "deterministic-tool",
+    "tags": [
+      "data",
+      "privacy",
+      "pii"
+    ]
+  },
+  "capability": {
+    "summary": "Detect and redact PII from a text document",
+    "capabilityTags": [
+      "data.pii.redact"
+    ],
+    "inputs": [
+      {
+        "name": "document",
+        "type": "TextDocument",
+        "required": true
+      }
+    ],
+    "outputs": [
+      {
+        "name": "redacted",
+        "type": "TextDocument",
+        "required": true
+      }
+    ],
+    "preconditions": [],
+    "effects": [
+      "pii.redacted"
+    ]
+  },
+  "scoring": {
+    "determinism": "high",
+    "risk": "medium",
+    "reversible": false,
+    "rationale": "Produces a derived redacted artifact; medium risk if detection misses an entity."
+  },
+  "dependencies": [],
+  "governance": {
+    "visibility": "org",
+    "rbac": [
+      "data.engineer"
+    ],
+    "dataClassification": "restricted",
+    "cost": {
+      "unit": "usd-per-1k-calls",
+      "estimate": 0.7
+    },
+    "audit": {
+      "logged": true,
+      "retentionDays": 365
+    }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-01T09:00:00Z"
+  }
+}

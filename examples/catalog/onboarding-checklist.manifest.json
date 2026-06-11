@@ -1,0 +1,76 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "hr/onboarding-checklist",
+    "name": "Onboarding Checklist Builder",
+    "version": "1.1.0",
+    "description": "Generates a role- and location-specific onboarding checklist for a new hire from policy templates.",
+    "owner": {
+      "handle": "h.rivera",
+      "team": "People Ops"
+    },
+    "skillType": "deterministic-tool",
+    "tags": [
+      "hr",
+      "onboarding",
+      "checklist"
+    ]
+  },
+  "capability": {
+    "summary": "Build a tailored onboarding checklist for a new hire",
+    "capabilityTags": [
+      "hr.onboarding.checklist"
+    ],
+    "inputs": [
+      {
+        "name": "role",
+        "type": "JobRole",
+        "required": true
+      },
+      {
+        "name": "location",
+        "type": "Location",
+        "required": true
+      }
+    ],
+    "outputs": [
+      {
+        "name": "checklist",
+        "type": "Checklist",
+        "required": true
+      }
+    ],
+    "preconditions": [
+      "user.authenticated"
+    ],
+    "effects": []
+  },
+  "scoring": {
+    "determinism": "high",
+    "risk": "low",
+    "reversible": true,
+    "rationale": "Deterministic template expansion; produces a document, no side effects."
+  },
+  "dependencies": [],
+  "governance": {
+    "visibility": "org",
+    "rbac": [
+      "hr.processor"
+    ],
+    "dataClassification": "internal",
+    "cost": {
+      "unit": "usd-per-1k-calls",
+      "estimate": 0.8
+    },
+    "audit": {
+      "logged": true,
+      "retentionDays": 365
+    }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-01T09:00:00Z"
+  }
+}

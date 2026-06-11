@@ -1,0 +1,74 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "marketing/utm-build",
+    "name": "UTM Link Builder",
+    "version": "1.0.0",
+    "description": "Builds a campaign-tagged tracking URL from a base link and UTM parameters.",
+    "owner": {
+      "handle": "m.osei",
+      "team": "Marketing"
+    },
+    "skillType": "deterministic-tool",
+    "tags": [
+      "marketing",
+      "analytics",
+      "utm"
+    ]
+  },
+  "capability": {
+    "summary": "Build a UTM-tagged tracking URL",
+    "capabilityTags": [
+      "marketing.utm.build"
+    ],
+    "inputs": [
+      {
+        "name": "baseUrl",
+        "type": "Url",
+        "required": true
+      },
+      {
+        "name": "params",
+        "type": "UtmParams",
+        "required": true
+      }
+    ],
+    "outputs": [
+      {
+        "name": "taggedUrl",
+        "type": "Url",
+        "required": true
+      }
+    ],
+    "preconditions": [],
+    "effects": []
+  },
+  "scoring": {
+    "determinism": "high",
+    "risk": "low",
+    "reversible": true,
+    "rationale": "Pure string construction; deterministic and reversible."
+  },
+  "dependencies": [],
+  "governance": {
+    "visibility": "public",
+    "rbac": [
+      "marketing.author"
+    ],
+    "dataClassification": "public",
+    "cost": {
+      "unit": "usd-per-1k-calls",
+      "estimate": 0.01
+    },
+    "audit": {
+      "logged": true,
+      "retentionDays": 30
+    }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-01T09:00:00Z"
+  }
+}

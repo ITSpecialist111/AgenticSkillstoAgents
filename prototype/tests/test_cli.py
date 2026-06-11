@@ -61,3 +61,22 @@ def test_metrics_command_outputs_json(tmp_path, invoice_extract, capsys):
     assert main(["metrics", "--db", db]) == 0
     payload = json.loads(capsys.readouterr().out)
     assert payload["registry"]["skills_total"] == 1
+
+
+def test_evaluate_cli_meets_gate_on_labelled_corpus(capsys):
+    eval_dir = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+        "examples",
+        "evaluation",
+    )
+    rc = main(["evaluate", eval_dir, "--labels", os.path.join(eval_dir, "labels.json")])
+    out = capsys.readouterr().out
+    assert rc == 0
+    assert "Phase 2 exit gate: MET" in out
+    assert "duplicate_precision" in out
+
+
+def test_evaluate_cli_no_manifests_returns_1(tmp_path, capsys):
+    rc = main(["evaluate", str(tmp_path)])
+    assert rc == 1
+    assert "no manifests found" in capsys.readouterr().out

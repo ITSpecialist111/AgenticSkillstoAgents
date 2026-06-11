@@ -1,0 +1,61 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "eval/url-scan-x",
+    "name": "URL Scanner X",
+    "version": "1.0.0",
+    "description": "URL Scanner X (evaluation fixture).",
+    "owner": {
+      "handle": "eval.fixture",
+      "team": "Evaluation"
+    },
+    "skillType": "deterministic-tool",
+    "tags": [
+      "evaluation",
+      "fixture"
+    ]
+  },
+  "capability": {
+    "summary": "URL Scanner X",
+    "capabilityTags": [
+      "url.scan"
+    ],
+    "inputs": [
+      {
+        "name": "url",
+        "type": "Url",
+        "required": true
+      }
+    ],
+    "outputs": [
+      {
+        "name": "report",
+        "type": "Report",
+        "required": true
+      }
+    ],
+    "preconditions": [],
+    "effects": []
+  },
+  "scoring": {
+    "determinism": "high",
+    "risk": "low",
+    "reversible": true,
+    "rationale": "Evaluation fixture for the Phase 2 duplicate-detection harness."
+  },
+  "dependencies": [],
+  "governance": {
+    "visibility": "team",
+    "dataClassification": "internal",
+    "audit": {
+      "logged": true,
+      "retentionDays": 30
+    }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-01T09:00:00Z"
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "support/ticket-triage",
+    "name": "Ticket Triage Router",
+    "version": "1.4.0",
+    "description": "Classifies an inbound support ticket into a queue and priority using a deterministic keyword+rules classifier.",
+    "owner": {
+      "handle": "s.patel",
+      "team": "Customer Support"
+    },
+    "skillType": "deterministic-tool",
+    "tags": [
+      "support",
+      "triage",
+      "routing"
+    ]
+  },
+  "capability": {
+    "summary": "Classify and route an inbound support ticket",
+    "capabilityTags": [
+      "support.ticket.triage"
+    ],
+    "inputs": [
+      {
+        "name": "ticket",
+        "type": "SupportTicket",
+        "required": true
+      }
+    ],
+    "outputs": [
+      {
+        "name": "routing",
+        "type": "TicketRouting",
+        "required": true
+      }
+    ],
+    "preconditions": [
+      "user.authenticated"
+    ],
+    "effects": [
+      "ticket.routed"
+    ]
+  },
+  "scoring": {
+    "determinism": "high",
+    "risk": "low",
+    "reversible": true,
+    "rationale": "Rules-based classification; routing record is re-assignable (reversible)."
+  },
+  "dependencies": [],
+  "governance": {
+    "visibility": "org",
+    "rbac": [
+      "support.agent"
+    ],
+    "dataClassification": "internal",
+    "cost": {
+      "unit": "usd-per-1k-calls",
+      "estimate": 0.4
+    },
+    "audit": {
+      "logged": true,
+      "retentionDays": 180
+    }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-01T09:00:00Z"
+  }
+}

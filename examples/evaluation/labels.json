@@ -1,0 +1,21 @@
+{
+  "description": "Ground-truth labels for the Phase 2 duplicate-detection evaluation. duplicate_pairs lists skill-id pairs that a human curator has judged to be functionally equivalent (true DUPLICATE_OF). Pairs are unordered.",
+  "duplicate_pairs": [
+    [
+      "eval/summarize-fast",
+      "eval/summarize-pro"
+    ],
+    [
+      "eval/image-classify",
+      "eval/vision-tagger"
+    ],
+    [
+      "eval/transcribe-a",
+      "eval/transcribe-b"
+    ],
+    [
+      "eval/url-scan-x",
+      "eval/url-scan-y"
+    ]
+  ]
+}

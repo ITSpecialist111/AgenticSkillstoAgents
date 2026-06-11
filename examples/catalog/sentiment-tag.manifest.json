@@ -1,0 +1,69 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "support/sentiment-tag",
+    "name": "Sentiment Tagger",
+    "version": "1.0.0",
+    "description": "Tags a customer message with a coarse sentiment label (positive/neutral/negative) for prioritisation.",
+    "owner": {
+      "handle": "s.patel",
+      "team": "Customer Support"
+    },
+    "skillType": "mcp-tool",
+    "tags": [
+      "support",
+      "sentiment",
+      "nlp"
+    ]
+  },
+  "capability": {
+    "summary": "Tag a customer message with a coarse sentiment label",
+    "capabilityTags": [
+      "support.sentiment.tag"
+    ],
+    "inputs": [
+      {
+        "name": "message",
+        "type": "CustomerMessage",
+        "required": true
+      }
+    ],
+    "outputs": [
+      {
+        "name": "sentiment",
+        "type": "SentimentLabel",
+        "required": true
+      }
+    ],
+    "preconditions": [],
+    "effects": []
+  },
+  "scoring": {
+    "determinism": "medium",
+    "risk": "low",
+    "reversible": true,
+    "rationale": "Model-backed classification; advisory label only, no state change."
+  },
+  "dependencies": [],
+  "governance": {
+    "visibility": "org",
+    "rbac": [
+      "support.agent"
+    ],
+    "dataClassification": "internal",
+    "cost": {
+      "unit": "tokens-per-call",
+      "estimate": 0.0
+    },
+    "audit": {
+      "logged": true,
+      "retentionDays": 90
+    }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-01T09:00:00Z"
+  }
+}

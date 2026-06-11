@@ -1,0 +1,72 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "sales/quote-generate",
+    "name": "Quote Generator",
+    "version": "1.0.3",
+    "description": "Generates a priced quote document from a product configuration and the active price book.",
+    "owner": {
+      "handle": "s.lopez",
+      "team": "Revenue Ops"
+    },
+    "skillType": "deterministic-tool",
+    "tags": [
+      "sales",
+      "cpq",
+      "quote"
+    ]
+  },
+  "capability": {
+    "summary": "Generate a priced quote from a product configuration",
+    "capabilityTags": [
+      "sales.quote.generate"
+    ],
+    "inputs": [
+      {
+        "name": "config",
+        "type": "ProductConfig",
+        "required": true
+      }
+    ],
+    "outputs": [
+      {
+        "name": "quote",
+        "type": "Quote",
+        "required": true
+      }
+    ],
+    "preconditions": [
+      "user.authenticated",
+      "pricebook.active"
+    ],
+    "effects": []
+  },
+  "scoring": {
+    "determinism": "high",
+    "risk": "medium",
+    "reversible": true,
+    "rationale": "Deterministic pricing; produces a draft quote document, no commitment posted."
+  },
+  "dependencies": [],
+  "governance": {
+    "visibility": "org",
+    "rbac": [
+      "sales.rep"
+    ],
+    "dataClassification": "confidential",
+    "cost": {
+      "unit": "usd-per-1k-calls",
+      "estimate": 1.1
+    },
+    "audit": {
+      "logged": true,
+      "retentionDays": 365
+    }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-01T09:00:00Z"
+  }
+}

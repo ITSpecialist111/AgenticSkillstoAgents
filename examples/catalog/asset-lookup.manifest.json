@@ -1,0 +1,72 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "it/asset-lookup",
+    "name": "IT Asset Lookup",
+    "version": "1.0.0",
+    "description": "Looks up assigned hardware and software assets for a user or device tag from the CMDB.",
+    "owner": {
+      "handle": "i.tomas",
+      "team": "IT Service Desk"
+    },
+    "skillType": "deterministic-tool",
+    "tags": [
+      "it",
+      "cmdb",
+      "assets"
+    ]
+  },
+  "capability": {
+    "summary": "Look up assigned IT assets for a user or device",
+    "capabilityTags": [
+      "it.asset.lookup"
+    ],
+    "inputs": [
+      {
+        "name": "query",
+        "type": "AssetQuery",
+        "required": true
+      }
+    ],
+    "outputs": [
+      {
+        "name": "assets",
+        "type": "AssetList",
+        "required": true
+      }
+    ],
+    "preconditions": [
+      "user.authenticated"
+    ],
+    "effects": []
+  },
+  "scoring": {
+    "determinism": "high",
+    "risk": "low",
+    "reversible": true,
+    "rationale": "Read-only CMDB query; no state change."
+  },
+  "dependencies": [],
+  "governance": {
+    "visibility": "org",
+    "rbac": [
+      "it.helpdesk",
+      "it.reader"
+    ],
+    "dataClassification": "internal",
+    "cost": {
+      "unit": "usd-per-1k-calls",
+      "estimate": 0.2
+    },
+    "audit": {
+      "logged": true,
+      "retentionDays": 180
+    }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-01T09:00:00Z"
+  }
+}

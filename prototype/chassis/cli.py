@@ -12,6 +12,7 @@ invocations (the difference between a demo and a product):
     chassis list [--db DSN]                         # show the catalog
     chassis gate <manifest.json> ...                # headless gate checks (CI)
     chassis metrics [--db DSN]                      # program telemetry snapshot
+    chassis evaluate <path> ... [--labels F]        # Phase 2 falsifiable-bet scorecard
     chassis walkthrough                             # bundled six-gate demo
     chassis intake <root> [--register] [--watch]    # SKILL.md folders -> drafts
     chassis serve [--host H --port P] [--db DSN]    # run the HTTP API
@@ -23,11 +24,13 @@ file path.
 from __future__ import annotations
 
 import argparse
+import glob
 import json
 import os
 import sys
 from typing import List, Optional
 
+from .evaluation import evaluate, load_baseline, load_labels
 from .gatecheck import check_manifests, summarize
 from .intake import build_manifest, discover
 from .intake.watcher import IntakeWatcher
@@ -135,6 +138,58 @@ def _cmd_metrics(db: Optional[str]) -> int:
     result = agent.sync_meaning(registry.all())
     print(json.dumps(snapshot(registry.all(), result), indent=2, sort_keys=True))
     return 0
+
+
+def _collect_manifests(paths: List[str]) -> List[str]:
+    """Expand a mix of files and directories into manifest file paths."""
+    files: List[str] = []
+    for path in paths:
+        if os.path.isdir(path):
+            files.extend(sorted(glob.glob(os.path.join(path, "*.manifest.json"))))
+        else:
+            files.append(path)
+    return files
+
+
+def _cmd_evaluate(
+    paths: List[str],
+    *,
+    labels: Optional[str],
+    baseline: Optional[str],
+    minutes_per_review: Optional[float],
+) -> int:
+    files = _collect_manifests(paths)
+    if not files:
+        print("no manifests found to evaluate")
+        return 1
+    manifests = []
+    for path in files:
+        try:
+            manifests.append(load_manifest(path))
+        except ManifestError as exc:
+            print(f"INVALID  {path}: {exc}")
+            return 1
+
+    truth_pairs = load_labels(labels) if labels else None
+    baseline_data = load_baseline(baseline) if baseline else None
+    report = evaluate(
+        manifests,
+        truth_pairs=truth_pairs,
+        baseline=baseline_data,
+        minutes_per_review=minutes_per_review,
+    )
+
+    print(json.dumps(report.to_dict(), indent=2, sort_keys=True))
+    print()
+    for metric in report.metrics:
+        status = "PASS" if metric.passed else "FAIL"
+        print(
+            f"[{status}] {metric.name}: {metric.value} {metric.comparison} "
+            f"{metric.target}  ({metric.detail})"
+        )
+    verdict = "MET" if report.passed else "NOT MET"
+    print(f"\nPhase 2 exit gate: {verdict}")
+    return 0 if report.passed else 1
 
 
 def _cmd_walkthrough() -> int:
@@ -275,6 +330,23 @@ def main(argv: List[str] | None = None) -> int:
     p_metrics = sub.add_parser("metrics", help="print a program telemetry snapshot")
     p_metrics.add_argument("--db", default=None, help="store DSN (default: in-memory)")
 
+    p_eval = sub.add_parser(
+        "evaluate", help="score an agent run against the Phase 2 exit-gate targets"
+    )
+    p_eval.add_argument("paths", nargs="+", help="manifest files or directories to evaluate")
+    p_eval.add_argument(
+        "--labels", default=None, help="ground-truth duplicate-pairs JSON file"
+    )
+    p_eval.add_argument(
+        "--baseline", default=None, help="Phase 1 baseline JSON (default: packaged)"
+    )
+    p_eval.add_argument(
+        "--minutes-per-review",
+        type=float,
+        default=None,
+        help="human minutes per withheld proposal (default: from baseline)",
+    )
+
     sub.add_parser("walkthrough", help="run the bundled six-gate walkthrough")
 
     p_intake = sub.add_parser(
@@ -316,6 +388,13 @@ def main(argv: List[str] | None = None) -> int:
         return _cmd_gate(args.paths)
     if args.command == "metrics":
         return _cmd_metrics(args.db)
+    if args.command == "evaluate":
+        return _cmd_evaluate(
+            args.paths,
+            labels=args.labels,
+            baseline=args.baseline,
+            minutes_per_review=args.minutes_per_review,
+        )
     if args.command == "walkthrough":
         return _cmd_walkthrough()
     if args.command == "intake":
