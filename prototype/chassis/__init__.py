@@ -25,6 +25,7 @@ from .manifest import (
 )
 from .ontology import Ontology, OntologyBuilderAgent, SyncResult
 from .registry import GateError, Registry, Stage
+from .store import InMemoryStore, SkillStore, SqliteStore, open_store
 
 __all__ = [
     "Manifest",
@@ -38,4 +39,8 @@ __all__ = [
     "GateError",
     "Registry",
     "Stage",
+    "SkillStore",
+    "InMemoryStore",
+    "SqliteStore",
+    "open_store",
 ]

@@ -3,6 +3,7 @@
 Usage:
     python -m chassis.cli validate <manifest.json> [<manifest.json> ...]
     python -m chassis.cli walkthrough   # graduate the bundled example skills
+    python -m chassis.cli serve         # run minimal HTTP registry API
 """
 
 from __future__ import annotations
@@ -12,9 +13,11 @@ import os
 import sys
 from typing import List
 
+from .api import run_server
 from .manifest import ManifestError, load_manifest, skill_id
 from .ontology import OntologyBuilderAgent
 from .registry import GateError, Registry
+from .store import open_store
 
 _REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 EXAMPLES_DIR = os.path.join(_REPO_ROOT, "examples")
@@ -33,8 +36,8 @@ def _cmd_validate(paths: List[str]) -> int:
     return rc
 
 
-def _cmd_walkthrough() -> int:
-    registry = Registry()
+def _cmd_walkthrough(dsn: str | None = None) -> int:
+    registry = Registry(open_store(dsn))
     order = ["invoice-extract", "po-match", "ap-intake"]
     print("== Graduating bundled example skills through the six gates ==")
     for name in order:
@@ -70,13 +73,22 @@ def main(argv: List[str] | None = None) -> int:
     p_validate = sub.add_parser("validate", help="validate manifests against the schema")
     p_validate.add_argument("paths", nargs="+")
 
-    sub.add_parser("walkthrough", help="run the bundled six-gate walkthrough")
+    p_walkthrough = sub.add_parser("walkthrough", help="run the bundled six-gate walkthrough")
+    p_walkthrough.add_argument("--dsn", default="memory", help="store DSN (memory or sqlite:///abs/path.db)")
+
+    p_serve = sub.add_parser("serve", help="run HTTP registry API")
+    p_serve.add_argument("--host", default="127.0.0.1")
+    p_serve.add_argument("--port", type=int, default=8080)
+    p_serve.add_argument("--dsn", default="memory", help="store DSN (memory or sqlite:///abs/path.db)")
 
     args = parser.parse_args(argv)
     if args.command == "validate":
         return _cmd_validate(args.paths)
     if args.command == "walkthrough":
-        return _cmd_walkthrough()
+        return _cmd_walkthrough(args.dsn)
+    if args.command == "serve":
+        run_server(host=args.host, port=args.port, dsn=args.dsn)
+        return 0
     parser.error("unknown command")  # pragma: no cover
     return 2
 

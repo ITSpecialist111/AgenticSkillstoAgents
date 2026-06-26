@@ -20,6 +20,7 @@ from .manifest import (
     skill_id,
     validate_manifest,
 )
+from .store import InMemoryStore, SkillStore
 
 
 class Stage(str, Enum):
@@ -42,19 +43,19 @@ def _utcnow_iso() -> str:
 
 
 class Registry:
-    """An in-memory, MCP-shaped catalog of manifests keyed by skill id."""
+    """An MCP-shaped catalog of manifests keyed by skill id."""
 
-    def __init__(self) -> None:
-        self._skills: Dict[str, Manifest] = {}
+    def __init__(self, store: SkillStore | None = None) -> None:
+        self._store = store or InMemoryStore()
 
     # ----- helpers --------------------------------------------------------
     def get(self, sid: str) -> Manifest:
-        if sid not in self._skills:
+        if not self._store.exists(sid):
             raise KeyError(f"unknown skill: {sid}")
-        return self._skills[sid]
+        return self._store.get(sid)
 
     def all(self) -> List[Manifest]:
-        return list(self._skills.values())
+        return self._store.all()
 
     def _stage(self, manifest: Manifest) -> Stage:
         return Stage(manifest["lifecycle"]["stage"])
@@ -62,7 +63,8 @@ class Registry:
     def _published_tags(self, exclude: Optional[str] = None) -> Dict[str, str]:
         """Map capability tag -> skill id for published skills (for dedupe scan)."""
         seen: Dict[str, str] = {}
-        for sid, manifest in self._skills.items():
+        for manifest in self._store.all():
+            sid = skill_id(manifest)
             if sid == exclude:
                 continue
             if self._stage(manifest) != Stage.PUBLISHED:
@@ -77,7 +79,7 @@ class Registry:
         validate_manifest(manifest)
         manifest = copy.deepcopy(manifest)
         sid = skill_id(manifest)
-        if sid in self._skills:
+        if self._store.exists(sid):
             raise GateError(f"skill already registered: {sid}")
         if self._stage(manifest) not in (Stage.DRAFT, Stage.REGISTERED):
             raise GateError(
@@ -85,7 +87,7 @@ class Registry:
                 f"'{manifest['lifecycle']['stage']}'"
             )
         manifest["lifecycle"]["stage"] = Stage.REGISTERED.value
-        self._skills[sid] = manifest
+        self._store.put(manifest)
         return manifest
 
     # ----- Gate 2: Certify -----------------------------------------------
@@ -123,12 +125,13 @@ class Registry:
         manifest["lifecycle"]["stage"] = Stage.CERTIFIED.value
         manifest["lifecycle"]["certifiedBy"] = approver
         manifest["lifecycle"]["certifiedAt"] = _utcnow_iso()
+        self._store.put(manifest)
         return manifest
 
     def _unresolved_dependencies(self, manifest: Manifest) -> List[str]:
-        known_ids = set(self._skills.keys())
+        known_ids = {skill_id(m) for m in self._store.all()}
         known_tags = {
-            tag for m in self._skills.values() for tag in capability_tags(m)
+            tag for m in self._store.all() for tag in capability_tags(m)
         }
         unresolved = []
         for dep in manifest.get("dependencies", []):
@@ -149,6 +152,7 @@ class Registry:
         if not mcp.get("namespace"):
             raise GateError("publish requires a verified mcp.namespace")
         manifest["lifecycle"]["stage"] = Stage.PUBLISHED.value
+        self._store.put(manifest)
         return manifest
 
     # ----- Gate 6: Retire / version --------------------------------------
@@ -160,6 +164,7 @@ class Registry:
         manifest["lifecycle"]["stage"] = Stage.DEPRECATED.value
         if superseded_by:
             manifest["lifecycle"]["supersededBy"] = superseded_by
+        self._store.put(manifest)
         return manifest
 
     def retire(self, sid: str) -> Manifest:
@@ -168,13 +173,14 @@ class Registry:
         if self._stage(manifest) != Stage.DEPRECATED:
             raise GateError(f"retire requires stage deprecated, got '{manifest['lifecycle']['stage']}'")
         manifest["lifecycle"]["stage"] = Stage.RETIRED.value
+        self._store.put(manifest)
         return manifest
 
     # ----- Query surface (Reasoning Layer) -------------------------------
     def find_by_capability(self, tag: str, *, published_only: bool = True) -> List[Manifest]:
         """Matchmaking query: skills providing ``tag`` (GET /capabilities?tag=)."""
         out = []
-        for manifest in self._skills.values():
+        for manifest in self._store.all():
             if published_only and self._stage(manifest) != Stage.PUBLISHED:
                 continue
             if tag in capability_tags(manifest):

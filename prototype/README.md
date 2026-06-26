@@ -2,8 +2,8 @@
 
 An executable, dependency-light reference implementation of the graduation
 **chassis** described in this repo's docs. It exists to make the specification
-*runnable and testable* — it is a heuristic, in-memory reference, not a
-production registry.
+*runnable and testable* — it is a heuristic reference with in-memory or SQLite
+persistence options, not a production registry.
 
 It maps 1:1 onto the three parts of the construct:
 
@@ -12,6 +12,8 @@ It maps 1:1 onto the three parts of the construct:
 | **A — Manifest** | [`schemas/skill-manifest.schema.json`](../schemas/skill-manifest.schema.json), [`docs/technical-spec.md`](../docs/technical-spec.md) | [`chassis/manifest.py`](chassis/manifest.py) — load + JSON-Schema validation + IOPE signature |
 | **B — Pipeline** | [`docs/architecture.md`](../docs/architecture.md) (six gates) | [`chassis/registry.py`](chassis/registry.py) — registry + state machine with gate exit checks |
 | **C — Ontology Builder Agent** | [`docs/ontology-builder-agent.md`](../docs/ontology-builder-agent.md) | [`chassis/ontology.py`](chassis/ontology.py) — `sync_meaning(manifests, ontology)` |
+| **Registry persistence** | [`docs/technical-spec.md`](../docs/technical-spec.md) (system-of-record + lineage) | [`chassis/store.py`](chassis/store.py) — `InMemoryStore`, `SqliteStore`, `open_store(dsn)` |
+| **API surface** | [`docs/technical-spec.md`](../docs/technical-spec.md) (registry endpoints) | [`chassis/api.py`](chassis/api.py) — minimal HTTP API for register/certify/publish/query |
 
 ## Install
 
@@ -28,7 +30,25 @@ python -m chassis.cli validate ../examples/*.manifest.json
 
 # Graduate the bundled example skills through all six gates + meaning-sync
 python -m chassis.cli walkthrough
+
+# Run the same walkthrough against persisted SQLite state
+python -m chassis.cli walkthrough --dsn sqlite:////tmp/chassis.db
+
+# Serve the minimal HTTP API
+python -m chassis.cli serve --host 127.0.0.1 --port 8080 --dsn sqlite:////tmp/chassis.db
 ```
+
+## API routes (prototype)
+
+| Method | Route | Purpose |
+|---|---|---|
+| GET | `/health` | Liveness check |
+| GET | `/skills` | List registered skills |
+| POST | `/skills` | Register a manifest |
+| POST | `/skills/{id}/certify` | Certify (`{"approver":"..."}`) |
+| POST | `/skills/{id}/publish` | Publish certified skill |
+| GET | `/capabilities?tag=...` | Capability matchmaking query |
+| GET | `/skills/{id}/lineage` | Dependency + supersede lineage |
 
 ## Run the smoke tests
 
