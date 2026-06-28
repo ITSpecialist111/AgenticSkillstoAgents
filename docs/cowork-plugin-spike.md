@@ -30,7 +30,8 @@ giving them a governed view over the org's skills.
 
 ## The MCP contract
 
-Three read-only tools. Discovery only — invocation is out of scope (the
+Four tools — three read-only discovery tools plus one write-side tool that
+opens a GitHub PR. Invocation of business skills is out of scope (the
 agent uses the `mcp` block in each returned skill to call the underlying
 skill server directly).
 
@@ -56,12 +57,14 @@ tool name, namespace, transport).
 | Field | Type | Notes |
 |---|---|---|
 | **Input** `skill_id` | string | e.g. `finance/invoice-extract` |
-| **Output** | `Manifest` | the full schema-validated manifest |
+| **Output** | `Manifest` + `payloadFiles[]` | the full schema-validated manifest, plus an array of `{path, uri, mimeType}` records pointing at `skill://` resources |
 | **Errors** | `NotFound` | if the id is unknown |
 | **Annotations** | `readOnlyHint=true`, `idempotentHint=true` | |
 
 Returns the canonical manifest so the agent can read governance, scoring
-(determinism/risk), preconditions, and effects before deciding.
+(determinism/risk), preconditions, and effects before deciding. The
+`payloadFiles` array lets the agent pull the narrative `SKILL.md` and any
+asset schemas via MCP resources — read on demand, no context-window cost.
 
 ### `list_capabilities`
 
@@ -75,6 +78,42 @@ Returns the canonical manifest so the agent can read governance, scoring
 
 Useful for the agent to ask "what categories of work are available?"
 before it has a specific task in mind.
+
+### `submit_skill_draft`
+
+> "Register this new skill on behalf of the user / authoring agent."
+
+| Field | Type | Notes |
+|---|---|---|
+| **Input** `manifest` | object | must validate against `schemas/skill-manifest.schema.json` |
+| **Input** `payload` | `{relPath: utf8Text}` (optional) | `SKILL.md`, `assets/*`, `scripts/*`; paths must not contain `..` or start with `/` |
+| **Input** `title`, `body` | string (optional) | PR title/body; defaults to a templated summary |
+| **Output** | `{pr_url, pr_number, branch, files_added[]}` | the opened PR |
+| **Errors** | `SubmitError` | bad manifest, unsafe path, missing `GITHUB_TOKEN`, GitHub API failure |
+| **Annotations** | `readOnlyHint=false`, `idempotentHint=false`, `openWorldHint=true` | |
+
+This is the two-way bridge. An agent (or human via Cowork) submits a
+manifest; the server validates it against the schema, branches off `main`,
+writes `examples/<last-segment>.manifest.json` + payload files under
+`examples/<slug>/`, and opens a PR. **The PR review IS the Register
+gate** — nothing on `main` until a human approves.
+
+Server needs `GITHUB_TOKEN` (with `contents:write` + `pull_requests:write`
+on the target repo) and `GITHUB_REPO` (defaults to the upstream).
+
+### Resources: `skill://<slug>/<path>`
+
+Each skill's payload folder (`examples/<slug>/`, where the slug is the
+skill id with `/` replaced by `-`) is exposed as a set of MCP resources:
+
+| URI | Mime |
+|---|---|
+| `skill://finance-invoice-extract/SKILL.md` | `text/markdown` |
+| `skill://finance-invoice-extract/assets/output-schema.json` | `application/json` |
+
+Resources don't count against Cowork's 20-tool / system-prompt cap.
+That's the design lever — narrative + schemas live behind URIs the agent
+chooses to fetch, instead of being baked into the system prompt.
 
 ## How a Cowork agent uses it
 

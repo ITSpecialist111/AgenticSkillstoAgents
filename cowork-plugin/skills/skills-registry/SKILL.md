@@ -42,8 +42,22 @@ don't already know which concrete tool to call. Typical signals:
 | Tool | When to call |
 |---|---|
 | `find_skill_by_capability(tag)` | You know roughly what capability you need. Pass a dotted lowercase tag (e.g. `invoice.extract`). |
-| `describe_skill(skill_id)` | You have a candidate skill id and need the full manifest (governance, scoring, preconditions, effects) before deciding to call it. |
+| `describe_skill(skill_id)` | You have a candidate skill id and need the full manifest (governance, scoring, preconditions, effects) before deciding to call it. The response includes a `payloadFiles` list of `skill://` resource URIs for the narrative SKILL.md and any asset schemas. |
 | `list_capabilities()` | You want the full inventory before forming a plan, or to confirm a tag exists. |
+| `submit_skill_draft(manifest, payload?)` | An agent or human authored a new skill and wants it registered. Opens a PR; a human reviewer must merge before the skill becomes discoverable. |
+
+## Resources
+
+Each skill's narrative and assets are exposed as **MCP resources** rather
+than tool output, so reading them costs no tool slots and no system-prompt
+context:
+
+- `skill://<slug>/SKILL.md` — human-readable description and composition notes.
+- `skill://<slug>/assets/<file>` — JSON schemas, examples, scripts.
+
+The `<slug>` is the skill id with `/` replaced by `-` (so
+`finance/invoice-extract` → `finance-invoice-extract`). The URIs are
+returned in `describe_skill().payloadFiles`.
 
 ## Typical workflow
 
@@ -52,7 +66,9 @@ don't already know which concrete tool to call. Typical signals:
 3. Agent → `find_skill_by_capability(tag="invoice.extract")`
    - returns `finance/invoice-extract` + its `mcp` binding.
 4. Agent → `describe_skill("finance/invoice-extract")` to confirm the
-   skill's data classification is acceptable for the user's document.
+   skill's data classification is acceptable for the user's document,
+   then optionally reads `skill://finance-invoice-extract/SKILL.md` for
+   composition guidance.
 5. Agent calls the underlying skill server via the returned `mcp` binding.
 6. Agent → `find_skill_by_capability(tag="po.match")` and repeats for
    the matching step.
@@ -61,7 +77,8 @@ don't already know which concrete tool to call. Typical signals:
 ## What this skill is not
 
 - **Not an executor.** It returns bindings, not results.
-- **Not write-enabled.** New skills land via GitHub PR (the
-  registry's Stage 1 Register gate), not via this connector.
+- **Not a write-free zone.** `submit_skill_draft` opens a PR, but the PR
+  review is the actual Register gate — nothing lands on `main` without
+  human approval.
 - **Not authoritative for credentials.** Auth lives on each underlying
   skill server.
