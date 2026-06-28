@@ -75,14 +75,19 @@ def build(url: str, out_path: str) -> str:
     with open(os.path.join(PLUGIN_DIR, "manifest.json"), "r", encoding="utf-8") as fh:
         manifest = json.load(fh)
 
-    # Inject the URL + lock validDomains to the matching wildcard.
+    # Inject the URL into agentConnectors[0].toolSource.remoteMcpServer.mcpServerUrl.
+    # Manifest v1.28 nests it that way (mirrors the TomTom Map MCP POC).
     connectors = manifest.get("agentConnectors") or []
     if not connectors:
         raise SystemExit("cowork-plugin/manifest.json has no agentConnectors entry")
-    connectors[0].setdefault("remoteMcpServer", {})["mcpServerUrl"] = url
+    tool_source = connectors[0].setdefault("toolSource", {})
+    remote = tool_source.setdefault("remoteMcpServer", {})
+    remote["mcpServerUrl"] = url
 
-    wildcard = _wildcard_domain(host)
-    manifest["validDomains"] = sorted({wildcard, host})
+    # Manifest v1.28 has no top-level validDomains for MCP connectors; the
+    # allowed host is implied by mcpServerUrl. Strip any stale entry to avoid
+    # "additional property not allowed" rejection from the Teams validator.
+    manifest.pop("validDomains", None)
 
     with tempfile.TemporaryDirectory() as tmp:
         baked = os.path.join(tmp, "manifest.json")
