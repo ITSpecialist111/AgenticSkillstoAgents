@@ -1,13 +1,25 @@
 # mcp-server — Skills Registry MCP server
 
 A thin MCP adapter over [`prototype-lite/lite.py:Registry`](../prototype-lite/lite.py).
-Exposes three read-only discovery tools that any MCP client can call:
+Exposes four tools and a family of `skill://` resources that any MCP client
+can call:
 
 | Tool | Returns |
 |---|---|
 | `find_skill_by_capability(tag, published_only=True)` | List of skill summaries (id, name, version, stage, capability tags, MCP binding). |
-| `describe_skill(skill_id)` | Full schema-validated manifest including governance and scoring. |
+| `describe_skill(skill_id)` | Full schema-validated manifest **plus** a `payloadFiles` list of `skill://` resource URIs. |
 | `list_capabilities()` | `{tag: [skill_id, …]}` inverted index. |
+| `submit_skill_draft(manifest, payload?, title?, body?)` | Opens a GitHub PR adding the manifest (+ optional payload files). Returns `{pr_url, pr_number, branch, files_added}`. The PR review is the Register gate. |
+
+Resources (one per file in each `examples/<slug>/` payload folder):
+
+| URI pattern | Example | Mime |
+|---|---|---|
+| `skill://<slug>/SKILL.md` | `skill://finance-invoice-extract/SKILL.md` | `text/markdown` |
+| `skill://<slug>/assets/<file>` | `skill://finance-invoice-extract/assets/output-schema.json` | guessed from extension |
+
+Resources don't count against Cowork's 20-tool / system-prompt cap, so the
+agent can read narrative + schemas on demand without inflating context.
 
 See [`docs/cowork-plugin-spike.md`](../docs/cowork-plugin-spike.md) for the
 contract and the Cowork plugin that wraps this server.
@@ -17,7 +29,7 @@ contract and the Cowork plugin that wraps this server.
 ```bash
 cd mcp-server
 python -m pip install -r requirements.txt
-python -m pytest -q          # 11 tests, no MCP client needed
+python -m pytest -q          # 20 tests, no MCP client needed
 ```
 
 ## Run it
@@ -41,8 +53,24 @@ curl http://localhost:8000/health      # liveness for Container Apps
 | `MCP_TRANSPORT` | `stdio` | `stdio` or `http` (`streamable-http`). |
 | `HOST` | `0.0.0.0` | HTTP bind host. |
 | `PORT` | `8000` | HTTP bind port. |
-| `REGISTRY_CATALOG_MODE` | `local` | `local` (glob `../examples/*.manifest.json`) or `remote` (pull Stage 2 blob — not yet implemented). |
-| `REGISTRY_CATALOG_URL` | — | Required when `REGISTRY_CATALOG_MODE=remote`. |
+| `REGISTRY_CATALOG_MODE` | `local` | `local` (glob `../examples/*.manifest.json`) or `remote` (pull Stage 2 blob). |
+| `REGISTRY_CATALOG_URL` | — | Required when `REGISTRY_CATALOG_MODE=remote`. Public URL of the `catalog.json` blob published by `.github/workflows/publish-catalog.yml`. |
+| `REGISTRY_CATALOG_TTL` | `60` | Seconds the remote catalog is cached in memory before re-fetching. |
+| `GITHUB_TOKEN` | — | Required for `submit_skill_draft`. Needs `contents:write` + `pull_requests:write` on the target repo. |
+| `GITHUB_REPO` | `ITSpecialist111/AgenticSkillstoAgents` | Target repo for `submit_skill_draft` PRs. |
+
+### Remote-catalog mode
+
+When `REGISTRY_CATALOG_MODE=remote`, the server `GET`s `REGISTRY_CATALOG_URL`
+once on first tool call and caches the result for `REGISTRY_CATALOG_TTL`
+seconds. The blob must be the output of `python lite.py index` *with full
+manifests embedded* (the default) — a summary-only catalog is rejected at
+load time so `describe_skill` can't silently break.
+
+Payload files (`SKILL.md`, asset schemas) are not published to Blob in this
+spike. In remote mode `describe_skill().payloadFiles` is therefore an empty
+list — agents that need the narrative can still fetch it from GitHub. We'll
+revisit if a Stage B live-test demands it.
 
 ## Build the container image
 
@@ -73,8 +101,11 @@ Opens a browser UI listing the three tools. Try
 
 ## What this server is *not*
 
-- Not a write API. New skills land via GitHub PR (Stage 1 Register gate).
+- Not a free-for-all write API. `submit_skill_draft` opens a PR; the PR
+  review IS the Stage 1 Register gate. Nothing reaches `main` without a
+  human approver.
 - Not an executor. Each summary contains the `mcp` binding the agent
   uses to call the underlying skill server directly.
-- Not auth-gated. Discovery metadata is non-sensitive; sensitive material
-  lives on the underlying skill servers and carries its own auth.
+- Not auth-gated for discovery. Discovery metadata is non-sensitive;
+  sensitive material lives on the underlying skill servers and carries
+  its own auth. The write path *is* auth-gated (GitHub token).

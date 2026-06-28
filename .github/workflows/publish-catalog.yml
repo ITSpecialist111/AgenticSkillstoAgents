@@ -1,0 +1,81 @@
+name: publish-catalog
+
+# Stage 2: regenerate catalog.json on push to main and upload it to the public
+# Azure Blob (created by infra/stage-2/main.bicep). Agents fetch this URL to
+# discover skills without cloning the repo.
+#
+# Auth: GitHub OIDC federated credential -> User-Assigned Managed Identity (or
+# App Registration) with `Storage Blob Data Contributor` on the storage account.
+# No long-lived SP secrets in the repo. See docs/stage-2-plan.md for the
+# one-time portal setup.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "examples/**"
+      - "schemas/**"
+      - "prototype-lite/**"
+      - ".github/workflows/publish-catalog.yml"
+  workflow_dispatch:
+
+permissions:
+  id-token: write   # required for the azure/login OIDC exchange
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    # Repository secrets/vars wired up after the one-time OIDC setup:
+    #   AZURE_CLIENT_ID        - app reg / UAMI client id
+    #   AZURE_TENANT_ID        - tenant id
+    #   AZURE_SUBSCRIPTION_ID  - subscription id
+    #   STAGE2_STORAGE_ACCOUNT - storage account name (from stage-2 outputs)
+    #   STAGE2_CONTAINER       - container name (default: catalog)
+    env:
+      STAGE2_CONTAINER: ${{ vars.STAGE2_CONTAINER || 'catalog' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install jsonschema
+
+      - name: Build catalog.json
+        working-directory: prototype-lite
+        run: |
+          python lite.py index --out ../catalog.json
+          echo "--- catalog summary ---"
+          python -c "import json; c=json.load(open('../catalog.json')); print('skills:', len(c['skills'])); print('tags:', len(c['capabilityIndex'])); print('manifests:', 'manifests' in c)"
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Upload catalog.json to Blob Storage
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az storage blob upload \
+              --account-name "${{ secrets.STAGE2_STORAGE_ACCOUNT }}" \
+              --container-name "${STAGE2_CONTAINER}" \
+              --name catalog.json \
+              --file catalog.json \
+              --content-type application/json \
+              --content-cache-control "public, max-age=60" \
+              --auth-mode login \
+              --overwrite
+
+      - name: Print catalog URL
+        run: |
+          echo "Catalog is now live at:"
+          echo "https://${{ secrets.STAGE2_STORAGE_ACCOUNT }}.blob.core.windows.net/${STAGE2_CONTAINER}/catalog.json"

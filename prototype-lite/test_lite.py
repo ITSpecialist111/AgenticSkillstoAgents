@@ -90,3 +90,43 @@ def test_index_shape_is_stage2_catalog():
     # Every published-skill entry carries the MCP binding agents need to call it.
     extract = next(s for s in idx["skills"] if s["id"] == "finance/invoice-extract")
     assert "toolName" in extract["mcp"]
+
+
+def test_index_embeds_full_manifests_by_default():
+    """The Stage 2 catalog needs full manifests so the MCP server's remote
+    backend can answer describe_skill without falling back to GitHub."""
+    reg = lite.Registry.from_dir(EXAMPLES)
+    idx = reg.index()
+    assert "manifests" in idx
+    assert "finance/invoice-extract" in idx["manifests"]
+    full = idx["manifests"]["finance/invoice-extract"]
+    assert full["identity"]["id"] == "finance/invoice-extract"
+    assert "governance" in full
+    assert "scoring" in full
+
+
+def test_index_without_manifests_is_compact():
+    reg = lite.Registry.from_dir(EXAMPLES)
+    idx = reg.index(include_manifests=False)
+    assert "manifests" not in idx
+    assert "skills" in idx  # summaries still present
+
+
+def test_from_catalog_round_trips():
+    """index() + from_catalog() must produce a registry that answers the same
+    discovery queries as the original. This is what makes remote mode work."""
+    original = lite.Registry.from_dir(EXAMPLES)
+    catalog = original.index()
+    rebuilt = lite.Registry.from_catalog(catalog)
+    assert set(rebuilt.skills) == set(original.skills)
+    # Same find_by_capability results.
+    a = [m["identity"]["id"] for m in original.find_by_capability("invoice.extract")]
+    b = [m["identity"]["id"] for m in rebuilt.find_by_capability("invoice.extract")]
+    assert a == b
+
+
+def test_from_catalog_rejects_summary_only_payload():
+    reg = lite.Registry.from_dir(EXAMPLES)
+    compact = reg.index(include_manifests=False)
+    with pytest.raises(lite.ManifestError, match="manifests"):
+        lite.Registry.from_catalog(compact)
