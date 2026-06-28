@@ -126,6 +126,31 @@ class Registry:
                         dupes.append((sids[i], sids[j], tag))
         return dupes
 
+    def index(self) -> Dict[str, object]:
+        """Catalog snapshot — the artifact a Stage 2 deployment would publish to
+        blob storage so agents can discover skills without cloning the repo."""
+        from datetime import datetime, timezone
+
+        return {
+            "generatedAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "schemaVersion": "skills.dev/v1",
+            "skills": [
+                {
+                    "id": _id(m),
+                    "name": m["identity"]["name"],
+                    "version": m["identity"]["version"],
+                    "stage": m["lifecycle"]["stage"],
+                    "capabilityTags": _tags(m),
+                    "mcp": m.get("mcp", {}),
+                }
+                for m in sorted(self.skills.values(), key=_id)
+            ],
+            "capabilityIndex": {
+                tag: sorted(sids)
+                for tag, sids in sorted(self.list_capabilities().items())
+            },
+        }
+
     def certify(self, sid: str, approver: str) -> Manifest:
         """The Certify gate. In production this is a GitHub PR approval that
         edits the manifest file; here we mutate in-memory for parity with the
@@ -157,6 +182,8 @@ def _cli() -> int:
     sub.add_parser("dupes", help="report duplicate-capability candidates")
     s = sub.add_parser("find", help="find skills providing a capability tag")
     s.add_argument("tag")
+    i = sub.add_parser("index", help="emit catalog JSON (Stage 2 artifact)")
+    i.add_argument("--out", help="write JSON to this file (default: stdout)")
     args = p.parse_args()
 
     reg = Registry.from_dir()
@@ -171,6 +198,15 @@ def _cli() -> int:
     elif args.cmd == "find":
         for m in reg.find_by_capability(args.tag):
             print(f"{_id(m):35s} {m['lifecycle']['stage']}")
+    elif args.cmd == "index":
+        payload = json.dumps(reg.index(), indent=2, sort_keys=False)
+        if args.out:
+            os.makedirs(os.path.dirname(os.path.abspath(args.out)) or ".", exist_ok=True)
+            with open(args.out, "w", encoding="utf-8") as handle:
+                handle.write(payload + "\n")
+            print(f"wrote {args.out}")
+        else:
+            print(payload)
     return 0
 
 

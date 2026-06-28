@@ -1,0 +1,52 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "<team>/<skill-name>",
+    "name": "<Human-readable name>",
+    "version": "0.1.0",
+    "description": "<One paragraph: what it does, when to use it, what it returns.>",
+    "owner": {
+      "handle": "<your.handle>",
+      "team": "<Your team>",
+      "contact": "<your.email@example.com>"
+    },
+    "skillType": "deterministic-tool",
+    "tags": ["<freeform>", "<discovery>", "<tags>"]
+  },
+  "capability": {
+    "summary": "<One sentence capability summary>",
+    "capabilityTags": ["<domain.action>"],
+    "inputs": [
+      { "name": "<input>", "type": "<TypeName>", "required": true, "description": "<what it is>" }
+    ],
+    "outputs": [
+      { "name": "<output>", "type": "<TypeName>", "required": true, "description": "<what it is>" }
+    ],
+    "preconditions": ["<dotted.precondition>"],
+    "effects": []
+  },
+  "scoring": {
+    "determinism": "high",
+    "risk": "low",
+    "reversible": true,
+    "rationale": "<Why this scoring is honest. Cite the behaviour, not the intent.>"
+  },
+  "dependencies": [],
+  "mcp": {
+    "server": "<mcp-server-name>",
+    "toolName": "<tool_name>",
+    "namespace": "<your-org>",
+    "transport": "http"
+  },
+  "governance": {
+    "visibility": "org",
+    "rbac": ["<role.reader>", "<role.processor>"],
+    "dataClassification": "confidential",
+    "cost": { "unit": "usd-per-1k-calls", "estimate": 0.0 },
+    "audit": { "logged": true, "retentionDays": 365 }
+  },
+  "lifecycle": {
+    "stage": "draft"
+  }
+}

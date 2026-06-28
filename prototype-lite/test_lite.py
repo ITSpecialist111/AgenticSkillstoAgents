@@ -76,3 +76,17 @@ def test_certify_requires_approver():
     reg = lite.Registry.from_dir(EXAMPLES)
     with pytest.raises(lite.ManifestError):
         reg.certify("finance/invoice-extract", approver="")
+
+
+def test_index_shape_is_stage2_catalog():
+    reg = lite.Registry.from_dir(EXAMPLES)
+    idx = reg.index()
+    assert idx["schemaVersion"] == "skills.dev/v1"
+    assert idx["generatedAt"].endswith("Z")
+    ids = [s["id"] for s in idx["skills"]]
+    assert ids == sorted(ids)
+    assert "invoice.extract" in idx["capabilityIndex"]
+    assert idx["capabilityIndex"]["invoice.extract"] == ["finance/invoice-extract"]
+    # Every published-skill entry carries the MCP binding agents need to call it.
+    extract = next(s for s in idx["skills"] if s["id"] == "finance/invoice-extract")
+    assert "toolName" in extract["mcp"]

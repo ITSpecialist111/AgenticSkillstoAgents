@@ -119,5 +119,19 @@ promotion criteria for graduating from lite to the full chassis, are in
 
 ## Status
 
-Concept / architecture phase. Targets Microsoft Fabric IQ (Ontology, Preview), OneLake,
-and Copilot Studio custom engine agents, with GitHub as the skill system-of-record.
+**Stage 1 (Register gate) — live.** Every PR that touches a manifest runs
+[`.github/workflows/validate-manifests.yml`](.github/workflows/validate-manifests.yml):
+schema validation, the lite + full test suites (33 tests), and a duplicate-
+capability scan. CODEOWNERS + the PR template enforce the Certify gate on the
+human side. New contributors follow [`CONTRIBUTING.md`](CONTRIBUTING.md).
+
+**Stage 2 (published catalog) — planned, not deployed.** A ready-to-deploy
+Bicep template lives at [`infra/stage-2/main.bicep`](infra/stage-2/main.bicep)
+and the full plan (resources, cost < £0.05/mo, exact commands) is in
+[`docs/stage-2-plan.md`](docs/stage-2-plan.md). Nothing in Azure has been
+created.
+
+Stages 3 (compute) and 4 (Copilot Studio integration) are intentionally
+deferred until the Stage 2 catalog has real consumers. Target platform when
+they ship: Microsoft Fabric IQ (Ontology, Preview), OneLake, and Copilot
+Studio custom engine agents, with GitHub as the skill system-of-record.
