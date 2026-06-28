@@ -53,10 +53,24 @@ curl http://localhost:8000/health      # liveness for Container Apps
 | `MCP_TRANSPORT` | `stdio` | `stdio` or `http` (`streamable-http`). |
 | `HOST` | `0.0.0.0` | HTTP bind host. |
 | `PORT` | `8000` | HTTP bind port. |
-| `REGISTRY_CATALOG_MODE` | `local` | `local` (glob `../examples/*.manifest.json`) or `remote` (pull Stage 2 blob — not yet implemented). |
-| `REGISTRY_CATALOG_URL` | — | Required when `REGISTRY_CATALOG_MODE=remote`. |
+| `REGISTRY_CATALOG_MODE` | `local` | `local` (glob `../examples/*.manifest.json`) or `remote` (pull Stage 2 blob). |
+| `REGISTRY_CATALOG_URL` | — | Required when `REGISTRY_CATALOG_MODE=remote`. Public URL of the `catalog.json` blob published by `.github/workflows/publish-catalog.yml`. |
+| `REGISTRY_CATALOG_TTL` | `60` | Seconds the remote catalog is cached in memory before re-fetching. |
 | `GITHUB_TOKEN` | — | Required for `submit_skill_draft`. Needs `contents:write` + `pull_requests:write` on the target repo. |
 | `GITHUB_REPO` | `ITSpecialist111/AgenticSkillstoAgents` | Target repo for `submit_skill_draft` PRs. |
+
+### Remote-catalog mode
+
+When `REGISTRY_CATALOG_MODE=remote`, the server `GET`s `REGISTRY_CATALOG_URL`
+once on first tool call and caches the result for `REGISTRY_CATALOG_TTL`
+seconds. The blob must be the output of `python lite.py index` *with full
+manifests embedded* (the default) — a summary-only catalog is rejected at
+load time so `describe_skill` can't silently break.
+
+Payload files (`SKILL.md`, asset schemas) are not published to Blob in this
+spike. In remote mode `describe_skill().payloadFiles` is therefore an empty
+list — agents that need the narrative can still fetch it from GitHub. We'll
+revisit if a Stage B live-test demands it.
 
 ## Build the container image
 

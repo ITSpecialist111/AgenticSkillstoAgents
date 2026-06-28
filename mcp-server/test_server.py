@@ -47,6 +47,104 @@ def test_load_registry_remote_needs_url(monkeypatch):
         server.load_registry()
 
 
+# --- remote catalog backend --------------------------------------------------
+
+
+class _FakeBlobClient:
+    """Returns a canned catalog payload for GET requests. Counts calls so the
+    TTL cache can be verified."""
+
+    def __init__(self, payload, status_code=200):
+        self.payload = payload
+        self.status_code = status_code
+        self.get_calls = 0
+
+    def get(self, url):
+        self.get_calls += 1
+        return _FakeResponse(self.status_code, self.payload)
+
+    def close(self):
+        pass
+
+
+def _bundled_catalog():
+    """Use the on-disk examples to produce a real catalog payload so tests
+    exercise the actual index() shape, not a hand-rolled stub."""
+    import lite as _lite
+
+    return _lite.Registry.from_dir(EXAMPLES).index()
+
+
+def test_load_remote_registry_round_trips():
+    """Remote mode must return a Registry that answers the same discovery
+    queries as the local backend — that's the whole point of Stage 2."""
+    server._clear_remote_cache()
+    catalog = _bundled_catalog()
+    fake = _FakeBlobClient(catalog)
+    reg = server._load_remote_registry(
+        "https://example/catalog.json", http_client=fake, now=0.0
+    )
+    assert "finance/invoice-extract" in reg.skills
+    hits = server.tool_find_skill_by_capability(reg, "invoice.extract")
+    assert [h["id"] for h in hits] == ["finance/invoice-extract"]
+
+
+def test_load_remote_registry_uses_ttl_cache():
+    server._clear_remote_cache()
+    fake = _FakeBlobClient(_bundled_catalog())
+    url = "https://example/catalog-ttl.json"
+    # First call hits the network.
+    server._load_remote_registry(url, http_client=fake, now=0.0, ttl_seconds=60)
+    # Second call within TTL must NOT hit the network again.
+    server._load_remote_registry(url, http_client=fake, now=30.0, ttl_seconds=60)
+    assert fake.get_calls == 1
+    # After TTL elapses, we fetch again.
+    server._load_remote_registry(url, http_client=fake, now=120.0, ttl_seconds=60)
+    assert fake.get_calls == 2
+
+
+def test_load_remote_registry_propagates_http_error():
+    server._clear_remote_cache()
+    fake = _FakeBlobClient({"message": "not found"}, status_code=404)
+    with pytest.raises(server.CatalogError, match="404"):
+        server._load_remote_registry(
+            "https://example/missing.json", http_client=fake, now=0.0
+        )
+
+
+def test_load_remote_registry_rejects_summary_only_catalog():
+    """A catalog produced with include_manifests=False can answer
+    find_skill_by_capability but not describe_skill, so we refuse it loudly
+    at load time instead of failing per-tool-call later."""
+    server._clear_remote_cache()
+    import lite as _lite
+
+    compact = _lite.Registry.from_dir(EXAMPLES).index(include_manifests=False)
+    fake = _FakeBlobClient(compact)
+    with pytest.raises(server.CatalogError, match="manifests"):
+        server._load_remote_registry(
+            "https://example/compact.json", http_client=fake, now=0.0
+        )
+
+
+def test_remote_mode_via_env(monkeypatch):
+    """End-to-end: env vars switch the backend to remote and load_registry
+    plumbs the URL through. Uses monkeypatch to inject the fake client."""
+    server._clear_remote_cache()
+    monkeypatch.setenv("REGISTRY_CATALOG_MODE", "remote")
+    monkeypatch.setenv("REGISTRY_CATALOG_URL", "https://example/env-cat.json")
+    fake = _FakeBlobClient(_bundled_catalog())
+    monkeypatch.setattr(
+        server,
+        "_load_remote_registry",
+        lambda url, ttl_seconds, http_client=None, now=None: server.lite.Registry.from_catalog(
+            fake.get(url).json()
+        ),
+    )
+    reg = server.load_registry()
+    assert "finance/invoice-extract" in reg.skills
+
+
 def test_find_skill_by_capability_hit(registry):
     hits = server.tool_find_skill_by_capability(registry, "invoice.extract")
     assert len(hits) == 1

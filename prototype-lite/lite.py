@@ -126,12 +126,19 @@ class Registry:
                         dupes.append((sids[i], sids[j], tag))
         return dupes
 
-    def index(self) -> Dict[str, object]:
-        """Catalog snapshot — the artifact a Stage 2 deployment would publish to
-        blob storage so agents can discover skills without cloning the repo."""
+    def index(self, *, include_manifests: bool = True) -> Dict[str, object]:
+        """Catalog snapshot — the artifact a Stage 2 deployment publishes to
+        blob storage so agents can discover skills without cloning the repo.
+
+        ``include_manifests`` controls whether the full manifest body is
+        embedded under a ``manifests`` map (skill_id -> manifest). The MCP
+        server's remote backend needs that so ``describe_skill`` can return
+        the same shape it does in local mode. Set False if you only need the
+        compact summary view (older consumers).
+        """
         from datetime import datetime, timezone
 
-        return {
+        payload: Dict[str, object] = {
             "generatedAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             "schemaVersion": "skills.dev/v1",
             "skills": [
@@ -150,6 +157,28 @@ class Registry:
                 for tag, sids in sorted(self.list_capabilities().items())
             },
         }
+        if include_manifests:
+            payload["manifests"] = {
+                _id(m): m for m in sorted(self.skills.values(), key=_id)
+            }
+        return payload
+
+    @classmethod
+    def from_catalog(cls, catalog: Dict[str, object]) -> "Registry":
+        """Reconstruct a Registry from a catalog produced by ``index()``.
+
+        Used by the MCP server when ``REGISTRY_CATALOG_MODE=remote``. The
+        catalog must include the ``manifests`` map; otherwise we can only
+        return summaries and ``describe_skill`` would have nothing to return.
+        """
+        manifests = catalog.get("manifests")
+        if not isinstance(manifests, dict) or not manifests:
+            raise ManifestError(
+                "catalog has no 'manifests' map; regenerate with "
+                "include_manifests=True (the MCP server needs full manifests "
+                "to answer describe_skill)."
+            )
+        return cls(skills={str(sid): m for sid, m in manifests.items()})
 
     def certify(self, sid: str, approver: str) -> Manifest:
         """The Certify gate. In production this is a GitHub PR approval that

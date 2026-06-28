@@ -33,6 +33,7 @@ import mimetypes
 import os
 import re
 import sys
+import time
 from typing import Any, Dict, List, Optional, Tuple
 
 # Reuse the chassis instead of reimplementing — single source of truth for
@@ -80,10 +81,70 @@ def load_registry(*, examples_dir: Optional[str] = None) -> lite.Registry:
         url = os.environ.get("REGISTRY_CATALOG_URL")
         if not url:
             raise CatalogError("REGISTRY_CATALOG_MODE=remote needs REGISTRY_CATALOG_URL")
-        raise CatalogError(
-            "remote catalog backend not yet implemented — Stage 2 must be deployed first"
-        )
+        ttl = float(os.environ.get("REGISTRY_CATALOG_TTL", "60"))
+        return _load_remote_registry(url, ttl_seconds=ttl)
     raise CatalogError(f"unknown REGISTRY_CATALOG_MODE: {mode!r}")
+
+
+# Module-level cache for the remote catalog. The Stage 2 blob barely changes
+# (publish-catalog.yml runs on push to main), so a 60s TTL keeps the MCP server
+# responsive without hammering blob storage on every tool call.
+_REMOTE_CACHE: Dict[str, Tuple[float, lite.Registry]] = {}
+
+
+def _load_remote_registry(
+    url: str,
+    *,
+    ttl_seconds: float = 60.0,
+    http_client: Optional[Any] = None,
+    now: Optional[float] = None,
+) -> lite.Registry:
+    """GET the catalog.json blob and build a Registry from it.
+
+    ``http_client`` and ``now`` are injected by tests; production paths use
+    httpx + time.monotonic().
+    """
+    current = now if now is not None else time.monotonic()
+    cached = _REMOTE_CACHE.get(url)
+    if cached and (current - cached[0]) < ttl_seconds:
+        return cached[1]
+
+    own_client = False
+    if http_client is None:
+        import httpx
+
+        http_client = httpx.Client(timeout=15.0)
+        own_client = True
+    try:
+        try:
+            r = http_client.get(url)
+        except Exception as exc:
+            raise CatalogError(f"remote catalog GET failed: {exc}") from exc
+        if getattr(r, "status_code", 0) != 200:
+            raise CatalogError(
+                f"remote catalog GET returned {getattr(r, 'status_code', '?')}: "
+                f"{getattr(r, 'text', '')[:200]}"
+            )
+        try:
+            catalog = r.json()
+        except Exception as exc:
+            raise CatalogError(f"remote catalog is not valid JSON: {exc}") from exc
+    finally:
+        if own_client:
+            http_client.close()
+
+    try:
+        registry = lite.Registry.from_catalog(catalog)
+    except lite.ManifestError as exc:
+        raise CatalogError(f"remote catalog rejected: {exc}") from exc
+
+    _REMOTE_CACHE[url] = (current, registry)
+    return registry
+
+
+def _clear_remote_cache() -> None:
+    """Test helper — wipes the module-level TTL cache."""
+    _REMOTE_CACHE.clear()
 
 
 # --- Skill payload conventions ------------------------------------------------
