@@ -1,7 +1,7 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.28/MicrosoftTeams.schema.json",
   "manifestVersion": "1.28",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "id": "8f2e3b8c-9d6f-4a2b-8c1a-7b4f6d3a1c92",
   "developer": {
     "name": "Skills Registry Spike",
