@@ -1,0 +1,27 @@
+{
+  "tools": [
+    {
+      "name": "invoice_extract",
+      "title": "Extract structured fields from an invoice",
+      "description": "Worked-example skill server bound by the Skills Registry's finance/invoice-extract entry. Pass the URL of a PDF or image invoice; returns vendor, invoice number, issue/due dates, currency, line items, subtotal/tax/total. Deterministic OCR+rules pipeline (stubbed in this spike — returns canned data that matches examples/invoice-extract/sample-output.json so an agent can prove the registry → binding → invoke loop end-to-end).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "document_url": {
+            "type": "string",
+            "description": "HTTPS URL of the invoice PDF or image to extract."
+          }
+        },
+        "required": ["document_url"]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "execution"
+      }
+    }
+  ]
+}

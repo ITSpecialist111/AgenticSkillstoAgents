@@ -187,8 +187,13 @@
         },
         "transport": {
           "type": "string",
-          "enum": ["stdio", "http", "sse"],
+          "enum": ["stdio", "http", "sse", "streamable-http"],
           "description": "MCP transport used to reach the server."
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Concrete endpoint URL for HTTP transports. Agents dial this URL to invoke the skill's tool."
         }
       }
     },

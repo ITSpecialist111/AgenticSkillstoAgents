@@ -113,7 +113,18 @@ def _load_remote_registry(
     if http_client is None:
         import httpx
 
-        http_client = httpx.Client(timeout=15.0)
+        # When the catalog blob lives behind AAD (private container + managed
+        # identity), attach a Bearer token. Storage's REST API requires
+        # x-ms-version on AAD-authenticated requests.
+        extra_headers: Dict[str, str] = {}
+        if os.environ.get("REGISTRY_CATALOG_AUTH", "").lower() == "managed_identity":
+            from azure.identity import DefaultAzureCredential
+
+            token = DefaultAzureCredential().get_token("https://storage.azure.com/.default")
+            extra_headers["Authorization"] = f"Bearer {token.token}"
+            extra_headers["x-ms-version"] = "2021-12-02"
+
+        http_client = httpx.Client(timeout=15.0, headers=extra_headers or None)
         own_client = True
     try:
         try:
@@ -410,6 +421,57 @@ def tool_submit_skill_draft(
             http_client.close()
 
 
+# --- finance-tools stub MCP server -------------------------------------------
+#
+# Wires the second half of the registry pattern: an actual skill server that
+# the agent dials via the binding the registry returned. Mounted in the same
+# container at /api/skills/finance-tools/mcp so the spike has zero extra infra.
+# Real deployments would run each skill server as its own service.
+
+
+def build_finance_tools_server():
+    """A minimal FastMCP server exposing the invoice_extract tool that the
+    finance/invoice-extract skill manifest binds to."""
+    from mcp.server.fastmcp import FastMCP
+    from mcp.server.transport_security import TransportSecuritySettings
+
+    server = FastMCP("finance-tools")
+    server.settings.streamable_http_path = "/mcp"
+    server.settings.transport_security = TransportSecuritySettings(
+        enable_dns_rebinding_protection=False
+    )
+
+    @server.tool(
+        description=(
+            "Extract structured fields from an invoice document. Pass the URL of a "
+            "PDF or image invoice; returns vendor, invoice number, dates, line items, "
+            "subtotal/tax/total. Deterministic OCR+rules pipeline (stubbed in this spike)."
+        )
+    )
+    def invoice_extract(document_url: str) -> Dict[str, Any]:
+        # Stub: a real implementation would fetch + OCR the document. The point
+        # of the spike is to prove the registry → binding → invoke loop, not to
+        # build OCR. The shape matches examples/invoice-extract/sample-output.json.
+        return {
+            "vendor": "Acme Widgets Ltd",
+            "invoice_number": "INV-2026-04829",
+            "issue_date": "2026-06-15",
+            "due_date": "2026-07-15",
+            "currency": "GBP",
+            "subtotal": 1240.00,
+            "tax": 248.00,
+            "total": 1488.00,
+            "line_items": [
+                {"sku": "WIDGET-A", "qty": 10, "unit_price": 49.00, "amount": 490.00},
+                {"sku": "WIDGET-B", "qty": 15, "unit_price": 50.00, "amount": 750.00},
+            ],
+            "_source_url": document_url,
+            "_extraction_method": "stub-spike-v1",
+        }
+
+    return server
+
+
 # --- MCP transport wrapper ----------------------------------------------------
 
 
@@ -539,10 +601,11 @@ def _register_payload_resources(server, registry: lite.Registry, examples_dir: s
 def build_http_app(server=None):
     """Wrap the FastMCP streamable-HTTP app with a friendly GET probe + /health.
 
-    Cowork only needs POST /api/mcp, but a GET probe makes manual testing and
-    Container Apps health checks much less mysterious.
+    Also mounts the finance-tools stub server at /api/skills/finance-tools so
+    the registry's binding URL (returned by find_skill_by_capability) actually
+    resolves end-to-end in the same container.
     """
-    from contextlib import asynccontextmanager
+    from contextlib import AsyncExitStack, asynccontextmanager
 
     from starlette.applications import Starlette
     from starlette.responses import JSONResponse
@@ -550,6 +613,9 @@ def build_http_app(server=None):
 
     server = server or build_server()
     mcp_app = server.streamable_http_app()
+
+    finance_tools = build_finance_tools_server()
+    finance_app = finance_tools.streamable_http_app()
 
     async def probe(_request):
         return JSONResponse(
@@ -565,27 +631,43 @@ def build_http_app(server=None):
                     "submit_skill_draft",
                 ],
                 "resources": "skill://<slug>/<path> (one per skill payload file)",
+                "embedded_skill_servers": {
+                    "finance-tools": "/api/skills/finance-tools/mcp",
+                },
+            }
+        )
+
+    async def finance_probe(_request):
+        return JSONResponse(
+            {
+                "service": "finance-tools",
+                "transport": "streamable-http",
+                "endpoint": "/api/skills/finance-tools/mcp",
+                "method": "POST (JSON-RPC 2.0)",
+                "tools": ["invoice_extract"],
             }
         )
 
     async def health(_request):
         return JSONResponse({"status": "ok"})
 
-    # Forward the FastMCP app's lifespan so its session manager's task group is
-    # actually started. Without this, POST /api/mcp returns 500 with
-    # "Task group is not initialized" — see mcp.server.streamable_http_manager.
+    # Both FastMCP apps need their lifespans entered so their session managers
+    # have a running task group. Without this, POST returns 500 with
+    # "Task group is not initialized".
     @asynccontextmanager
     async def lifespan(app):
-        async with mcp_app.router.lifespan_context(app):
+        async with AsyncExitStack() as stack:
+            await stack.enter_async_context(mcp_app.router.lifespan_context(app))
+            await stack.enter_async_context(finance_app.router.lifespan_context(app))
             yield
 
-    # Order matters: GET probe is registered first so it wins for GET /api/mcp;
-    # the FastMCP app handles POST + the rest of the protocol surface.
     return Starlette(
         lifespan=lifespan,
         routes=[
             Route("/health", health, methods=["GET"]),
             Route(MCP_HTTP_PATH, probe, methods=["GET"]),
+            Route("/api/skills/finance-tools/mcp", finance_probe, methods=["GET"]),
+            Mount("/api/skills/finance-tools", app=finance_app),
             Mount("/", app=mcp_app),
         ],
     )

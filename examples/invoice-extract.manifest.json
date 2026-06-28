@@ -37,7 +37,8 @@
     "server": "finance-tools",
     "toolName": "invoice_extract",
     "namespace": "example-org",
-    "transport": "http"
+    "transport": "streamable-http",
+    "url": "https://ca-cowork-mcp.lemonsea-9c8971ad.uksouth.azurecontainerapps.io/api/skills/finance-tools/mcp"
   },
   "governance": {
     "visibility": "org",
