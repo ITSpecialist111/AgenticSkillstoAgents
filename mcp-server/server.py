@@ -432,6 +432,16 @@ def build_server(*, examples_dir: Optional[str] = None):
     # spec lines up with the TomTom POC pattern (and any other client that
     # already speaks Streamable HTTP).
     server.settings.streamable_http_path = MCP_HTTP_PATH
+    # The MCP SDK's DNS-rebinding protection rejects any Host header it hasn't
+    # been told about (returns 421 "Invalid Host header"). For a public Cowork-
+    # facing endpoint the Host arrives as whatever fqdn the client called, so
+    # we either need to enumerate every caller or disable the check. The spike
+    # has no auth either way — relaxing this is the smaller risk.
+    from mcp.server.transport_security import TransportSecuritySettings
+
+    server.settings.transport_security = TransportSecuritySettings(
+        enable_dns_rebinding_protection=False
+    )
 
     @server.tool(
         description=(
@@ -532,6 +542,8 @@ def build_http_app(server=None):
     Cowork only needs POST /api/mcp, but a GET probe makes manual testing and
     Container Apps health checks much less mysterious.
     """
+    from contextlib import asynccontextmanager
+
     from starlette.applications import Starlette
     from starlette.responses import JSONResponse
     from starlette.routing import Route, Mount
@@ -559,14 +571,23 @@ def build_http_app(server=None):
     async def health(_request):
         return JSONResponse({"status": "ok"})
 
+    # Forward the FastMCP app's lifespan so its session manager's task group is
+    # actually started. Without this, POST /api/mcp returns 500 with
+    # "Task group is not initialized" — see mcp.server.streamable_http_manager.
+    @asynccontextmanager
+    async def lifespan(app):
+        async with mcp_app.router.lifespan_context(app):
+            yield
+
     # Order matters: GET probe is registered first so it wins for GET /api/mcp;
     # the FastMCP app handles POST + the rest of the protocol surface.
     return Starlette(
+        lifespan=lifespan,
         routes=[
             Route("/health", health, methods=["GET"]),
             Route(MCP_HTTP_PATH, probe, methods=["GET"]),
             Mount("/", app=mcp_app),
-        ]
+        ],
     )
 
 

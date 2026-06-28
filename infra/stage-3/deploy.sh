@@ -39,38 +39,55 @@ fi
 echo "==> Resource group: ${RG} (${LOCATION})"
 az group create --name "${RG}" --location "${LOCATION}" --output none
 
-echo "==> Deploying Bicep (catalogMode=${CATALOG_MODE})"
-DEPLOY_OUT="$(az deployment group create \
+echo "==> Phase 1/3: Bicep deploy (ACR + Log Analytics + Container Apps env, no app yet)"
+PHASE1_OUT="$(az deployment group create \
   --resource-group "${RG}" \
+  --name stage3-phase1 \
   --template-file "${TEMPLATE}" \
   --parameters \
       location="${LOCATION}" \
       catalogMode="${CATALOG_MODE}" \
       catalogUrl="${CATALOG_URL}" \
       imageTag="${IMAGE_TAG}" \
+      deployApp=false \
   --query "properties.outputs" \
   -o json)"
 
-ACR_NAME="$(echo "${DEPLOY_OUT}" | python -c "import json,sys;print(json.load(sys.stdin)['acrName']['value'])")"
-MCP_URL="$(echo "${DEPLOY_OUT}" | python -c "import json,sys;print(json.load(sys.stdin)['mcpServerUrl']['value'])")"
-FQDN="$(echo "${DEPLOY_OUT}" | python -c "import json,sys;print(json.load(sys.stdin)['containerAppFqdn']['value'])")"
+ACR_NAME="$(echo "${PHASE1_OUT}" | python -c "import json,sys;print(json.load(sys.stdin)['acrName']['value'])")"
 
 echo "==> ACR: ${ACR_NAME}"
-echo "==> Building + pushing image via 'az acr build'"
+echo "==> Phase 2/3: Building + pushing image via 'az acr build'"
+# --no-logs avoids a Windows-only Azure CLI crash where colorama log-streaming
+# can't encode non-cp1252 build output (pip install ASCII-art bars etc.) and
+# aborts the local CLI even though the remote build succeeded. PYTHONIOENCODING
+# doesn't propagate through az.cmd, so suppressing the stream is the cleanest
+# cross-platform fix. Tail logs with: az acr task logs --registry <acr> --run-id <id>
 az acr build \
   --registry "${ACR_NAME}" \
   --image "skills-registry-mcp:${IMAGE_TAG}" \
   --file "${REPO_ROOT}/mcp-server/Dockerfile" \
+  --no-logs \
   "${REPO_ROOT}"
 
-# The Container App was created with the image already referenced, but ACR may
-# not have had it yet. Force a new revision so it pulls the freshly-built image.
-echo "==> Restarting Container App revision so it picks up the new image"
-az containerapp update \
+echo "==> Phase 3/3: Bicep deploy (Container App, now that the image exists)"
+DEPLOY_OUT="$(az deployment group create \
   --resource-group "${RG}" \
-  --name "ca-skills-registry-mcp" \
-  --image "${ACR_NAME}.azurecr.io/skills-registry-mcp:${IMAGE_TAG}" \
-  --output none
+  --name stage3-phase2 \
+  --template-file "${TEMPLATE}" \
+  --parameters \
+      location="${LOCATION}" \
+      catalogMode="${CATALOG_MODE}" \
+      catalogUrl="${CATALOG_URL}" \
+      imageTag="${IMAGE_TAG}" \
+      deployApp=true \
+  --query "properties.outputs" \
+  -o json)"
+
+MCP_URL="$(echo "${DEPLOY_OUT}" | python -c "import json,sys;print(json.load(sys.stdin)['mcpServerUrl']['value'])")"
+FQDN="$(echo "${DEPLOY_OUT}" | python -c "import json,sys;print(json.load(sys.stdin)['containerAppFqdn']['value'])")"
+
+# Re-applying Phase 3 is a no-op when nothing changed; on re-runs (new image
+# tag, new env) it picks up the new image without a separate restart.
 
 echo ""
 echo "=============================================================="

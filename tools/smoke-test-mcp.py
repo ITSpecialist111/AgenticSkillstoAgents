@@ -143,15 +143,25 @@ def main(argv: list[str] | None = None) -> int:
         result = called.get("result", {})
         content = result.get("content", [])
         _expect(bool(content), f"tools/call find_skill_by_capability returned content for tag={args.tag!r}")
-        # Content is a list of {type: text, text: "..."}; the text is JSON.
-        first_text = next((c["text"] for c in content if c.get("type") == "text"), None)
-        if first_text:
+        # Prefer structuredContent.result (canonical) — falls back to parsing the
+        # text block. FastMCP flattens single-result lists in the text rendering,
+        # which used to confuse this parser.
+        structured = result.get("structuredContent", {}).get("result")
+        if isinstance(structured, list):
+            hits = structured
+        else:
+            first_text = next((c["text"] for c in content if c.get("type") == "text"), None)
             try:
-                payload = json.loads(first_text)
-                ids = [hit.get("id") for hit in payload] if isinstance(payload, list) else []
-                print(f"     hits: {ids}")
+                payload = json.loads(first_text) if first_text else []
             except Exception:
-                print(f"     raw: {first_text[:200]}")
+                payload = []
+            hits = payload if isinstance(payload, list) else [payload]
+        ids = [h.get("id") for h in hits if isinstance(h, dict)]
+        print(f"     hits: {ids}")
+        _expect(
+            "finance/invoice-extract" in ids,
+            f"find_skill_by_capability(tag={args.tag!r}) returns finance/invoice-extract",
+        )
 
     print("\nAll checks passed.")
     return 0

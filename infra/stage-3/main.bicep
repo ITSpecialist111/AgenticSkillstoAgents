@@ -41,6 +41,9 @@ param catalogMode string = 'local'
 @description('Required when catalogMode = remote. The public URL of the Stage 2 catalog.json blob.')
 param catalogUrl string = ''
 
+@description('Set false on the first deploy so the Container App is skipped while ACR is still empty. Set true after `az acr build` has pushed the image.')
+param deployApp bool = true
+
 var acrName = 'acrskills${nameSuffix}'
 var lawName = 'law-skills-${nameSuffix}'
 var caeName = 'cae-skills-${nameSuffix}'
@@ -83,7 +86,7 @@ resource environment 'Microsoft.App/managedEnvironments@2024-03-01' = {
   }
 }
 
-resource app 'Microsoft.App/containerApps@2024-03-01' = {
+resource app 'Microsoft.App/containerApps@2024-03-01' = if (deployApp) {
   name: appName
   location: location
   properties: {
@@ -161,11 +164,11 @@ resource app 'Microsoft.App/containerApps@2024-03-01' = {
   }
 }
 
-@description('The public HTTPS endpoint Cowork connects to. Paste this into cowork-plugin/manifest.json (agentConnectors[0].remoteMcpServer.mcpServerUrl).')
-output mcpServerUrl string = 'https://${app.properties.configuration.ingress.fqdn}/api/mcp'
+@description('The public HTTPS endpoint Cowork connects to. Empty when deployApp=false. Paste this into cowork-plugin/manifest.json (agentConnectors[0].remoteMcpServer.mcpServerUrl).')
+output mcpServerUrl string = deployApp ? 'https://${app.properties.configuration.ingress.fqdn}/api/mcp' : ''
 
-@description('FQDN of the deployed Container App.')
-output containerAppFqdn string = app.properties.configuration.ingress.fqdn
+@description('FQDN of the deployed Container App. Empty when deployApp=false.')
+output containerAppFqdn string = deployApp ? app.properties.configuration.ingress.fqdn : ''
 
 @description('Name of the Container Registry. Pass to `az acr build --registry <this>`.')
 output acrName string = acr.name
