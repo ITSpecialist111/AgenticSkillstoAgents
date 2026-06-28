@@ -1,0 +1,11 @@
+# Branch protection enforcement: anything that changes the canonical
+# registry artifacts needs explicit owner review. This IS the human side of
+# the Certify gate. CI is the automated side.
+
+# Schema and example manifests: every change goes through @ITSpecialist111.
+/schemas/   @ITSpecialist111
+/examples/  @ITSpecialist111
+
+# Workflow + infra changes: lock these down too.
+/.github/   @ITSpecialist111
+/infra/     @ITSpecialist111
