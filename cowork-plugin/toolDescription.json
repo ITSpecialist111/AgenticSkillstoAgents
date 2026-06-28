@@ -31,7 +31,7 @@
     {
       "name": "describe_skill",
       "title": "Describe a skill in full",
-      "description": "Return the full manifest for a skill, including governance (RBAC, data classification), scoring (determinism, risk), preconditions, and effects. Call this after find_skill_by_capability when you need to decide whether a skill is safe to use for the task at hand.",
+      "description": "Return the full manifest for a skill, including governance (RBAC, data classification), scoring (determinism, risk), preconditions, effects, and a 'payloadFiles' list of skill:// resource URIs (SKILL.md narrative, asset schemas, scripts). Read those resources on demand — they don't count against the agent context budget. Call this after find_skill_by_capability when you need to decide whether a skill is safe to use for the task at hand.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -66,6 +66,42 @@
       },
       "execution": {
         "taskSupport": "discovery"
+      }
+    },
+    {
+      "name": "submit_skill_draft",
+      "title": "Submit a new skill draft (opens a PR)",
+      "description": "Propose a new skill by opening a GitHub PR against the registry. Pass a manifest object that conforms to schemas/skill-manifest.schema.json plus an optional payload mapping (e.g. {'SKILL.md': '...', 'assets/output-schema.json': '...'}). Returns {pr_url, pr_number, branch, files_added}. The PR review is the Register gate — a human approver must merge before the skill becomes discoverable. Use this when an agent or human author wants to share a skill they built.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "manifest": {
+            "type": "object",
+            "description": "Skill manifest object. Must validate against schemas/skill-manifest.schema.json."
+          },
+          "payload": {
+            "type": "object",
+            "description": "Optional map of relative file path to UTF-8 text content (SKILL.md, assets/, scripts/). Paths must not contain '..' or start with '/'.",
+            "additionalProperties": { "type": "string" }
+          },
+          "title": {
+            "type": "string",
+            "description": "Optional PR title. Defaults to 'Register skill: <skill_id>'."
+          },
+          "body": {
+            "type": "string",
+            "description": "Optional PR body / motivation. Defaults to a templated summary."
+          }
+        },
+        "required": ["manifest"]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "registration"
       }
     }
   ]

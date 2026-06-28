@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/schemas/InvoiceFields.json",
+  "title": "InvoiceFields",
+  "description": "Structured fields extracted from a single invoice document.",
+  "type": "object",
+  "required": ["supplier", "invoiceNumber", "issueDate", "totals"],
+  "properties": {
+    "supplier": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string" },
+        "taxId": { "type": "string" },
+        "address": { "type": "string" }
+      }
+    },
+    "invoiceNumber": { "type": "string" },
+    "issueDate": { "type": "string", "format": "date" },
+    "dueDate": { "type": "string", "format": "date" },
+    "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+    "lineItems": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["description", "quantity", "unitPrice"],
+        "properties": {
+          "description": { "type": "string" },
+          "quantity": { "type": "number", "minimum": 0 },
+          "unitPrice": { "type": "number", "minimum": 0 },
+          "lineTotal": { "type": "number", "minimum": 0 }
+        }
+      }
+    },
+    "totals": {
+      "type": "object",
+      "required": ["subtotal", "total"],
+      "properties": {
+        "subtotal": { "type": "number" },
+        "tax": { "type": "number" },
+        "total": { "type": "number" }
+      }
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "OCR/parse confidence in the range [0, 1]."
+    }
+  }
+}
