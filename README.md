@@ -111,6 +111,12 @@ smoke tests lives in [`prototype/`](prototype). Run it with
 `cd prototype && pip install -r requirements.txt && python -m pytest -q`, or try
 `python -m chassis.cli walkthrough`.
 
+A deliberately minimal counter-implementation — the same manifest and example
+skills, but in **one 178-line file** with no agent and no graph — lives in
+[`prototype-lite/`](prototype-lite). The rationale for keeping both, and the
+promotion criteria for graduating from lite to the full chassis, are in
+[`docs/complexity-review.md`](docs/complexity-review.md).
+
 ## Status
 
 Concept / architecture phase. Targets Microsoft Fabric IQ (Ontology, Preview), OneLake,
