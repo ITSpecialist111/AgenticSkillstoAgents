@@ -9,3 +9,8 @@
 # Workflow + infra changes: lock these down too.
 /.github/   @ITSpecialist111
 /infra/     @ITSpecialist111
+
+# Spike surfaces. Even on a spike, the MCP contract and the Cowork
+# plugin envelope are what external agents read — review with care.
+/mcp-server/      @ITSpecialist111
+/cowork-plugin/   @ITSpecialist111
