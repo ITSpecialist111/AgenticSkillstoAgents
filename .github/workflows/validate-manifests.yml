@@ -1,0 +1,62 @@
+name: validate-manifests
+
+# Stage 1 deployment of the AgenticSkillstoAgents chassis: the GitHub repo IS the
+# registry. This workflow IS the Register gate (schema validation) and provides
+# the automated checks that gate the Certify gate (the human PR review).
+#
+# Trigger on any PR or push to main that touches the manifest catalog, the
+# schema, or either prototype.
+
+on:
+  pull_request:
+    paths:
+      - "examples/**"
+      - "schemas/**"
+      - "prototype/**"
+      - "prototype-lite/**"
+      - ".github/workflows/validate-manifests.yml"
+  push:
+    branches: [main]
+    paths:
+      - "examples/**"
+      - "schemas/**"
+      - "prototype/**"
+      - "prototype-lite/**"
+      - ".github/workflows/validate-manifests.yml"
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip jsonschema pytest
+
+      - name: Lite smoke tests (8 tests)
+        working-directory: prototype-lite
+        run: python -m pytest -q
+
+      - name: Full chassis smoke tests (25 tests)
+        working-directory: prototype
+        run: python -m pytest -q
+
+      - name: Catalog sanity (capability index prints)
+        working-directory: prototype-lite
+        run: python lite.py list
+
+      - name: Duplicate-capability scan must be clean
+        working-directory: prototype-lite
+        shell: bash
+        run: |
+          out=$(python lite.py dupes)
+          echo "$out"
+          if [ "$out" != "no duplicates" ]; then
+            echo "::error::duplicate-capability scan failed - a published skill already provides one of these tags"
+            exit 1
+          fi
