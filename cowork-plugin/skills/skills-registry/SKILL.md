@@ -1,5 +1,5 @@
 ---
-name: Skills Registry
+name: skills-registry
 description: Discover what capabilities exist in this org's skills registry — and the MCP bindings needed to call them.
 license: MIT
 metadata:
