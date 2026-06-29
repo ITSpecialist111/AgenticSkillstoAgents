@@ -58,6 +58,44 @@
         "idempotentHint": true,
         "openWorldHint": false
       }
+    },
+    {
+      "name": "query_ontology",
+      "title": "Traverse the skills ontology",
+      "description": "Walk the org's skills knowledge-graph from a seed node along a relation (DEPENDS_ON, PROVIDES, CONSUMES, PRODUCES, REQUIRES, CAUSES, SUPERSEDES) up to max_hops (capped at 5). Use this to answer 'what does X depend on?', 'what produces this data type?', or 'what would break if I deprecated this skill?'. Returns ranked paths with per-hop data-classification so callers can see governance scope. Pass caller_classification (public|internal|confidential|restricted) to gate paths above your clearance.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "seed": {
+            "type": "string",
+            "description": "Seed node id — either a skill id like 'legal/msa-redlining' or a capability tag like 'docx.create'."
+          },
+          "relation": {
+            "type": "string",
+            "description": "Edge type to traverse. Omit for any relation.",
+            "enum": ["DEPENDS_ON", "PROVIDES", "CONSUMES", "PRODUCES", "REQUIRES", "CAUSES", "SUPERSEDES"]
+          },
+          "max_hops": {
+            "type": "integer",
+            "description": "Maximum traversal depth (1-5). Default 3.",
+            "minimum": 1,
+            "maximum": 5,
+            "default": 3
+          },
+          "caller_classification": {
+            "type": "string",
+            "description": "Caller's data clearance. Paths whose max classification exceeds this are suppressed. Default 'internal'.",
+            "enum": ["public", "internal", "confidential", "restricted"],
+            "default": "internal"
+          }
+        },
+        "required": ["seed"]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
     }
   ]
 }

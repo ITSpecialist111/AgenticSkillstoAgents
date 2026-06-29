@@ -592,6 +592,14 @@ def build_server(*, examples_dir: Optional[str] = None):
     registry = load_registry(examples_dir=examples_dir)
     ex_dir = _examples_dir(examples_dir)
     server = FastMCP("skills-registry")
+
+    # Stage E: one append-only event per tool call. Backend selected by
+    # TELEMETRY_BACKEND env var (null/stdout/jsonl). Default null keeps
+    # tests quiet; Container Apps deploys set it to ``stdout`` so events
+    # surface in Log Analytics with no extra wiring.
+    from telemetry import make_telemetry, record_call
+    tel = make_telemetry()
+
     # Mount the streamable-HTTP endpoint at /api/mcp so the Cowork connector
     # spec lines up with the TomTom POC pattern (and any other client that
     # already speaks Streamable HTTP).
@@ -615,7 +623,17 @@ def build_server(*, examples_dir: Optional[str] = None):
         )
     )
     def find_skill_by_capability(tag: str, published_only: bool = True) -> List[Dict[str, Any]]:
-        return tool_find_skill_by_capability(registry, tag, published_only=published_only)
+        args = {"tag": tag, "published_only": published_only}
+        with record_call(
+            tel,
+            tool="find_skill_by_capability",
+            args=args,
+            extras_factory=lambda r: {"resultCount": len(r) if r else 0},
+        ) as ctx:
+            ctx["result"] = tool_find_skill_by_capability(
+                registry, tag, published_only=published_only
+            )
+            return ctx["result"]
 
     @server.tool(
         description=(
@@ -626,7 +644,17 @@ def build_server(*, examples_dir: Optional[str] = None):
         )
     )
     def describe_skill(skill_id: str) -> Dict[str, Any]:
-        return tool_describe_skill(registry, skill_id, examples_dir=ex_dir)
+        args = {"skill_id": skill_id}
+        with record_call(
+            tel,
+            tool="describe_skill",
+            args=args,
+            extras_factory=lambda r: {
+                "payloadFileCount": len(r.get("payloadFiles", [])) if r else 0,
+            },
+        ) as ctx:
+            ctx["result"] = tool_describe_skill(registry, skill_id, examples_dir=ex_dir)
+            return ctx["result"]
 
     @server.tool(
         description=(
@@ -635,7 +663,14 @@ def build_server(*, examples_dir: Optional[str] = None):
         )
     )
     def list_capabilities() -> Dict[str, List[str]]:
-        return tool_list_capabilities(registry)
+        with record_call(
+            tel,
+            tool="list_capabilities",
+            args={},
+            extras_factory=lambda r: {"capabilityCount": len(r) if r else 0},
+        ) as ctx:
+            ctx["result"] = tool_list_capabilities(registry)
+            return ctx["result"]
 
     @server.tool(
         description=(
@@ -654,12 +689,30 @@ def build_server(*, examples_dir: Optional[str] = None):
         max_hops: int = 3,
         caller_classification: str = "internal",
     ) -> Dict[str, Any]:
-        return tool_query_ontology(
-            seed=seed,
-            relation=relation,
-            max_hops=max_hops,
-            caller_classification=caller_classification,
-        )
+        args = {
+            "seed": seed,
+            "relation": relation,
+            "max_hops": max_hops,
+            "caller_classification": caller_classification,
+        }
+        with record_call(
+            tel,
+            tool="query_ontology",
+            args=args,
+            extras_factory=lambda r: {
+                "totalPaths": r.get("totalPaths", 0) if r else 0,
+                "suppressedByClassification": r.get("suppressedByClassification", 0) if r else 0,
+                "truncated": r.get("truncated", False) if r else False,
+                "maxHopsApplied": r.get("maxHopsApplied", 0) if r else 0,
+            },
+        ) as ctx:
+            ctx["result"] = tool_query_ontology(
+                seed=seed,
+                relation=relation,
+                max_hops=max_hops,
+                caller_classification=caller_classification,
+            )
+            return ctx["result"]
 
     @server.tool(
         description=(
@@ -676,9 +729,27 @@ def build_server(*, examples_dir: Optional[str] = None):
         title: str = "",
         body: str = "",
     ) -> Dict[str, Any]:
-        return tool_submit_skill_draft(
-            manifest=manifest, payload=payload, title=title, body=body
-        )
+        # We do NOT log the manifest body — just the skill id + a hash for
+        # de-dup of repeated identical drafts.
+        args = {
+            "skill_id": (manifest or {}).get("id"),
+            "version": (manifest or {}).get("version"),
+            "has_payload": bool(payload),
+            "title": title,
+        }
+        with record_call(
+            tel,
+            tool="submit_skill_draft",
+            args=args,
+            extras_factory=lambda r: {
+                "filesAdded": len(r.get("files_added", [])) if r else 0,
+                "prOpened": bool(r and r.get("pr_url")),
+            },
+        ) as ctx:
+            ctx["result"] = tool_submit_skill_draft(
+                manifest=manifest, payload=payload, title=title, body=body
+            )
+            return ctx["result"]
 
     # Register every payload file as a concrete MCP resource. Resources don't
     # count against Cowork's tool cap, so this scales with the catalog.

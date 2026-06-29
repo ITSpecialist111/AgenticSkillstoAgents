@@ -531,3 +531,96 @@ def test_fabric_export_idempotent(tmp_path):
         b1 = (out1 / fname).read_bytes()
         b2 = (out2 / fname).read_bytes()
         assert b1 == b2, f"{fname} differs between runs (export is not deterministic)"
+
+
+# --- Stage E telemetry -------------------------------------------------------
+
+
+def test_telemetry_null_default(monkeypatch):
+    monkeypatch.delenv("TELEMETRY_BACKEND", raising=False)
+    from telemetry import make_telemetry, NullTelemetry
+
+    assert isinstance(make_telemetry(), NullTelemetry)
+
+
+def test_telemetry_unknown_backend_raises(monkeypatch):
+    monkeypatch.setenv("TELEMETRY_BACKEND", "moonbeam")
+    from telemetry import make_telemetry
+
+    with pytest.raises(RuntimeError):
+        make_telemetry()
+
+
+def test_telemetry_jsonl_requires_path(monkeypatch):
+    monkeypatch.setenv("TELEMETRY_BACKEND", "jsonl")
+    monkeypatch.delenv("TELEMETRY_LOG_PATH", raising=False)
+    from telemetry import make_telemetry
+
+    with pytest.raises(RuntimeError):
+        make_telemetry()
+
+
+def test_telemetry_jsonl_appends_one_line_per_event(tmp_path, monkeypatch):
+    monkeypatch.setenv("TELEMETRY_BACKEND", "jsonl")
+    log = tmp_path / "telem.jsonl"
+    monkeypatch.setenv("TELEMETRY_LOG_PATH", str(log))
+    from telemetry import make_telemetry
+
+    tel = make_telemetry()
+    tel.record({"ts": "now", "tool": "find_skill_by_capability"})
+    tel.record({"ts": "later", "tool": "describe_skill"})
+
+    lines = log.read_text(encoding="utf-8").splitlines()
+    assert len(lines) == 2
+    assert json.loads(lines[0])["tool"] == "find_skill_by_capability"
+    assert json.loads(lines[1])["tool"] == "describe_skill"
+
+
+def test_telemetry_record_call_captures_extras_and_latency(tmp_path):
+    from telemetry import JsonlTelemetry, record_call
+
+    log = tmp_path / "t.jsonl"
+    tel = JsonlTelemetry(str(log))
+
+    with record_call(
+        tel,
+        tool="query_ontology",
+        args={"seed": "x", "max_hops": 3},
+        extras_factory=lambda r: {"totalPaths": r["totalPaths"]},
+    ) as ctx:
+        ctx["result"] = {"totalPaths": 7}
+
+    event = json.loads(log.read_text(encoding="utf-8").splitlines()[0])
+    assert event["tool"] == "query_ontology"
+    assert event["ok"] is True
+    assert event["error_class"] is None
+    assert event["totalPaths"] == 7
+    assert isinstance(event["latency_ms"], (int, float))
+    assert len(event["args_hash"]) == 16
+
+
+def test_telemetry_record_call_captures_errors(tmp_path):
+    from telemetry import JsonlTelemetry, record_call
+
+    log = tmp_path / "t.jsonl"
+    tel = JsonlTelemetry(str(log))
+
+    with pytest.raises(ValueError):
+        with record_call(tel, tool="describe_skill", args={"skill_id": "nope"}):
+            raise ValueError("boom")
+
+    event = json.loads(log.read_text(encoding="utf-8").splitlines()[0])
+    assert event["ok"] is False
+    assert event["error_class"] == "ValueError"
+
+
+def test_telemetry_args_hash_is_stable_and_order_invariant():
+    from telemetry import hash_args
+
+    a = hash_args({"tag": "invoice.extract", "published_only": True})
+    b = hash_args({"published_only": True, "tag": "invoice.extract"})
+    c = hash_args({"tag": "invoice.match", "published_only": True})
+    assert a == b
+    assert a != c
+    assert len(a) == 16
+

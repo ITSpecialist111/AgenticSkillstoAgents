@@ -146,6 +146,32 @@ to avoid.
   for automation, `b.scrollIntoView(); b.focus(); b.click()` is reliable
   where a plain `.click()` sometimes no-ops on first attempt.
 
+## 7. Ontology query tool: per-edge governance fence works (proved)
+
+**Test (2026-06-29, image `:v5`, plugin v0.2.0).** Stage D added
+`query_ontology(seed, relation, max_hops, caller_classification)` as the
+fourth registry tool. Two Cowork tasks against the deployed Container
+App, identical seed and hops, only `caller_classification` changed:
+
+| Caller clearance | totalPaths | suppressedByClassification |
+| --- | --- | --- |
+| `confidential` | 1 (`msa-redlining → DEPENDS_ON → docx.create`) | 0 |
+| `internal` | 0 | 14 |
+
+The agent picked the tool unprompted from the connector advertisement,
+hit one Approve modal (per §3), and rendered the path table verbatim.
+At `internal` clearance the same query returns zero paths but reports 14
+edges suppressed — every dependency edge for `msa-redlining` is
+classified `confidential` or above, so a lower-cleared caller learns
+nothing about its graph neighbourhood.
+
+**Implication.** `dataClassification` is not advisory metadata; it gates
+traversal at the edge level inside the MCP server before any response
+reaches the agent. A registry that contains confidential pipeline skills
+can still be safely discoverable by lower-cleared agents — they get
+suppression counts, not silent denials, and never see the confidential
+endpoints. Full evidence: [`stage-d-evidence.md`](stage-d-evidence.md).
+
 ## Summary for the missing-middle thesis
 
 The registry-as-Cowork-plugin pattern survives contact with Cowork's

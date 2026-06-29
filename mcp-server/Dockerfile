@@ -7,7 +7,8 @@ ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     MCP_TRANSPORT=http \
     HOST=0.0.0.0 \
-    PORT=8000
+    PORT=8000 \
+    TELEMETRY_BACKEND=stdout
 
 WORKDIR /app
 
@@ -22,6 +23,10 @@ COPY mcp-server/ /app/mcp-server/
 COPY prototype-lite/ /app/prototype-lite/
 COPY schemas/ /app/schemas/
 COPY examples/ /app/examples/
+
+# Parquet ontology drop for ONTOLOGY_BACKEND=local (query_ontology tool).
+# Rebuild with: python -m prototype.chassis.fabric_export --out prototype/out/fabric/
+COPY prototype/out/fabric/ /app/prototype/out/fabric/
 
 WORKDIR /app/mcp-server
 EXPOSE 8000

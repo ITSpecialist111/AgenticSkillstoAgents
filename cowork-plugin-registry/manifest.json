@@ -1,7 +1,7 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.28/MicrosoftTeams.schema.json",
   "manifestVersion": "1.28",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "id": "a3d5f2c7-1e8b-4c6a-9d4f-2b8e5a7c3f91",
   "developer": {
     "name": "Skills Registry Spike",
@@ -15,7 +15,7 @@
   },
   "description": {
     "short": "Find skills (capabilities) an agent can call inside this org.",
-    "full": "Read-only discovery over the org's skills registry. find_skill_by_capability, describe_skill, list_capabilities. Split from the finance-tools connector to work around Cowork per-host connector dedup."
+    "full": "Read-only discovery over the org's skills registry. find_skill_by_capability, describe_skill, list_capabilities, query_ontology. Split from the finance-tools connector to work around Cowork per-host connector dedup."
   },
   "icons": {
     "color": "color.png",
@@ -29,7 +29,7 @@
     {
       "id": "skills-registry-mcp",
       "displayName": "Skills Registry",
-      "description": "Read-only discovery tools over the org's skills registry. find_skill_by_capability, describe_skill, list_capabilities.",
+      "description": "Read-only discovery tools over the org's skills registry. find_skill_by_capability, describe_skill, list_capabilities, query_ontology.",
       "toolSource": {
         "remoteMcpServer": {
           "mcpServerUrl": "https://ca-cowork-mcp.lemonsea-9c8971ad.uksouth.azurecontainerapps.io/api/mcp",

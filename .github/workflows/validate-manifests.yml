@@ -51,7 +51,16 @@ jobs:
         working-directory: prototype
         run: python -m pytest -q
 
-      - name: MCP server smoke tests
+      - name: Fabric export — manifests -> parquet (Stage D)
+        run: |
+          python -m prototype.chassis.fabric_export --out prototype/out/fabric/
+          ls -l prototype/out/fabric/
+          test -f prototype/out/fabric/nodes.parquet
+          test -f prototype/out/fabric/edges.parquet
+          test -f prototype/out/fabric/manifests.parquet
+          test -f prototype/out/fabric/_schema_version.txt
+
+      - name: MCP server smoke tests (incl. query_ontology + telemetry)
         working-directory: mcp-server
         run: python -m pytest -q
 

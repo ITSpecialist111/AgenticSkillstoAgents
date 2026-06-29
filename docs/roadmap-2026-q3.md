@@ -130,10 +130,13 @@ finding the right person inside ABS.
 
 ### Stage D — Skill IQ MCP: an ontology-query tool on top of Stage 2
 
-> **Status:** in progress (2026-06-29). Local DuckDB backend + MCP tool +
-> tests + Bicep + runbook landed; Fabric SQL endpoint backend is stubbed
-> behind `ONTOLOGY_BACKEND=fabric` pending the user running
-> [`fabric-iq-setup.md`](fabric-iq-setup.md).
+> **Status:** complete (2026-06-29). Local DuckDB backend + MCP tool +
+> tests + Bicep + runbook landed and verified end-to-end in Cowork
+> (image `:v5`, revision `0000005`, plugin v0.2.0). Evidence and live
+> governance-gating proof in
+> [`stage-d-evidence.md`](stage-d-evidence.md). Fabric SQL endpoint
+> backend stubbed behind `ONTOLOGY_BACKEND=fabric` pending the user
+> running [`fabric-iq-setup.md`](fabric-iq-setup.md).
 
 (a) **Goal.** Add a fourth MCP tool to `mcp-server/`:
 `query_ontology(seed, relation, max_hops, caller_classification)` that
@@ -161,6 +164,16 @@ end-to-end test against the deployed Container App.
 copy for `cowork-plugin/`.
 
 ### Stage E — Telemetry loop: record which skills get found, picked, succeeded
+
+> **Status:** sink shipped (2026-06-29). Every MCP tool call emits one
+> append-only JSON event via `mcp-server/telemetry.py`; backends
+> `null`/`stdout`/`jsonl` selected by `TELEMETRY_BACKEND`. Container Apps
+> default is `stdout` → Log Analytics. Args are hashed (sha256 16-char
+> prefix), never logged in the clear. Per-tool extras captured (e.g.
+> `totalPaths` / `suppressedByClassification` for `query_ontology`).
+> **What's left:** the find/pick/succeed dashboard, plus an OneLake or
+> Kusto sink for durable analytics — the stdout stream is enough to start
+> charting but not enough to query historically without a scrape job.
 
 (a) **Goal.** Add a single append-only telemetry table — one row per MCP
 call from any agent: `{timestamp, agent_id, tool_name, args_hash, result,
