@@ -1,0 +1,52 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "productivity/tailored-resume",
+    "name": "Tailored Resume Generator",
+    "version": "1.0.0",
+    "description": "Customises a base resume to a specific job description: re-orders bullets by relevance, suggests rewordings against the job's keywords, and outputs both a DOCX and a tracked-changes diff for human review.",
+    "owner": {
+      "handle": "composiohq",
+      "team": "Composio (community Skill)",
+      "contact": "skills@example.com"
+    },
+    "skillType": "anthropic-agent-skill",
+    "tags": ["resume", "cv", "productivity", "careers"]
+  },
+  "capability": {
+    "summary": "Tailor a resume to a target job description",
+    "capabilityTags": ["resume.tailor", "document.rewrite", "careers.assist"],
+    "inputs": [
+      { "name": "baseResume", "type": "DocxDocument", "required": true, "description": "Source resume." },
+      { "name": "jobDescription", "type": "text", "required": true, "description": "Target job description." }
+    ],
+    "outputs": [
+      { "name": "tailored", "type": "DocxDocument", "required": true, "description": "Tailored resume DOCX." },
+      { "name": "diff", "type": "Markdown", "required": true, "description": "Tracked-changes summary." }
+    ],
+    "preconditions": [],
+    "effects": []
+  },
+  "scoring": {
+    "determinism": "low",
+    "risk": "low",
+    "reversible": true,
+    "rationale": "LLM-mediated rewording; output reviewed by human before use."
+  },
+  "dependencies": [
+    { "ref": "office/docx-toolkit", "optional": false }
+  ],
+  "governance": {
+    "visibility": "private",
+    "rbac": ["careers.user"],
+    "dataClassification": "internal",
+    "cost": { "unit": "usd-per-1k-calls", "estimate": 1.5 },
+    "audit": { "logged": true, "retentionDays": 30 }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-29T10:00:00Z"
+  }
+}

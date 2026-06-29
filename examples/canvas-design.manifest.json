@@ -1,0 +1,49 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "design/canvas",
+    "name": "Canvas Design",
+    "version": "1.0.0",
+    "description": "Composes a visual canvas (poster, social card, single-page graphic) from a structured brief: background, headline, body, imagery placement, palette. Outputs SVG + rasterised PNG. Originally an Anthropic Agent Skill.",
+    "owner": {
+      "handle": "anthropics",
+      "team": "Anthropic Skills",
+      "contact": "skills@example.com"
+    },
+    "skillType": "anthropic-agent-skill",
+    "tags": ["design", "visual", "canvas", "graphics", "marketing"]
+  },
+  "capability": {
+    "summary": "Render a canvas graphic from a structured design brief",
+    "capabilityTags": ["design.canvas", "graphic.generate", "marketing.asset"],
+    "inputs": [
+      { "name": "brief", "type": "CanvasBrief", "required": true, "description": "Structured design brief: layout, copy, palette, imagery." }
+    ],
+    "outputs": [
+      { "name": "svg", "type": "Svg", "required": true, "description": "Vector source." },
+      { "name": "png", "type": "Image", "required": true, "description": "Rasterised preview." }
+    ],
+    "preconditions": [],
+    "effects": []
+  },
+  "scoring": {
+    "determinism": "medium",
+    "risk": "low",
+    "reversible": true,
+    "rationale": "Visual output may vary subtly; safe to regenerate."
+  },
+  "dependencies": [],
+  "governance": {
+    "visibility": "org",
+    "rbac": ["design.author"],
+    "dataClassification": "internal",
+    "cost": { "unit": "usd-per-1k-calls", "estimate": 0.8 },
+    "audit": { "logged": true, "retentionDays": 30 }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-29T10:00:00Z"
+  }
+}

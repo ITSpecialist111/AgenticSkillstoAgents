@@ -58,6 +58,10 @@ class SubmitError(RuntimeError):
 # live in object storage and be referenced by URL from the manifest.
 _PAYLOAD_MAX_BYTES = 256 * 1024  # 256 KB
 
+# Ensure markdown is recognised as text on every platform — the stdlib's
+# mimetypes mapping for .md varies between OSes and Docker base images.
+mimetypes.add_type("text/markdown", ".md")
+
 
 def _examples_dir(override: Optional[str] = None) -> str:
     if override is not None:
@@ -215,20 +219,57 @@ def _read_payload_file(examples_dir: str, skill_id: str, rel_path: str) -> Tuple
     return data, mime
 
 
-def _payload_summary(examples_dir: str, skill_id: str) -> List[Dict[str, str]]:
-    """Compact list of {path, uri, mime} for inclusion in describe_skill."""
+# Inlining cap per file. SKILL.md bodies are typically 5–15 KB; this leaves
+# headroom for assets without blowing the describe_skill response budget.
+_INLINE_MAX_BYTES = 64 * 1024  # 64 KB per file
+
+
+def _is_text_mime(mime: str) -> bool:
+    if mime.startswith("text/"):
+        return True
+    return mime in {
+        "application/json",
+        "application/yaml",
+        "application/x-yaml",
+        "application/xml",
+        "application/javascript",
+        "application/markdown",
+    }
+
+
+def _payload_summary(examples_dir: str, skill_id: str) -> List[Dict[str, Any]]:
+    """Compact list of {path, uri, mimeType, sizeBytes, content?} for describe_skill.
+
+    For text payloads <=_INLINE_MAX_BYTES, includes the file body inline under
+    `content` so the calling agent can act on SKILL.md without a second fetch.
+    The `uri` field is retained for backwards compatibility and for binary or
+    oversized files that cannot be inlined.
+    """
     files = _list_payload_files(examples_dir, skill_id)
     slug = _slug(skill_id)
-    out: List[Dict[str, str]] = []
+    root = _payload_dir(examples_dir, skill_id)
+    out: List[Dict[str, Any]] = []
     for rel in files:
         mime, _enc = mimetypes.guess_type(rel)
-        out.append(
-            {
-                "path": rel,
-                "uri": f"skill://{slug}/{rel}",
-                "mimeType": mime or "application/octet-stream",
-            }
-        )
+        mime = mime or "application/octet-stream"
+        full = os.path.join(root, rel)
+        try:
+            size = os.path.getsize(full)
+        except OSError:
+            size = 0
+        entry: Dict[str, Any] = {
+            "path": rel,
+            "uri": f"skill://{slug}/{rel}",
+            "mimeType": mime,
+            "sizeBytes": size,
+        }
+        if _is_text_mime(mime) and 0 < size <= _INLINE_MAX_BYTES:
+            try:
+                with open(full, "rb") as fh:
+                    entry["content"] = fh.read().decode("utf-8")
+            except (OSError, UnicodeDecodeError):
+                pass
+        out.append(entry)
     return out
 
 

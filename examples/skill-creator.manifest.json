@@ -1,0 +1,50 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "dev/skill-creator",
+    "name": "Skill Creator",
+    "version": "1.0.0",
+    "description": "Guided authoring of a new Skill manifest + SKILL.md payload, including schema validation and capability-tag suggestions. Wraps the Register-gate workflow so a maker can ship a new skill in minutes without memorising the schema.",
+    "owner": {
+      "handle": "anthropics",
+      "team": "Anthropic Skills",
+      "contact": "skills@example.com"
+    },
+    "skillType": "anthropic-agent-skill",
+    "tags": ["meta", "authoring", "registry", "dev"]
+  },
+  "capability": {
+    "summary": "Author a schema-valid Skill manifest and payload",
+    "capabilityTags": ["skill.create", "manifest.author", "registry.register"],
+    "inputs": [
+      { "name": "intent", "type": "text", "required": true, "description": "Natural-language description of what the new skill should do." },
+      { "name": "ownerHandle", "type": "text", "required": true, "description": "Accountable owner identity." }
+    ],
+    "outputs": [
+      { "name": "manifest", "type": "SkillManifest", "required": true, "description": "Validated skill manifest JSON." },
+      { "name": "payload", "type": "SkillPayload", "required": true, "description": "Generated SKILL.md narrative." }
+    ],
+    "preconditions": [],
+    "effects": ["draft.skill.created"]
+  },
+  "scoring": {
+    "determinism": "medium",
+    "risk": "low",
+    "reversible": true,
+    "rationale": "Produces a draft artifact only. Human approval at Certify gate prevents low-quality skills from being published."
+  },
+  "dependencies": [],
+  "governance": {
+    "visibility": "org",
+    "rbac": ["skills.author"],
+    "dataClassification": "internal",
+    "cost": { "unit": "usd-per-1k-calls", "estimate": 0.5 },
+    "audit": { "logged": true, "retentionDays": 365 }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-29T10:00:00Z"
+  }
+}

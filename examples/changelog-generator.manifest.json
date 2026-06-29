@@ -1,0 +1,49 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "dev/changelog-generator",
+    "name": "Changelog Generator",
+    "version": "1.0.0",
+    "description": "Generates a Keep-a-Changelog-formatted CHANGELOG entry from a git commit range. Groups commits by Conventional-Commit type (feat/fix/docs/chore), de-duplicates by PR, and produces a markdown block ready to paste under a new version heading.",
+    "owner": {
+      "handle": "composiohq",
+      "team": "Composio (community Skill)",
+      "contact": "skills@example.com"
+    },
+    "skillType": "anthropic-agent-skill",
+    "tags": ["git", "release", "changelog", "dev"]
+  },
+  "capability": {
+    "summary": "Generate a changelog entry from a git commit range",
+    "capabilityTags": ["changelog.generate", "release.notes", "git.summarise"],
+    "inputs": [
+      { "name": "repoPath", "type": "FilesystemPath", "required": true, "description": "Local path to the git repository." },
+      { "name": "range", "type": "GitRange", "required": true, "description": "Git revision range, e.g. 'v1.2.0..HEAD'." }
+    ],
+    "outputs": [
+      { "name": "changelog", "type": "Markdown", "required": true, "description": "Formatted CHANGELOG.md entry." }
+    ],
+    "preconditions": ["repo.readable"],
+    "effects": []
+  },
+  "scoring": {
+    "determinism": "high",
+    "risk": "low",
+    "reversible": true,
+    "rationale": "Reads git history; produces a markdown string. No external writes."
+  },
+  "dependencies": [],
+  "governance": {
+    "visibility": "org",
+    "rbac": ["dev.author"],
+    "dataClassification": "internal",
+    "cost": { "unit": "usd-per-1k-calls", "estimate": 0.2 },
+    "audit": { "logged": true, "retentionDays": 30 }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-29T10:00:00Z"
+  }
+}

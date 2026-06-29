@@ -1,0 +1,50 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "finance/invoice-organizer",
+    "name": "Invoice Organizer",
+    "version": "1.0.0",
+    "description": "Sorts a folder of mixed invoice files into per-supplier, per-month subfolders; renames to a canonical scheme (YYYY-MM_<supplier>_<number>.<ext>); and emits a CSV index. Pairs naturally with finance/invoice-extract.",
+    "owner": {
+      "handle": "composiohq",
+      "team": "Composio (community Skill)",
+      "contact": "skills@example.com"
+    },
+    "skillType": "anthropic-agent-skill",
+    "tags": ["finance", "invoices", "filing", "ap"]
+  },
+  "capability": {
+    "summary": "Sort and rename a folder of invoices to a canonical scheme",
+    "capabilityTags": ["invoice.organize", "files.rename", "finance.filing"],
+    "inputs": [
+      { "name": "inputDirectory", "type": "FilesystemPath", "required": true, "description": "Folder containing mixed invoice files." }
+    ],
+    "outputs": [
+      { "name": "index", "type": "CsvFile", "required": true, "description": "CSV of original path → new path with extracted supplier/month/number." }
+    ],
+    "preconditions": ["directory.writable"],
+    "effects": ["files.renamed", "files.moved"]
+  },
+  "scoring": {
+    "determinism": "medium",
+    "risk": "medium",
+    "reversible": true,
+    "rationale": "Moves and renames files; reversible via the emitted CSV index but disruptive if run on wrong directory."
+  },
+  "dependencies": [
+    { "ref": "invoice.extract", "optional": false }
+  ],
+  "governance": {
+    "visibility": "org",
+    "rbac": ["finance.processor"],
+    "dataClassification": "confidential",
+    "cost": { "unit": "usd-per-1k-calls", "estimate": 3.0 },
+    "audit": { "logged": true, "retentionDays": 365 }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-29T10:00:00Z"
+  }
+}

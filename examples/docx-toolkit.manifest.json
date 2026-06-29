@@ -1,0 +1,49 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "office/docx-toolkit",
+    "name": "Word (DOCX) Toolkit",
+    "version": "1.0.0",
+    "description": "Create, edit, format and inspect Microsoft Word documents. Wraps python-docx so an agent can author letters, reports and policy documents with headings, tables, images and styles. Originally an Anthropic Agent Skill.",
+    "owner": {
+      "handle": "anthropics",
+      "team": "Anthropic Skills",
+      "contact": "skills@example.com"
+    },
+    "skillType": "anthropic-agent-skill",
+    "tags": ["word", "docx", "documents", "office", "authoring"]
+  },
+  "capability": {
+    "summary": "Author and edit Microsoft Word documents",
+    "capabilityTags": ["docx.create", "docx.edit", "document.author"],
+    "inputs": [
+      { "name": "document", "type": "DocxDocument", "required": false, "description": "Optional existing DOCX to edit; omit to create from scratch." },
+      { "name": "instructions", "type": "DocAuthoringInstructions", "required": true, "description": "Structured edits or generation spec (headings, paragraphs, tables, styles)." }
+    ],
+    "outputs": [
+      { "name": "document", "type": "DocxDocument", "required": true, "description": "Resulting .docx bytes." }
+    ],
+    "preconditions": [],
+    "effects": []
+  },
+  "scoring": {
+    "determinism": "high",
+    "risk": "low",
+    "reversible": true,
+    "rationale": "Generates a new document; does not mutate external systems."
+  },
+  "dependencies": [],
+  "governance": {
+    "visibility": "org",
+    "rbac": ["skills.reader"],
+    "dataClassification": "internal",
+    "cost": { "unit": "usd-per-1k-calls", "estimate": 0.1 },
+    "audit": { "logged": true, "retentionDays": 90 }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-29T10:00:00Z"
+  }
+}

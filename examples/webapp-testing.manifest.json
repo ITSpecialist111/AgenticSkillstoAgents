@@ -1,0 +1,49 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "dev/webapp-testing",
+    "name": "Web App Testing",
+    "version": "1.0.0",
+    "description": "Drives a real browser (Playwright) to test web applications: navigation, form filling, assertion of visible state, screenshot capture, network-request inspection. Useful for smoke-testing a deployed app or as a CI verification step.",
+    "owner": {
+      "handle": "anthropics",
+      "team": "Anthropic Skills",
+      "contact": "skills@example.com"
+    },
+    "skillType": "anthropic-agent-skill",
+    "tags": ["testing", "qa", "browser", "playwright", "automation"]
+  },
+  "capability": {
+    "summary": "Execute browser-based tests against a web app",
+    "capabilityTags": ["webapp.test", "browser.automate", "qa.smoke"],
+    "inputs": [
+      { "name": "url", "type": "Url", "required": true, "description": "Entry URL to the application under test." },
+      { "name": "scenario", "type": "TestScenario", "required": true, "description": "Ordered list of steps (navigate, click, type, assert)." }
+    ],
+    "outputs": [
+      { "name": "report", "type": "TestReport", "required": true, "description": "Pass/fail per step, screenshots, console logs, network requests." }
+    ],
+    "preconditions": ["network.reachable"],
+    "effects": ["browser.session.created"]
+  },
+  "scoring": {
+    "determinism": "medium",
+    "risk": "medium",
+    "reversible": true,
+    "rationale": "Browses real systems; can submit forms or trigger emails if scenario includes write actions. Risk depends on the scenario."
+  },
+  "dependencies": [],
+  "governance": {
+    "visibility": "org",
+    "rbac": ["qa.tester"],
+    "dataClassification": "internal",
+    "cost": { "unit": "usd-per-1k-calls", "estimate": 1.5 },
+    "audit": { "logged": true, "retentionDays": 90 }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-29T10:00:00Z"
+  }
+}

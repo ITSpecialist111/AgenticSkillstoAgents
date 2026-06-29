@@ -1,8 +1,8 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.28/MicrosoftTeams.schema.json",
   "manifestVersion": "1.28",
-  "version": "0.3.0",
-  "id": "8f2e3b8c-9d6f-4a2b-8c1a-7b4f6d3a1c92",
+  "version": "0.1.0",
+  "id": "a3d5f2c7-1e8b-4c6a-9d4f-2b8e5a7c3f91",
   "developer": {
     "name": "Skills Registry Spike",
     "websiteUrl": "https://github.com/ITSpecialist111/AgenticSkillstoAgents",
@@ -11,11 +11,11 @@
   },
   "name": {
     "short": "Skills Registry",
-    "full": "Skills Registry — discover org capabilities"
+    "full": "Skills Registry \u2014 discover org capabilities"
   },
   "description": {
     "short": "Find skills (capabilities) an agent can call inside this org.",
-    "full": "Read-only discovery over the org's skills registry plus a worked-example skill server (finance-tools) so an agent can prove the end-to-end loop: ask 'who can do X?', read the binding, then call the bound tool."
+    "full": "Read-only discovery over the org's skills registry. find_skill_by_capability, describe_skill, list_capabilities. Split from the finance-tools connector to work around Cowork per-host connector dedup."
   },
   "icons": {
     "color": "color.png",
@@ -35,22 +35,6 @@
           "mcpServerUrl": "https://ca-cowork-mcp.lemonsea-9c8971ad.uksouth.azurecontainerapps.io/api/mcp",
           "mcpToolDescription": {
             "file": "toolDescription.json"
-          },
-          "authorization": {
-            "type": "None"
-          }
-        }
-      }
-    },
-    {
-      "id": "finance-tools-mcp",
-      "displayName": "Finance Tools",
-      "description": "Worked-example skill server. invoice_extract — extracts vendor, invoice number, dates, line items, totals from a PDF/image invoice URL. The Skills Registry's finance/invoice-extract binding points here.",
-      "toolSource": {
-        "remoteMcpServer": {
-          "mcpServerUrl": "https://ca-cowork-mcp.lemonsea-9c8971ad.uksouth.azurecontainerapps.io/api/skills/finance-tools/mcp",
-          "mcpToolDescription": {
-            "file": "toolDescription-finance.json"
           },
           "authorization": {
             "type": "None"

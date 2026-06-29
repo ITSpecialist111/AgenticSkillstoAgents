@@ -1,0 +1,49 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "dev/mcp-builder",
+    "name": "MCP Server Builder",
+    "version": "1.0.0",
+    "description": "Scaffolds a FastMCP-based Python MCP server from a tool-list specification: server entry point, tool stubs, transport wiring (stdio + streamable-http), Dockerfile, and a pytest skeleton. Originally an Anthropic Agent Skill.",
+    "owner": {
+      "handle": "anthropics",
+      "team": "Anthropic Skills",
+      "contact": "skills@example.com"
+    },
+    "skillType": "anthropic-agent-skill",
+    "tags": ["mcp", "scaffold", "dev", "fastmcp"]
+  },
+  "capability": {
+    "summary": "Scaffold a FastMCP server from a tool spec",
+    "capabilityTags": ["mcp.scaffold", "code.generate", "dev.bootstrap"],
+    "inputs": [
+      { "name": "spec", "type": "ToolListSpec", "required": true, "description": "List of tools with names, descriptions and input schemas." },
+      { "name": "targetDirectory", "type": "FilesystemPath", "required": true, "description": "Where to write the scaffold." }
+    ],
+    "outputs": [
+      { "name": "files", "type": "GeneratedFileSet", "required": true, "description": "Map of file paths to generated contents." }
+    ],
+    "preconditions": [],
+    "effects": ["files.written"]
+  },
+  "scoring": {
+    "determinism": "medium",
+    "risk": "low",
+    "reversible": true,
+    "rationale": "Generates code only; output is reviewable before commit."
+  },
+  "dependencies": [],
+  "governance": {
+    "visibility": "org",
+    "rbac": ["dev.author"],
+    "dataClassification": "internal",
+    "cost": { "unit": "usd-per-1k-calls", "estimate": 0.5 },
+    "audit": { "logged": true, "retentionDays": 90 }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-29T10:00:00Z"
+  }
+}

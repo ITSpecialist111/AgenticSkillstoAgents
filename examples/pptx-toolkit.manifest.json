@@ -1,0 +1,49 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "office/pptx-toolkit",
+    "name": "PowerPoint (PPTX) Toolkit",
+    "version": "1.0.0",
+    "description": "Generate, edit and template PowerPoint presentations. Wraps python-pptx so an agent can build slide decks with title slides, bullet content, tables, charts and images from structured input. Originally an Anthropic Agent Skill.",
+    "owner": {
+      "handle": "anthropics",
+      "team": "Anthropic Skills",
+      "contact": "skills@example.com"
+    },
+    "skillType": "anthropic-agent-skill",
+    "tags": ["powerpoint", "pptx", "slides", "office", "presentations"]
+  },
+  "capability": {
+    "summary": "Generate and edit PowerPoint presentations",
+    "capabilityTags": ["pptx.create", "pptx.edit", "presentation.author"],
+    "inputs": [
+      { "name": "template", "type": "PptxDocument", "required": false, "description": "Optional template; omit to use a default deck." },
+      { "name": "deck", "type": "SlideDeckSpec", "required": true, "description": "Ordered list of slide specs (title, layout, content)." }
+    ],
+    "outputs": [
+      { "name": "presentation", "type": "PptxDocument", "required": true, "description": "Resulting .pptx bytes." }
+    ],
+    "preconditions": [],
+    "effects": []
+  },
+  "scoring": {
+    "determinism": "high",
+    "risk": "low",
+    "reversible": true,
+    "rationale": "Builds a new deck deterministically from the input spec."
+  },
+  "dependencies": [],
+  "governance": {
+    "visibility": "org",
+    "rbac": ["skills.reader"],
+    "dataClassification": "internal",
+    "cost": { "unit": "usd-per-1k-calls", "estimate": 0.1 },
+    "audit": { "logged": true, "retentionDays": 90 }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-29T10:00:00Z"
+  }
+}

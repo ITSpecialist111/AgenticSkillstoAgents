@@ -1,0 +1,49 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "research/lead-research",
+    "name": "Lead Research Assistant",
+    "version": "1.0.0",
+    "description": "Builds a structured dossier on a sales lead from a company name and (optionally) a contact name: public funding history, recent news, technology fingerprint, decision-maker LinkedIn pointers. Read-only across public sources.",
+    "owner": {
+      "handle": "composiohq",
+      "team": "Composio (community Skill)",
+      "contact": "skills@example.com"
+    },
+    "skillType": "anthropic-agent-skill",
+    "tags": ["sales", "research", "lead", "crm"]
+  },
+  "capability": {
+    "summary": "Compile a structured dossier on a sales lead",
+    "capabilityTags": ["lead.research", "company.profile", "sales.assist"],
+    "inputs": [
+      { "name": "company", "type": "text", "required": true, "description": "Company name." },
+      { "name": "contact", "type": "text", "required": false, "description": "Named contact, if any." }
+    ],
+    "outputs": [
+      { "name": "dossier", "type": "LeadDossier", "required": true, "description": "Structured lead profile." }
+    ],
+    "preconditions": ["web.reachable"],
+    "effects": []
+  },
+  "scoring": {
+    "determinism": "low",
+    "risk": "medium",
+    "reversible": true,
+    "rationale": "Aggregates public web data; quality varies. Sources cited for verification."
+  },
+  "dependencies": [],
+  "governance": {
+    "visibility": "org",
+    "rbac": ["sales.researcher"],
+    "dataClassification": "confidential",
+    "cost": { "unit": "usd-per-1k-calls", "estimate": 5.0 },
+    "audit": { "logged": true, "retentionDays": 365 }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-29T10:00:00Z"
+  }
+}

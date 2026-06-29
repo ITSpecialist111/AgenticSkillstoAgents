@@ -1,0 +1,49 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "office/pdf-toolkit",
+    "name": "PDF Toolkit",
+    "version": "1.0.0",
+    "description": "Read, extract text and tables from, split, merge, and fill forms in PDF files. Wraps pdfplumber/pypdf/reportlab so a host agent can manipulate PDFs without learning library specifics. Anthropic-authored Agent Skill ported as a deterministic-tool manifest.",
+    "owner": {
+      "handle": "anthropics",
+      "team": "Anthropic Skills",
+      "contact": "skills@example.com"
+    },
+    "skillType": "anthropic-agent-skill",
+    "tags": ["pdf", "documents", "office", "extraction", "forms"]
+  },
+  "capability": {
+    "summary": "Read, extract, modify and fill PDF documents",
+    "capabilityTags": ["pdf.read", "pdf.extract", "pdf.write", "pdf.form.fill", "document.parse"],
+    "inputs": [
+      { "name": "document", "type": "PdfDocument", "required": true, "description": "PDF file (binary or URL)." },
+      { "name": "operation", "type": "text", "required": true, "description": "One of: extract_text, extract_tables, fill_form, split, merge." }
+    ],
+    "outputs": [
+      { "name": "result", "type": "PdfOperationResult", "required": true, "description": "Extracted text/tables, modified PDF bytes, or operation status." }
+    ],
+    "preconditions": ["document.readable"],
+    "effects": []
+  },
+  "scoring": {
+    "determinism": "high",
+    "risk": "low",
+    "reversible": true,
+    "rationale": "Pure file manipulation; no external state changes. Operations on a copy of the input."
+  },
+  "dependencies": [],
+  "governance": {
+    "visibility": "org",
+    "rbac": ["skills.reader"],
+    "dataClassification": "confidential",
+    "cost": { "unit": "usd-per-1k-calls", "estimate": 0.1 },
+    "audit": { "logged": true, "retentionDays": 90 }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-29T10:00:00Z"
+  }
+}

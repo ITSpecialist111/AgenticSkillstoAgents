@@ -1,0 +1,49 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "comms/meeting-insights",
+    "name": "Meeting Insights Analyser",
+    "version": "1.0.0",
+    "description": "Parses a meeting transcript (Teams/Zoom/Otter) into a structured artefact: decisions, action items with owners and due dates, open questions, and a one-paragraph summary. Outputs both Markdown and a JSON object suitable for an action-tracker.",
+    "owner": {
+      "handle": "composiohq",
+      "team": "Composio (community Skill)",
+      "contact": "skills@example.com"
+    },
+    "skillType": "anthropic-agent-skill",
+    "tags": ["meetings", "transcripts", "comms", "productivity"]
+  },
+  "capability": {
+    "summary": "Extract decisions and actions from a meeting transcript",
+    "capabilityTags": ["meeting.summarise", "action.extract", "transcript.parse"],
+    "inputs": [
+      { "name": "transcript", "type": "MeetingTranscript", "required": true, "description": "Plain text or VTT transcript." }
+    ],
+    "outputs": [
+      { "name": "summary", "type": "Markdown", "required": true, "description": "Human-readable summary." },
+      { "name": "actions", "type": "ActionItemList", "required": true, "description": "Machine-readable action items." }
+    ],
+    "preconditions": [],
+    "effects": []
+  },
+  "scoring": {
+    "determinism": "low",
+    "risk": "low",
+    "reversible": true,
+    "rationale": "LLM extraction; output is advisory and reviewed by the meeting owner before circulation."
+  },
+  "dependencies": [],
+  "governance": {
+    "visibility": "team",
+    "rbac": ["comms.user"],
+    "dataClassification": "confidential",
+    "cost": { "unit": "usd-per-1k-calls", "estimate": 1.0 },
+    "audit": { "logged": true, "retentionDays": 90 }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-29T10:00:00Z"
+  }
+}

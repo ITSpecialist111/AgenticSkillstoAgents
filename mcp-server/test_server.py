@@ -177,9 +177,10 @@ def test_describe_skill_unknown_raises(registry):
 
 
 def test_describe_skill_lists_payload_files(registry):
-    """describe_skill must surface skill:// URIs for payload files (SKILL.md +
-    assets). Resources don't count against Cowork's 20-tool cap, so this is
-    how agents read narrative + schemas without inflating the system prompt."""
+    """describe_skill must surface payload files (SKILL.md + assets) with both
+    a skill:// URI (for backwards compatibility / binary files) AND inline
+    `content` for text files so the agent can act on SKILL.md without a
+    second fetch — Cowork can't resolve skill:// URIs natively."""
     manifest = server.tool_describe_skill(
         registry, "finance/invoice-extract", examples_dir=EXAMPLES
     )
@@ -189,8 +190,14 @@ def test_describe_skill_lists_payload_files(registry):
     assert "SKILL.md" in paths
     assert paths["SKILL.md"]["uri"] == "skill://finance-invoice-extract/SKILL.md"
     assert paths["SKILL.md"]["mimeType"] == "text/markdown"
+    # SKILL.md body is inlined so Cowork can read it without resolving skill://
+    assert "content" in paths["SKILL.md"]
+    assert "finance/invoice-extract" in paths["SKILL.md"]["content"]
+    assert paths["SKILL.md"]["sizeBytes"] > 0
     assert "assets/output-schema.json" in paths
     assert paths["assets/output-schema.json"]["mimeType"] == "application/json"
+    # JSON is text-like, so it's inlined too.
+    assert "content" in paths["assets/output-schema.json"]
 
 
 def test_list_capabilities_is_sorted_and_indexed(registry):

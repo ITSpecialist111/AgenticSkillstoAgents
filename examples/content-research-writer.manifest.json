@@ -1,0 +1,50 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "content/research-writer",
+    "name": "Content Research Writer",
+    "version": "1.0.0",
+    "description": "Drafts a long-form research article (1500-3000 words) from a topic brief: gathers sources via web search, builds an outline, drafts sections with citations, and outputs Markdown plus a bibliography. Human-in-the-loop expected before publish.",
+    "owner": {
+      "handle": "composiohq",
+      "team": "Composio (community Skill)",
+      "contact": "skills@example.com"
+    },
+    "skillType": "anthropic-agent-skill",
+    "tags": ["content", "writing", "research", "marketing"]
+  },
+  "capability": {
+    "summary": "Draft a long-form research article from a topic brief",
+    "capabilityTags": ["content.draft", "research.summarise", "article.write"],
+    "inputs": [
+      { "name": "topic", "type": "text", "required": true, "description": "Article topic and angle." },
+      { "name": "audience", "type": "text", "required": false, "description": "Target audience description." }
+    ],
+    "outputs": [
+      { "name": "article", "type": "Markdown", "required": true, "description": "Drafted article." },
+      { "name": "bibliography", "type": "BibliographyList", "required": true, "description": "Cited sources." }
+    ],
+    "preconditions": ["web.reachable"],
+    "effects": []
+  },
+  "scoring": {
+    "determinism": "low",
+    "risk": "medium",
+    "reversible": true,
+    "rationale": "LLM-generated content; subject to hallucination — bibliography lets reviewers verify before publishing."
+  },
+  "dependencies": [],
+  "governance": {
+    "visibility": "org",
+    "rbac": ["content.author"],
+    "dataClassification": "internal",
+    "cost": { "unit": "usd-per-1k-calls", "estimate": 4.0 },
+    "audit": { "logged": true, "retentionDays": 90 }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-29T10:00:00Z"
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "productivity/file-organizer",
+    "name": "File Organizer",
+    "version": "1.0.0",
+    "description": "Bulk-classifies a directory tree by content type (docs, images, code, archives, media) and proposes a target layout with a dry-run preview before any move executes. Useful for taming Downloads folders and project workspaces.",
+    "owner": {
+      "handle": "composiohq",
+      "team": "Composio (community Skill)",
+      "contact": "skills@example.com"
+    },
+    "skillType": "anthropic-agent-skill",
+    "tags": ["files", "productivity", "organization"]
+  },
+  "capability": {
+    "summary": "Classify and re-layout a directory tree",
+    "capabilityTags": ["files.organize", "files.classify", "productivity.cleanup"],
+    "inputs": [
+      { "name": "root", "type": "FilesystemPath", "required": true, "description": "Directory to organise." },
+      { "name": "applyChanges", "type": "boolean", "required": false, "description": "If false (default), returns a dry-run plan only." }
+    ],
+    "outputs": [
+      { "name": "plan", "type": "FileMovePlan", "required": true, "description": "Source → destination mapping." }
+    ],
+    "preconditions": ["directory.readable"],
+    "effects": ["files.moved"]
+  },
+  "scoring": {
+    "determinism": "medium",
+    "risk": "medium",
+    "reversible": true,
+    "rationale": "Dry-run by default. When applied, the plan is the reversal manifest."
+  },
+  "dependencies": [],
+  "governance": {
+    "visibility": "team",
+    "rbac": ["productivity.user"],
+    "dataClassification": "internal",
+    "cost": { "unit": "usd-per-1k-calls", "estimate": 0.5 },
+    "audit": { "logged": true, "retentionDays": 30 }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-29T10:00:00Z"
+  }
+}

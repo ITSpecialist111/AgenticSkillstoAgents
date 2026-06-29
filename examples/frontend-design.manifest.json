@@ -1,0 +1,51 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "design/frontend",
+    "name": "Frontend Design",
+    "version": "1.0.0",
+    "description": "Generates production-quality React + Tailwind component code from a screen brief: header, hero, feature grid, footer. Output is ready to drop into a Next.js app. Originally an Anthropic Agent Skill.",
+    "owner": {
+      "handle": "anthropics",
+      "team": "Anthropic Skills",
+      "contact": "skills@example.com"
+    },
+    "skillType": "anthropic-agent-skill",
+    "tags": ["frontend", "react", "tailwind", "design", "ui"]
+  },
+  "capability": {
+    "summary": "Generate React + Tailwind UI from a screen brief",
+    "capabilityTags": ["frontend.generate", "react.component", "ui.scaffold"],
+    "inputs": [
+      { "name": "brief", "type": "ScreenBrief", "required": true, "description": "Sections, copy, intended call-to-action." },
+      { "name": "tokens", "type": "DesignTokens", "required": false, "description": "Optional design tokens to honour (output of design/theme-factory)." }
+    ],
+    "outputs": [
+      { "name": "components", "type": "ReactComponentSet", "required": true, "description": "TSX files keyed by component name." }
+    ],
+    "preconditions": [],
+    "effects": []
+  },
+  "scoring": {
+    "determinism": "medium",
+    "risk": "low",
+    "reversible": true,
+    "rationale": "Generated code; reviewable before commit."
+  },
+  "dependencies": [
+    { "ref": "design.tokens", "optional": true }
+  ],
+  "governance": {
+    "visibility": "org",
+    "rbac": ["frontend.author"],
+    "dataClassification": "internal",
+    "cost": { "unit": "usd-per-1k-calls", "estimate": 1.0 },
+    "audit": { "logged": true, "retentionDays": 30 }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-29T10:00:00Z"
+  }
+}

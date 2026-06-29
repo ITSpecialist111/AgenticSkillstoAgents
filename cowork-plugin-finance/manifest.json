@@ -1,0 +1,43 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.28/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.28",
+  "version": "0.1.0",
+  "id": "b7e4c8d1-5f9a-4d2b-8e3c-1a6b9d4e7f02",
+  "developer": {
+    "name": "Skills Registry Spike",
+    "websiteUrl": "https://github.com/ITSpecialist111/AgenticSkillstoAgents",
+    "privacyUrl": "https://github.com/ITSpecialist111/AgenticSkillstoAgents/blob/main/README.md",
+    "termsOfUseUrl": "https://github.com/ITSpecialist111/AgenticSkillstoAgents/blob/main/README.md"
+  },
+  "name": {
+    "short": "Finance Tools",
+    "full": "Finance Tools \u2014 worked-example skill server"
+  },
+  "description": {
+    "short": "invoice_extract: parse PDF/image invoices into structured fields.",
+    "full": "Worked-example skill server bound by the Skills Registry's finance/invoice-extract entry. Exposes invoice_extract — vendor, invoice number, dates, line items, totals."
+  },
+  "icons": {
+    "color": "color.png",
+    "outline": "outline.png"
+  },
+  "accentColor": "#10B981",
+  "agentConnectors": [
+    {
+      "id": "finance-tools-mcp",
+      "displayName": "Finance Tools",
+      "description": "Worked-example skill server. invoice_extract \u2014 extracts vendor, invoice number, dates, line items, totals from a PDF/image invoice URL.",
+      "toolSource": {
+        "remoteMcpServer": {
+          "mcpServerUrl": "https://ca-cowork-mcp.lemonsea-9c8971ad.uksouth.azurecontainerapps.io/api/skills/finance-tools/mcp",
+          "mcpToolDescription": {
+            "file": "toolDescription.json"
+          },
+          "authorization": {
+            "type": "None"
+          }
+        }
+      }
+    }
+  ]
+}

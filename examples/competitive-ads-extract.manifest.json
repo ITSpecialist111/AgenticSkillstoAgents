@@ -1,0 +1,48 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "research/competitive-ads-extract",
+    "name": "Competitive Ads Extractor",
+    "version": "1.0.0",
+    "description": "Given a competitor's name or domain, pulls their currently-running ads from public ad-library sources (Meta Ad Library, Google Transparency Centre) and structures them: copy, creative URL, audience, observed dates. Useful for marketing intelligence.",
+    "owner": {
+      "handle": "composiohq",
+      "team": "Composio (community Skill)",
+      "contact": "skills@example.com"
+    },
+    "skillType": "anthropic-agent-skill",
+    "tags": ["marketing", "ads", "competitive-intel", "research"]
+  },
+  "capability": {
+    "summary": "Extract a competitor's live ads from public ad libraries",
+    "capabilityTags": ["ads.extract", "competitor.intel", "marketing.research"],
+    "inputs": [
+      { "name": "competitor", "type": "text", "required": true, "description": "Competitor name or domain." }
+    ],
+    "outputs": [
+      { "name": "ads", "type": "AdRecordList", "required": true, "description": "Structured ad records." }
+    ],
+    "preconditions": ["web.reachable"],
+    "effects": []
+  },
+  "scoring": {
+    "determinism": "medium",
+    "risk": "low",
+    "reversible": true,
+    "rationale": "Read-only fetch from public ad-library APIs and pages."
+  },
+  "dependencies": [],
+  "governance": {
+    "visibility": "org",
+    "rbac": ["marketing.analyst"],
+    "dataClassification": "internal",
+    "cost": { "unit": "usd-per-1k-calls", "estimate": 2.0 },
+    "audit": { "logged": true, "retentionDays": 180 }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-29T10:00:00Z"
+  }
+}

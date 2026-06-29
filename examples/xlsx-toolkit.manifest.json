@@ -1,0 +1,49 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "office/xlsx-toolkit",
+    "name": "Excel (XLSX) Toolkit",
+    "version": "1.0.0",
+    "description": "Read, write, analyse and chart Excel workbooks. Wraps openpyxl/pandas for cell access, named-range lookup, formula evaluation, and chart insertion. Originally an Anthropic Agent Skill; manifest provided so it is discoverable via the registry.",
+    "owner": {
+      "handle": "anthropics",
+      "team": "Anthropic Skills",
+      "contact": "skills@example.com"
+    },
+    "skillType": "anthropic-agent-skill",
+    "tags": ["excel", "xlsx", "spreadsheet", "office", "tabular"]
+  },
+  "capability": {
+    "summary": "Read, write and analyse Excel workbooks",
+    "capabilityTags": ["xlsx.read", "xlsx.write", "spreadsheet.analyse", "data.tabular"],
+    "inputs": [
+      { "name": "workbook", "type": "XlsxDocument", "required": true, "description": "XLSX file (binary or URL)." },
+      { "name": "operation", "type": "text", "required": true, "description": "One of: read_range, write_range, add_chart, evaluate_formulas, list_sheets." }
+    ],
+    "outputs": [
+      { "name": "result", "type": "XlsxOperationResult", "required": true, "description": "Cell values, modified workbook bytes, or operation status." }
+    ],
+    "preconditions": ["workbook.readable"],
+    "effects": []
+  },
+  "scoring": {
+    "determinism": "high",
+    "risk": "low",
+    "reversible": true,
+    "rationale": "Read/write operates on the supplied workbook; no external systems touched."
+  },
+  "dependencies": [],
+  "governance": {
+    "visibility": "org",
+    "rbac": ["skills.reader"],
+    "dataClassification": "confidential",
+    "cost": { "unit": "usd-per-1k-calls", "estimate": 0.1 },
+    "audit": { "logged": true, "retentionDays": 90 }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-29T10:00:00Z"
+  }
+}

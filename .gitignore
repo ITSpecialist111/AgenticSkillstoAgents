@@ -3,3 +3,12 @@ __pycache__/
 prototype/out/
 prototype-lite/out/
 .pytest_cache/
+
+# Browser automation captures — may contain tenant / user / session data
+.playwright-mcp/
+
+# Cowork UI screenshots — may contain personal account / tenant chrome
+cowork-*.png
+
+# Pre-built plugin packages — re-build locally if you want to install
+*.zip
