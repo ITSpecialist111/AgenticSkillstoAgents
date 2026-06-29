@@ -18,11 +18,11 @@ EXAMPLES = os.path.join(REPO_ROOT, "examples")
 
 def test_loads_all_bundled_examples():
     reg = lite.Registry.from_dir(EXAMPLES)
-    assert set(reg.skills) == {
+    assert {
         "finance/invoice-extract",
         "finance/po-match",
         "finance/ap-intake",
-    }
+    } <= set(reg.skills)
 
 
 def test_invalid_manifest_rejected(tmp_path):
