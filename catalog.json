@@ -1,0 +1,2489 @@
+{
+  "generatedAt": "2026-06-29T06:09:05Z",
+  "schemaVersion": "skills.dev/v1",
+  "skills": [
+    {
+      "id": "comms/meeting-insights",
+      "name": "Meeting Insights Analyser",
+      "version": "1.0.0",
+      "stage": "published",
+      "capabilityTags": [
+        "meeting.summarise",
+        "action.extract",
+        "transcript.parse"
+      ],
+      "mcp": {}
+    },
+    {
+      "id": "content/research-writer",
+      "name": "Content Research Writer",
+      "version": "1.0.0",
+      "stage": "published",
+      "capabilityTags": [
+        "content.draft",
+        "research.summarise",
+        "article.write"
+      ],
+      "mcp": {}
+    },
+    {
+      "id": "design/canvas",
+      "name": "Canvas Design",
+      "version": "1.0.0",
+      "stage": "published",
+      "capabilityTags": [
+        "design.canvas",
+        "graphic.generate",
+        "marketing.asset"
+      ],
+      "mcp": {}
+    },
+    {
+      "id": "design/frontend",
+      "name": "Frontend Design",
+      "version": "1.0.0",
+      "stage": "published",
+      "capabilityTags": [
+        "frontend.generate",
+        "react.component",
+        "ui.scaffold"
+      ],
+      "mcp": {}
+    },
+    {
+      "id": "design/theme-factory",
+      "name": "Theme Factory",
+      "version": "1.0.0",
+      "stage": "published",
+      "capabilityTags": [
+        "theme.generate",
+        "design.tokens",
+        "branding.palette"
+      ],
+      "mcp": {}
+    },
+    {
+      "id": "dev/changelog-generator",
+      "name": "Changelog Generator",
+      "version": "1.0.0",
+      "stage": "published",
+      "capabilityTags": [
+        "changelog.generate",
+        "release.notes",
+        "git.summarise"
+      ],
+      "mcp": {}
+    },
+    {
+      "id": "dev/mcp-builder",
+      "name": "MCP Server Builder",
+      "version": "1.0.0",
+      "stage": "published",
+      "capabilityTags": [
+        "mcp.scaffold",
+        "code.generate",
+        "dev.bootstrap"
+      ],
+      "mcp": {}
+    },
+    {
+      "id": "dev/skill-creator",
+      "name": "Skill Creator",
+      "version": "1.0.0",
+      "stage": "published",
+      "capabilityTags": [
+        "skill.create",
+        "manifest.author",
+        "registry.register"
+      ],
+      "mcp": {}
+    },
+    {
+      "id": "dev/webapp-testing",
+      "name": "Web App Testing",
+      "version": "1.0.0",
+      "stage": "published",
+      "capabilityTags": [
+        "webapp.test",
+        "browser.automate",
+        "qa.smoke"
+      ],
+      "mcp": {}
+    },
+    {
+      "id": "finance/ap-intake",
+      "name": "Accounts Payable Intake",
+      "version": "0.2.0",
+      "stage": "draft",
+      "capabilityTags": [
+        "ap.intake"
+      ],
+      "mcp": {
+        "server": "finance-tools",
+        "toolName": "ap_intake",
+        "namespace": "example-org",
+        "transport": "http"
+      }
+    },
+    {
+      "id": "finance/invoice-extract",
+      "name": "Invoice Field Extractor",
+      "version": "1.3.0",
+      "stage": "published",
+      "capabilityTags": [
+        "invoice.extract",
+        "document.parse"
+      ],
+      "mcp": {
+        "server": "finance-tools",
+        "toolName": "invoice_extract",
+        "namespace": "example-org",
+        "transport": "streamable-http",
+        "url": "https://ca-cowork-mcp.lemonsea-9c8971ad.uksouth.azurecontainerapps.io/api/skills/finance-tools/mcp"
+      }
+    },
+    {
+      "id": "finance/invoice-extract-v2",
+      "name": "Invoice Field Extractor v2 (deliberate duplicate)",
+      "version": "0.1.0",
+      "stage": "draft",
+      "capabilityTags": [
+        "invoice.extract",
+        "document.parse"
+      ],
+      "mcp": {
+        "server": "finance-tools",
+        "toolName": "invoice_extract_v2",
+        "namespace": "example-org",
+        "transport": "http"
+      }
+    },
+    {
+      "id": "finance/invoice-organizer",
+      "name": "Invoice Organizer",
+      "version": "1.0.0",
+      "stage": "published",
+      "capabilityTags": [
+        "invoice.organize",
+        "files.rename",
+        "finance.filing"
+      ],
+      "mcp": {}
+    },
+    {
+      "id": "finance/po-match",
+      "name": "Purchase Order Matcher",
+      "version": "0.9.1",
+      "stage": "certified",
+      "capabilityTags": [
+        "invoice.match",
+        "po.reconcile"
+      ],
+      "mcp": {
+        "server": "finance-tools",
+        "toolName": "po_match",
+        "namespace": "example-org",
+        "transport": "http"
+      }
+    },
+    {
+      "id": "legal/msa-redlining",
+      "name": "Legal MSA Redlining",
+      "version": "1.0.0",
+      "stage": "published",
+      "capabilityTags": [
+        "legal.redline",
+        "msa.draft",
+        "contract.review",
+        "regional.compliance",
+        "clause.compare"
+      ],
+      "mcp": {}
+    },
+    {
+      "id": "office/docx-toolkit",
+      "name": "Word (DOCX) Toolkit",
+      "version": "1.0.0",
+      "stage": "published",
+      "capabilityTags": [
+        "docx.create",
+        "docx.edit",
+        "document.author"
+      ],
+      "mcp": {}
+    },
+    {
+      "id": "office/pdf-toolkit",
+      "name": "PDF Toolkit",
+      "version": "1.0.0",
+      "stage": "published",
+      "capabilityTags": [
+        "pdf.read",
+        "pdf.extract",
+        "pdf.write",
+        "pdf.form.fill",
+        "document.parse"
+      ],
+      "mcp": {}
+    },
+    {
+      "id": "office/pptx-toolkit",
+      "name": "PowerPoint (PPTX) Toolkit",
+      "version": "1.0.0",
+      "stage": "published",
+      "capabilityTags": [
+        "pptx.create",
+        "pptx.edit",
+        "presentation.author"
+      ],
+      "mcp": {}
+    },
+    {
+      "id": "office/xlsx-toolkit",
+      "name": "Excel (XLSX) Toolkit",
+      "version": "1.0.0",
+      "stage": "published",
+      "capabilityTags": [
+        "xlsx.read",
+        "xlsx.write",
+        "spreadsheet.analyse",
+        "data.tabular"
+      ],
+      "mcp": {}
+    },
+    {
+      "id": "productivity/file-organizer",
+      "name": "File Organizer",
+      "version": "1.0.0",
+      "stage": "published",
+      "capabilityTags": [
+        "files.organize",
+        "files.classify",
+        "productivity.cleanup"
+      ],
+      "mcp": {}
+    },
+    {
+      "id": "productivity/tailored-resume",
+      "name": "Tailored Resume Generator",
+      "version": "1.0.0",
+      "stage": "published",
+      "capabilityTags": [
+        "resume.tailor",
+        "document.rewrite",
+        "careers.assist"
+      ],
+      "mcp": {}
+    },
+    {
+      "id": "research/competitive-ads-extract",
+      "name": "Competitive Ads Extractor",
+      "version": "1.0.0",
+      "stage": "published",
+      "capabilityTags": [
+        "ads.extract",
+        "competitor.intel",
+        "marketing.research"
+      ],
+      "mcp": {}
+    },
+    {
+      "id": "research/lead-research",
+      "name": "Lead Research Assistant",
+      "version": "1.0.0",
+      "stage": "published",
+      "capabilityTags": [
+        "lead.research",
+        "company.profile",
+        "sales.assist"
+      ],
+      "mcp": {}
+    }
+  ],
+  "capabilityIndex": {
+    "action.extract": [
+      "comms/meeting-insights"
+    ],
+    "ads.extract": [
+      "research/competitive-ads-extract"
+    ],
+    "ap.intake": [
+      "finance/ap-intake"
+    ],
+    "article.write": [
+      "content/research-writer"
+    ],
+    "branding.palette": [
+      "design/theme-factory"
+    ],
+    "browser.automate": [
+      "dev/webapp-testing"
+    ],
+    "careers.assist": [
+      "productivity/tailored-resume"
+    ],
+    "changelog.generate": [
+      "dev/changelog-generator"
+    ],
+    "clause.compare": [
+      "legal/msa-redlining"
+    ],
+    "code.generate": [
+      "dev/mcp-builder"
+    ],
+    "company.profile": [
+      "research/lead-research"
+    ],
+    "competitor.intel": [
+      "research/competitive-ads-extract"
+    ],
+    "content.draft": [
+      "content/research-writer"
+    ],
+    "contract.review": [
+      "legal/msa-redlining"
+    ],
+    "data.tabular": [
+      "office/xlsx-toolkit"
+    ],
+    "design.canvas": [
+      "design/canvas"
+    ],
+    "design.tokens": [
+      "design/theme-factory"
+    ],
+    "dev.bootstrap": [
+      "dev/mcp-builder"
+    ],
+    "document.author": [
+      "office/docx-toolkit"
+    ],
+    "document.parse": [
+      "finance/invoice-extract",
+      "finance/invoice-extract-v2",
+      "office/pdf-toolkit"
+    ],
+    "document.rewrite": [
+      "productivity/tailored-resume"
+    ],
+    "docx.create": [
+      "office/docx-toolkit"
+    ],
+    "docx.edit": [
+      "office/docx-toolkit"
+    ],
+    "files.classify": [
+      "productivity/file-organizer"
+    ],
+    "files.organize": [
+      "productivity/file-organizer"
+    ],
+    "files.rename": [
+      "finance/invoice-organizer"
+    ],
+    "finance.filing": [
+      "finance/invoice-organizer"
+    ],
+    "frontend.generate": [
+      "design/frontend"
+    ],
+    "git.summarise": [
+      "dev/changelog-generator"
+    ],
+    "graphic.generate": [
+      "design/canvas"
+    ],
+    "invoice.extract": [
+      "finance/invoice-extract",
+      "finance/invoice-extract-v2"
+    ],
+    "invoice.match": [
+      "finance/po-match"
+    ],
+    "invoice.organize": [
+      "finance/invoice-organizer"
+    ],
+    "lead.research": [
+      "research/lead-research"
+    ],
+    "legal.redline": [
+      "legal/msa-redlining"
+    ],
+    "manifest.author": [
+      "dev/skill-creator"
+    ],
+    "marketing.asset": [
+      "design/canvas"
+    ],
+    "marketing.research": [
+      "research/competitive-ads-extract"
+    ],
+    "mcp.scaffold": [
+      "dev/mcp-builder"
+    ],
+    "meeting.summarise": [
+      "comms/meeting-insights"
+    ],
+    "msa.draft": [
+      "legal/msa-redlining"
+    ],
+    "pdf.extract": [
+      "office/pdf-toolkit"
+    ],
+    "pdf.form.fill": [
+      "office/pdf-toolkit"
+    ],
+    "pdf.read": [
+      "office/pdf-toolkit"
+    ],
+    "pdf.write": [
+      "office/pdf-toolkit"
+    ],
+    "po.reconcile": [
+      "finance/po-match"
+    ],
+    "pptx.create": [
+      "office/pptx-toolkit"
+    ],
+    "pptx.edit": [
+      "office/pptx-toolkit"
+    ],
+    "presentation.author": [
+      "office/pptx-toolkit"
+    ],
+    "productivity.cleanup": [
+      "productivity/file-organizer"
+    ],
+    "qa.smoke": [
+      "dev/webapp-testing"
+    ],
+    "react.component": [
+      "design/frontend"
+    ],
+    "regional.compliance": [
+      "legal/msa-redlining"
+    ],
+    "registry.register": [
+      "dev/skill-creator"
+    ],
+    "release.notes": [
+      "dev/changelog-generator"
+    ],
+    "research.summarise": [
+      "content/research-writer"
+    ],
+    "resume.tailor": [
+      "productivity/tailored-resume"
+    ],
+    "sales.assist": [
+      "research/lead-research"
+    ],
+    "skill.create": [
+      "dev/skill-creator"
+    ],
+    "spreadsheet.analyse": [
+      "office/xlsx-toolkit"
+    ],
+    "theme.generate": [
+      "design/theme-factory"
+    ],
+    "transcript.parse": [
+      "comms/meeting-insights"
+    ],
+    "ui.scaffold": [
+      "design/frontend"
+    ],
+    "webapp.test": [
+      "dev/webapp-testing"
+    ],
+    "xlsx.read": [
+      "office/xlsx-toolkit"
+    ],
+    "xlsx.write": [
+      "office/xlsx-toolkit"
+    ]
+  },
+  "manifests": {
+    "comms/meeting-insights": {
+      "apiVersion": "skills.dev/v1",
+      "kind": "Skill",
+      "identity": {
+        "id": "comms/meeting-insights",
+        "name": "Meeting Insights Analyser",
+        "version": "1.0.0",
+        "description": "Parses a meeting transcript (Teams/Zoom/Otter) into a structured artefact: decisions, action items with owners and due dates, open questions, and a one-paragraph summary. Outputs both Markdown and a JSON object suitable for an action-tracker.",
+        "owner": {
+          "handle": "composiohq",
+          "team": "Composio (community Skill)",
+          "contact": "skills@example.com"
+        },
+        "skillType": "anthropic-agent-skill",
+        "tags": [
+          "meetings",
+          "transcripts",
+          "comms",
+          "productivity"
+        ]
+      },
+      "capability": {
+        "summary": "Extract decisions and actions from a meeting transcript",
+        "capabilityTags": [
+          "meeting.summarise",
+          "action.extract",
+          "transcript.parse"
+        ],
+        "inputs": [
+          {
+            "name": "transcript",
+            "type": "MeetingTranscript",
+            "required": true,
+            "description": "Plain text or VTT transcript."
+          }
+        ],
+        "outputs": [
+          {
+            "name": "summary",
+            "type": "Markdown",
+            "required": true,
+            "description": "Human-readable summary."
+          },
+          {
+            "name": "actions",
+            "type": "ActionItemList",
+            "required": true,
+            "description": "Machine-readable action items."
+          }
+        ],
+        "preconditions": [],
+        "effects": []
+      },
+      "scoring": {
+        "determinism": "low",
+        "risk": "low",
+        "reversible": true,
+        "rationale": "LLM extraction; output is advisory and reviewed by the meeting owner before circulation."
+      },
+      "dependencies": [],
+      "governance": {
+        "visibility": "team",
+        "rbac": [
+          "comms.user"
+        ],
+        "dataClassification": "confidential",
+        "cost": {
+          "unit": "usd-per-1k-calls",
+          "estimate": 1.0
+        },
+        "audit": {
+          "logged": true,
+          "retentionDays": 90
+        }
+      },
+      "lifecycle": {
+        "stage": "published",
+        "certifiedBy": "coe.reviewer",
+        "certifiedAt": "2026-06-29T10:00:00Z"
+      }
+    },
+    "content/research-writer": {
+      "apiVersion": "skills.dev/v1",
+      "kind": "Skill",
+      "identity": {
+        "id": "content/research-writer",
+        "name": "Content Research Writer",
+        "version": "1.0.0",
+        "description": "Drafts a long-form research article (1500-3000 words) from a topic brief: gathers sources via web search, builds an outline, drafts sections with citations, and outputs Markdown plus a bibliography. Human-in-the-loop expected before publish.",
+        "owner": {
+          "handle": "composiohq",
+          "team": "Composio (community Skill)",
+          "contact": "skills@example.com"
+        },
+        "skillType": "anthropic-agent-skill",
+        "tags": [
+          "content",
+          "writing",
+          "research",
+          "marketing"
+        ]
+      },
+      "capability": {
+        "summary": "Draft a long-form research article from a topic brief",
+        "capabilityTags": [
+          "content.draft",
+          "research.summarise",
+          "article.write"
+        ],
+        "inputs": [
+          {
+            "name": "topic",
+            "type": "text",
+            "required": true,
+            "description": "Article topic and angle."
+          },
+          {
+            "name": "audience",
+            "type": "text",
+            "required": false,
+            "description": "Target audience description."
+          }
+        ],
+        "outputs": [
+          {
+            "name": "article",
+            "type": "Markdown",
+            "required": true,
+            "description": "Drafted article."
+          },
+          {
+            "name": "bibliography",
+            "type": "BibliographyList",
+            "required": true,
+            "description": "Cited sources."
+          }
+        ],
+        "preconditions": [
+          "web.reachable"
+        ],
+        "effects": []
+      },
+      "scoring": {
+        "determinism": "low",
+        "risk": "medium",
+        "reversible": true,
+        "rationale": "LLM-generated content; subject to hallucination \u2014 bibliography lets reviewers verify before publishing."
+      },
+      "dependencies": [],
+      "governance": {
+        "visibility": "org",
+        "rbac": [
+          "content.author"
+        ],
+        "dataClassification": "internal",
+        "cost": {
+          "unit": "usd-per-1k-calls",
+          "estimate": 4.0
+        },
+        "audit": {
+          "logged": true,
+          "retentionDays": 90
+        }
+      },
+      "lifecycle": {
+        "stage": "published",
+        "certifiedBy": "coe.reviewer",
+        "certifiedAt": "2026-06-29T10:00:00Z"
+      }
+    },
+    "design/canvas": {
+      "apiVersion": "skills.dev/v1",
+      "kind": "Skill",
+      "identity": {
+        "id": "design/canvas",
+        "name": "Canvas Design",
+        "version": "1.0.0",
+        "description": "Composes a visual canvas (poster, social card, single-page graphic) from a structured brief: background, headline, body, imagery placement, palette. Outputs SVG + rasterised PNG. Originally an Anthropic Agent Skill.",
+        "owner": {
+          "handle": "anthropics",
+          "team": "Anthropic Skills",
+          "contact": "skills@example.com"
+        },
+        "skillType": "anthropic-agent-skill",
+        "tags": [
+          "design",
+          "visual",
+          "canvas",
+          "graphics",
+          "marketing"
+        ]
+      },
+      "capability": {
+        "summary": "Render a canvas graphic from a structured design brief",
+        "capabilityTags": [
+          "design.canvas",
+          "graphic.generate",
+          "marketing.asset"
+        ],
+        "inputs": [
+          {
+            "name": "brief",
+            "type": "CanvasBrief",
+            "required": true,
+            "description": "Structured design brief: layout, copy, palette, imagery."
+          }
+        ],
+        "outputs": [
+          {
+            "name": "svg",
+            "type": "Svg",
+            "required": true,
+            "description": "Vector source."
+          },
+          {
+            "name": "png",
+            "type": "Image",
+            "required": true,
+            "description": "Rasterised preview."
+          }
+        ],
+        "preconditions": [],
+        "effects": []
+      },
+      "scoring": {
+        "determinism": "medium",
+        "risk": "low",
+        "reversible": true,
+        "rationale": "Visual output may vary subtly; safe to regenerate."
+      },
+      "dependencies": [],
+      "governance": {
+        "visibility": "org",
+        "rbac": [
+          "design.author"
+        ],
+        "dataClassification": "internal",
+        "cost": {
+          "unit": "usd-per-1k-calls",
+          "estimate": 0.8
+        },
+        "audit": {
+          "logged": true,
+          "retentionDays": 30
+        }
+      },
+      "lifecycle": {
+        "stage": "published",
+        "certifiedBy": "coe.reviewer",
+        "certifiedAt": "2026-06-29T10:00:00Z"
+      }
+    },
+    "design/frontend": {
+      "apiVersion": "skills.dev/v1",
+      "kind": "Skill",
+      "identity": {
+        "id": "design/frontend",
+        "name": "Frontend Design",
+        "version": "1.0.0",
+        "description": "Generates production-quality React + Tailwind component code from a screen brief: header, hero, feature grid, footer. Output is ready to drop into a Next.js app. Originally an Anthropic Agent Skill.",
+        "owner": {
+          "handle": "anthropics",
+          "team": "Anthropic Skills",
+          "contact": "skills@example.com"
+        },
+        "skillType": "anthropic-agent-skill",
+        "tags": [
+          "frontend",
+          "react",
+          "tailwind",
+          "design",
+          "ui"
+        ]
+      },
+      "capability": {
+        "summary": "Generate React + Tailwind UI from a screen brief",
+        "capabilityTags": [
+          "frontend.generate",
+          "react.component",
+          "ui.scaffold"
+        ],
+        "inputs": [
+          {
+            "name": "brief",
+            "type": "ScreenBrief",
+            "required": true,
+            "description": "Sections, copy, intended call-to-action."
+          },
+          {
+            "name": "tokens",
+            "type": "DesignTokens",
+            "required": false,
+            "description": "Optional design tokens to honour (output of design/theme-factory)."
+          }
+        ],
+        "outputs": [
+          {
+            "name": "components",
+            "type": "ReactComponentSet",
+            "required": true,
+            "description": "TSX files keyed by component name."
+          }
+        ],
+        "preconditions": [],
+        "effects": []
+      },
+      "scoring": {
+        "determinism": "medium",
+        "risk": "low",
+        "reversible": true,
+        "rationale": "Generated code; reviewable before commit."
+      },
+      "dependencies": [
+        {
+          "ref": "design.tokens",
+          "optional": true
+        }
+      ],
+      "governance": {
+        "visibility": "org",
+        "rbac": [
+          "frontend.author"
+        ],
+        "dataClassification": "internal",
+        "cost": {
+          "unit": "usd-per-1k-calls",
+          "estimate": 1.0
+        },
+        "audit": {
+          "logged": true,
+          "retentionDays": 30
+        }
+      },
+      "lifecycle": {
+        "stage": "published",
+        "certifiedBy": "coe.reviewer",
+        "certifiedAt": "2026-06-29T10:00:00Z"
+      }
+    },
+    "design/theme-factory": {
+      "apiVersion": "skills.dev/v1",
+      "kind": "Skill",
+      "identity": {
+        "id": "design/theme-factory",
+        "name": "Theme Factory",
+        "version": "1.0.0",
+        "description": "Produces a consistent UI theme (colour ramp, type scale, spacing, radii) from a small input: brand name, vibe words, primary colour. Returns design-token JSON usable by Tailwind, MUI or raw CSS variables. Originally an Anthropic Agent Skill.",
+        "owner": {
+          "handle": "anthropics",
+          "team": "Anthropic Skills",
+          "contact": "skills@example.com"
+        },
+        "skillType": "anthropic-agent-skill",
+        "tags": [
+          "design",
+          "theme",
+          "tokens",
+          "ui",
+          "branding"
+        ]
+      },
+      "capability": {
+        "summary": "Generate a coherent UI theme as design tokens",
+        "capabilityTags": [
+          "theme.generate",
+          "design.tokens",
+          "branding.palette"
+        ],
+        "inputs": [
+          {
+            "name": "brief",
+            "type": "ThemeBrief",
+            "required": true,
+            "description": "Brand name, vibe words, primary colour (hex)."
+          }
+        ],
+        "outputs": [
+          {
+            "name": "tokens",
+            "type": "DesignTokens",
+            "required": true,
+            "description": "JSON design-token document."
+          },
+          {
+            "name": "preview",
+            "type": "Image",
+            "required": false,
+            "description": "Optional preview swatch image."
+          }
+        ],
+        "preconditions": [],
+        "effects": []
+      },
+      "scoring": {
+        "determinism": "medium",
+        "risk": "low",
+        "reversible": true,
+        "rationale": "Output is design-only; safe to regenerate and replace."
+      },
+      "dependencies": [],
+      "governance": {
+        "visibility": "org",
+        "rbac": [
+          "design.author"
+        ],
+        "dataClassification": "internal",
+        "cost": {
+          "unit": "usd-per-1k-calls",
+          "estimate": 0.4
+        },
+        "audit": {
+          "logged": true,
+          "retentionDays": 30
+        }
+      },
+      "lifecycle": {
+        "stage": "published",
+        "certifiedBy": "coe.reviewer",
+        "certifiedAt": "2026-06-29T10:00:00Z"
+      }
+    },
+    "dev/changelog-generator": {
+      "apiVersion": "skills.dev/v1",
+      "kind": "Skill",
+      "identity": {
+        "id": "dev/changelog-generator",
+        "name": "Changelog Generator",
+        "version": "1.0.0",
+        "description": "Generates a Keep-a-Changelog-formatted CHANGELOG entry from a git commit range. Groups commits by Conventional-Commit type (feat/fix/docs/chore), de-duplicates by PR, and produces a markdown block ready to paste under a new version heading.",
+        "owner": {
+          "handle": "composiohq",
+          "team": "Composio (community Skill)",
+          "contact": "skills@example.com"
+        },
+        "skillType": "anthropic-agent-skill",
+        "tags": [
+          "git",
+          "release",
+          "changelog",
+          "dev"
+        ]
+      },
+      "capability": {
+        "summary": "Generate a changelog entry from a git commit range",
+        "capabilityTags": [
+          "changelog.generate",
+          "release.notes",
+          "git.summarise"
+        ],
+        "inputs": [
+          {
+            "name": "repoPath",
+            "type": "FilesystemPath",
+            "required": true,
+            "description": "Local path to the git repository."
+          },
+          {
+            "name": "range",
+            "type": "GitRange",
+            "required": true,
+            "description": "Git revision range, e.g. 'v1.2.0..HEAD'."
+          }
+        ],
+        "outputs": [
+          {
+            "name": "changelog",
+            "type": "Markdown",
+            "required": true,
+            "description": "Formatted CHANGELOG.md entry."
+          }
+        ],
+        "preconditions": [
+          "repo.readable"
+        ],
+        "effects": []
+      },
+      "scoring": {
+        "determinism": "high",
+        "risk": "low",
+        "reversible": true,
+        "rationale": "Reads git history; produces a markdown string. No external writes."
+      },
+      "dependencies": [],
+      "governance": {
+        "visibility": "org",
+        "rbac": [
+          "dev.author"
+        ],
+        "dataClassification": "internal",
+        "cost": {
+          "unit": "usd-per-1k-calls",
+          "estimate": 0.2
+        },
+        "audit": {
+          "logged": true,
+          "retentionDays": 30
+        }
+      },
+      "lifecycle": {
+        "stage": "published",
+        "certifiedBy": "coe.reviewer",
+        "certifiedAt": "2026-06-29T10:00:00Z"
+      }
+    },
+    "dev/mcp-builder": {
+      "apiVersion": "skills.dev/v1",
+      "kind": "Skill",
+      "identity": {
+        "id": "dev/mcp-builder",
+        "name": "MCP Server Builder",
+        "version": "1.0.0",
+        "description": "Scaffolds a FastMCP-based Python MCP server from a tool-list specification: server entry point, tool stubs, transport wiring (stdio + streamable-http), Dockerfile, and a pytest skeleton. Originally an Anthropic Agent Skill.",
+        "owner": {
+          "handle": "anthropics",
+          "team": "Anthropic Skills",
+          "contact": "skills@example.com"
+        },
+        "skillType": "anthropic-agent-skill",
+        "tags": [
+          "mcp",
+          "scaffold",
+          "dev",
+          "fastmcp"
+        ]
+      },
+      "capability": {
+        "summary": "Scaffold a FastMCP server from a tool spec",
+        "capabilityTags": [
+          "mcp.scaffold",
+          "code.generate",
+          "dev.bootstrap"
+        ],
+        "inputs": [
+          {
+            "name": "spec",
+            "type": "ToolListSpec",
+            "required": true,
+            "description": "List of tools with names, descriptions and input schemas."
+          },
+          {
+            "name": "targetDirectory",
+            "type": "FilesystemPath",
+            "required": true,
+            "description": "Where to write the scaffold."
+          }
+        ],
+        "outputs": [
+          {
+            "name": "files",
+            "type": "GeneratedFileSet",
+            "required": true,
+            "description": "Map of file paths to generated contents."
+          }
+        ],
+        "preconditions": [],
+        "effects": [
+          "files.written"
+        ]
+      },
+      "scoring": {
+        "determinism": "medium",
+        "risk": "low",
+        "reversible": true,
+        "rationale": "Generates code only; output is reviewable before commit."
+      },
+      "dependencies": [],
+      "governance": {
+        "visibility": "org",
+        "rbac": [
+          "dev.author"
+        ],
+        "dataClassification": "internal",
+        "cost": {
+          "unit": "usd-per-1k-calls",
+          "estimate": 0.5
+        },
+        "audit": {
+          "logged": true,
+          "retentionDays": 90
+        }
+      },
+      "lifecycle": {
+        "stage": "published",
+        "certifiedBy": "coe.reviewer",
+        "certifiedAt": "2026-06-29T10:00:00Z"
+      }
+    },
+    "dev/skill-creator": {
+      "apiVersion": "skills.dev/v1",
+      "kind": "Skill",
+      "identity": {
+        "id": "dev/skill-creator",
+        "name": "Skill Creator",
+        "version": "1.0.0",
+        "description": "Guided authoring of a new Skill manifest + SKILL.md payload, including schema validation and capability-tag suggestions. Wraps the Register-gate workflow so a maker can ship a new skill in minutes without memorising the schema.",
+        "owner": {
+          "handle": "anthropics",
+          "team": "Anthropic Skills",
+          "contact": "skills@example.com"
+        },
+        "skillType": "anthropic-agent-skill",
+        "tags": [
+          "meta",
+          "authoring",
+          "registry",
+          "dev"
+        ]
+      },
+      "capability": {
+        "summary": "Author a schema-valid Skill manifest and payload",
+        "capabilityTags": [
+          "skill.create",
+          "manifest.author",
+          "registry.register"
+        ],
+        "inputs": [
+          {
+            "name": "intent",
+            "type": "text",
+            "required": true,
+            "description": "Natural-language description of what the new skill should do."
+          },
+          {
+            "name": "ownerHandle",
+            "type": "text",
+            "required": true,
+            "description": "Accountable owner identity."
+          }
+        ],
+        "outputs": [
+          {
+            "name": "manifest",
+            "type": "SkillManifest",
+            "required": true,
+            "description": "Validated skill manifest JSON."
+          },
+          {
+            "name": "payload",
+            "type": "SkillPayload",
+            "required": true,
+            "description": "Generated SKILL.md narrative."
+          }
+        ],
+        "preconditions": [],
+        "effects": [
+          "draft.skill.created"
+        ]
+      },
+      "scoring": {
+        "determinism": "medium",
+        "risk": "low",
+        "reversible": true,
+        "rationale": "Produces a draft artifact only. Human approval at Certify gate prevents low-quality skills from being published."
+      },
+      "dependencies": [],
+      "governance": {
+        "visibility": "org",
+        "rbac": [
+          "skills.author"
+        ],
+        "dataClassification": "internal",
+        "cost": {
+          "unit": "usd-per-1k-calls",
+          "estimate": 0.5
+        },
+        "audit": {
+          "logged": true,
+          "retentionDays": 365
+        }
+      },
+      "lifecycle": {
+        "stage": "published",
+        "certifiedBy": "coe.reviewer",
+        "certifiedAt": "2026-06-29T10:00:00Z"
+      }
+    },
+    "dev/webapp-testing": {
+      "apiVersion": "skills.dev/v1",
+      "kind": "Skill",
+      "identity": {
+        "id": "dev/webapp-testing",
+        "name": "Web App Testing",
+        "version": "1.0.0",
+        "description": "Drives a real browser (Playwright) to test web applications: navigation, form filling, assertion of visible state, screenshot capture, network-request inspection. Useful for smoke-testing a deployed app or as a CI verification step.",
+        "owner": {
+          "handle": "anthropics",
+          "team": "Anthropic Skills",
+          "contact": "skills@example.com"
+        },
+        "skillType": "anthropic-agent-skill",
+        "tags": [
+          "testing",
+          "qa",
+          "browser",
+          "playwright",
+          "automation"
+        ]
+      },
+      "capability": {
+        "summary": "Execute browser-based tests against a web app",
+        "capabilityTags": [
+          "webapp.test",
+          "browser.automate",
+          "qa.smoke"
+        ],
+        "inputs": [
+          {
+            "name": "url",
+            "type": "Url",
+            "required": true,
+            "description": "Entry URL to the application under test."
+          },
+          {
+            "name": "scenario",
+            "type": "TestScenario",
+            "required": true,
+            "description": "Ordered list of steps (navigate, click, type, assert)."
+          }
+        ],
+        "outputs": [
+          {
+            "name": "report",
+            "type": "TestReport",
+            "required": true,
+            "description": "Pass/fail per step, screenshots, console logs, network requests."
+          }
+        ],
+        "preconditions": [
+          "network.reachable"
+        ],
+        "effects": [
+          "browser.session.created"
+        ]
+      },
+      "scoring": {
+        "determinism": "medium",
+        "risk": "medium",
+        "reversible": true,
+        "rationale": "Browses real systems; can submit forms or trigger emails if scenario includes write actions. Risk depends on the scenario."
+      },
+      "dependencies": [],
+      "governance": {
+        "visibility": "org",
+        "rbac": [
+          "qa.tester"
+        ],
+        "dataClassification": "internal",
+        "cost": {
+          "unit": "usd-per-1k-calls",
+          "estimate": 1.5
+        },
+        "audit": {
+          "logged": true,
+          "retentionDays": 90
+        }
+      },
+      "lifecycle": {
+        "stage": "published",
+        "certifiedBy": "coe.reviewer",
+        "certifiedAt": "2026-06-29T10:00:00Z"
+      }
+    },
+    "finance/ap-intake": {
+      "apiVersion": "skills.dev/v1",
+      "kind": "Skill",
+      "identity": {
+        "id": "finance/ap-intake",
+        "name": "Accounts Payable Intake",
+        "version": "0.2.0",
+        "description": "Composite skill: takes an inbound invoice document, extracts its fields, matches it to a purchase order, and returns a payment-ready packet or an exception for human review. Demonstrates runtime composition from certified skills.",
+        "owner": {
+          "handle": "c.coe",
+          "team": "Center of Excellence",
+          "contact": "c.coe@example.com"
+        },
+        "skillType": "composite",
+        "tags": [
+          "finance",
+          "ap",
+          "composite",
+          "workflow"
+        ]
+      },
+      "capability": {
+        "summary": "End-to-end AP intake: document in, payment-ready packet or exception out",
+        "capabilityTags": [
+          "ap.intake"
+        ],
+        "inputs": [
+          {
+            "name": "document",
+            "type": "InvoiceDocument",
+            "required": true,
+            "description": "Inbound invoice document."
+          }
+        ],
+        "outputs": [
+          {
+            "name": "packet",
+            "type": "PaymentPacket",
+            "required": false,
+            "description": "Payment-ready packet when matched."
+          },
+          {
+            "name": "exception",
+            "type": "ApException",
+            "required": false,
+            "description": "Exception detail when match fails."
+          }
+        ],
+        "preconditions": [
+          "user.authenticated",
+          "erp.reachable",
+          "document.readable"
+        ],
+        "effects": [
+          "match.recorded"
+        ]
+      },
+      "scoring": {
+        "determinism": "medium",
+        "risk": "medium",
+        "reversible": true,
+        "rationale": "Inherits medium risk from po-match; orchestration adds variability so determinism is medium. No ledger posting."
+      },
+      "dependencies": [
+        {
+          "ref": "invoice.extract",
+          "optional": false
+        },
+        {
+          "ref": "invoice.match",
+          "optional": false
+        }
+      ],
+      "mcp": {
+        "server": "finance-tools",
+        "toolName": "ap_intake",
+        "namespace": "example-org",
+        "transport": "http"
+      },
+      "governance": {
+        "visibility": "team",
+        "rbac": [
+          "finance.processor"
+        ],
+        "dataClassification": "confidential",
+        "cost": {
+          "unit": "usd-per-1k-calls",
+          "estimate": 6.0
+        },
+        "audit": {
+          "logged": true,
+          "retentionDays": 365
+        }
+      },
+      "lifecycle": {
+        "stage": "draft"
+      }
+    },
+    "finance/invoice-extract": {
+      "apiVersion": "skills.dev/v1",
+      "kind": "Skill",
+      "identity": {
+        "id": "finance/invoice-extract",
+        "name": "Invoice Field Extractor",
+        "version": "1.3.0",
+        "description": "Extracts structured fields (vendor, invoice number, line items, totals, dates) from a PDF or image invoice. Deterministic OCR + rules pipeline; use it when you need machine-readable invoice data.",
+        "owner": {
+          "handle": "a.maker",
+          "team": "Finance Automation",
+          "contact": "a.maker@example.com"
+        },
+        "skillType": "deterministic-tool",
+        "tags": [
+          "finance",
+          "ocr",
+          "documents",
+          "ap"
+        ]
+      },
+      "capability": {
+        "summary": "Extract structured fields from an invoice document",
+        "capabilityTags": [
+          "invoice.extract",
+          "document.parse"
+        ],
+        "inputs": [
+          {
+            "name": "document",
+            "type": "InvoiceDocument",
+            "required": true,
+            "description": "PDF or image of a single invoice."
+          }
+        ],
+        "outputs": [
+          {
+            "name": "fields",
+            "type": "InvoiceFields",
+            "required": true,
+            "description": "Vendor, number, dates, line items, totals."
+          }
+        ],
+        "preconditions": [
+          "document.readable"
+        ],
+        "effects": []
+      },
+      "scoring": {
+        "determinism": "high",
+        "risk": "low",
+        "reversible": true,
+        "rationale": "Read-only extraction; no state changes. Output is verifiable against the source document."
+      },
+      "dependencies": [],
+      "mcp": {
+        "server": "finance-tools",
+        "toolName": "invoice_extract",
+        "namespace": "example-org",
+        "transport": "streamable-http",
+        "url": "https://ca-cowork-mcp.lemonsea-9c8971ad.uksouth.azurecontainerapps.io/api/skills/finance-tools/mcp"
+      },
+      "governance": {
+        "visibility": "org",
+        "rbac": [
+          "finance.reader",
+          "finance.processor"
+        ],
+        "dataClassification": "confidential",
+        "cost": {
+          "unit": "usd-per-1k-calls",
+          "estimate": 4.0
+        },
+        "audit": {
+          "logged": true,
+          "retentionDays": 365
+        }
+      },
+      "lifecycle": {
+        "stage": "published",
+        "certifiedBy": "coe.reviewer",
+        "certifiedAt": "2026-03-11T09:30:00Z"
+      }
+    },
+    "finance/invoice-extract-v2": {
+      "apiVersion": "skills.dev/v1",
+      "kind": "Skill",
+      "identity": {
+        "id": "finance/invoice-extract-v2",
+        "name": "Invoice Field Extractor v2 (deliberate duplicate)",
+        "version": "0.1.0",
+        "description": "Smoke-test manifest. Deliberately collides with finance/invoice-extract on capabilityTags and IOPE signature so the validate-manifests workflow's duplicate scan must reject it.",
+        "owner": {
+          "handle": "b.maker",
+          "team": "Finance Automation",
+          "contact": "b.maker@example.com"
+        },
+        "skillType": "deterministic-tool",
+        "tags": [
+          "finance",
+          "ocr",
+          "smoketest"
+        ]
+      },
+      "capability": {
+        "summary": "Extract structured fields from an invoice document (duplicate of finance/invoice-extract)",
+        "capabilityTags": [
+          "invoice.extract",
+          "document.parse"
+        ],
+        "inputs": [
+          {
+            "name": "document",
+            "type": "InvoiceDocument",
+            "required": true,
+            "description": "PDF or image of a single invoice."
+          }
+        ],
+        "outputs": [
+          {
+            "name": "fields",
+            "type": "InvoiceFields",
+            "required": true,
+            "description": "Vendor, number, dates, line items, totals."
+          }
+        ],
+        "preconditions": [
+          "document.readable"
+        ],
+        "effects": []
+      },
+      "scoring": {
+        "determinism": "high",
+        "risk": "low",
+        "reversible": true,
+        "rationale": "Smoke-test only; not intended for use."
+      },
+      "dependencies": [],
+      "mcp": {
+        "server": "finance-tools",
+        "toolName": "invoice_extract_v2",
+        "namespace": "example-org",
+        "transport": "http"
+      },
+      "governance": {
+        "visibility": "org",
+        "rbac": [
+          "finance.reader"
+        ],
+        "dataClassification": "confidential",
+        "cost": {
+          "unit": "usd-per-1k-calls",
+          "estimate": 4.0
+        },
+        "audit": {
+          "logged": true,
+          "retentionDays": 365
+        }
+      },
+      "lifecycle": {
+        "stage": "draft"
+      }
+    },
+    "finance/invoice-organizer": {
+      "apiVersion": "skills.dev/v1",
+      "kind": "Skill",
+      "identity": {
+        "id": "finance/invoice-organizer",
+        "name": "Invoice Organizer",
+        "version": "1.0.0",
+        "description": "Sorts a folder of mixed invoice files into per-supplier, per-month subfolders; renames to a canonical scheme (YYYY-MM_<supplier>_<number>.<ext>); and emits a CSV index. Pairs naturally with finance/invoice-extract.",
+        "owner": {
+          "handle": "composiohq",
+          "team": "Composio (community Skill)",
+          "contact": "skills@example.com"
+        },
+        "skillType": "anthropic-agent-skill",
+        "tags": [
+          "finance",
+          "invoices",
+          "filing",
+          "ap"
+        ]
+      },
+      "capability": {
+        "summary": "Sort and rename a folder of invoices to a canonical scheme",
+        "capabilityTags": [
+          "invoice.organize",
+          "files.rename",
+          "finance.filing"
+        ],
+        "inputs": [
+          {
+            "name": "inputDirectory",
+            "type": "FilesystemPath",
+            "required": true,
+            "description": "Folder containing mixed invoice files."
+          }
+        ],
+        "outputs": [
+          {
+            "name": "index",
+            "type": "CsvFile",
+            "required": true,
+            "description": "CSV of original path \u2192 new path with extracted supplier/month/number."
+          }
+        ],
+        "preconditions": [
+          "directory.writable"
+        ],
+        "effects": [
+          "files.renamed",
+          "files.moved"
+        ]
+      },
+      "scoring": {
+        "determinism": "medium",
+        "risk": "medium",
+        "reversible": true,
+        "rationale": "Moves and renames files; reversible via the emitted CSV index but disruptive if run on wrong directory."
+      },
+      "dependencies": [
+        {
+          "ref": "invoice.extract",
+          "optional": false
+        }
+      ],
+      "governance": {
+        "visibility": "org",
+        "rbac": [
+          "finance.processor"
+        ],
+        "dataClassification": "confidential",
+        "cost": {
+          "unit": "usd-per-1k-calls",
+          "estimate": 3.0
+        },
+        "audit": {
+          "logged": true,
+          "retentionDays": 365
+        }
+      },
+      "lifecycle": {
+        "stage": "published",
+        "certifiedBy": "coe.reviewer",
+        "certifiedAt": "2026-06-29T10:00:00Z"
+      }
+    },
+    "finance/po-match": {
+      "apiVersion": "skills.dev/v1",
+      "kind": "Skill",
+      "identity": {
+        "id": "finance/po-match",
+        "name": "Purchase Order Matcher",
+        "version": "0.9.1",
+        "description": "Matches extracted invoice fields against open purchase orders and flags 2-way/3-way match exceptions. Use after invoice fields are available.",
+        "owner": {
+          "handle": "b.builder",
+          "team": "Finance Automation",
+          "contact": "b.builder@example.com"
+        },
+        "skillType": "deterministic-tool",
+        "tags": [
+          "finance",
+          "ap",
+          "matching"
+        ]
+      },
+      "capability": {
+        "summary": "Match invoice fields to purchase orders and flag exceptions",
+        "capabilityTags": [
+          "invoice.match",
+          "po.reconcile"
+        ],
+        "inputs": [
+          {
+            "name": "fields",
+            "type": "InvoiceFields",
+            "required": true,
+            "description": "Structured invoice fields."
+          }
+        ],
+        "outputs": [
+          {
+            "name": "matchResult",
+            "type": "MatchResult",
+            "required": true,
+            "description": "Matched PO id or list of exceptions."
+          }
+        ],
+        "preconditions": [
+          "user.authenticated",
+          "erp.reachable"
+        ],
+        "effects": [
+          "match.recorded"
+        ]
+      },
+      "scoring": {
+        "determinism": "high",
+        "risk": "medium",
+        "reversible": true,
+        "rationale": "Writes a match record but does not post to the ledger; medium risk because an incorrect match can route a payment for review."
+      },
+      "dependencies": [
+        {
+          "ref": "invoice.extract",
+          "optional": false
+        }
+      ],
+      "mcp": {
+        "server": "finance-tools",
+        "toolName": "po_match",
+        "namespace": "example-org",
+        "transport": "http"
+      },
+      "governance": {
+        "visibility": "org",
+        "rbac": [
+          "finance.processor"
+        ],
+        "dataClassification": "confidential",
+        "cost": {
+          "unit": "usd-per-1k-calls",
+          "estimate": 1.5
+        },
+        "audit": {
+          "logged": true,
+          "retentionDays": 365
+        }
+      },
+      "lifecycle": {
+        "stage": "certified",
+        "certifiedBy": "coe.reviewer",
+        "certifiedAt": "2026-05-20T14:05:00Z"
+      }
+    },
+    "legal/msa-redlining": {
+      "apiVersion": "skills.dev/v1",
+      "kind": "Skill",
+      "identity": {
+        "id": "legal/msa-redlining",
+        "name": "Legal MSA Redlining",
+        "version": "1.0.0",
+        "description": "Drafts, reviews, and redlines Master Service Agreements (MSAs) calibrated to the governing jurisdiction. Applies region-specific legal standards (UK GDPR, EU GDPR, CCPA/CPRA, APAC data laws, LATAM LGPD/LFPDPPP, MEA PDPL) to all relevant clauses and produces a Word document with tracked-change-style redline markup or a clean new draft. Always emits a Negotiation Summary cover page with risk-grouped findings and a legal-review disclaimer.",
+        "owner": {
+          "handle": "grahamhosking",
+          "team": "Skills CoE",
+          "contact": "skills@example.com"
+        },
+        "skillType": "anthropic-agent-skill",
+        "tags": [
+          "legal",
+          "contracts",
+          "msa",
+          "redline",
+          "compliance",
+          "gdpr"
+        ]
+      },
+      "capability": {
+        "summary": "Draft or redline a Master Service Agreement with region-specific legal standards",
+        "capabilityTags": [
+          "legal.redline",
+          "msa.draft",
+          "contract.review",
+          "regional.compliance",
+          "clause.compare"
+        ],
+        "inputs": [
+          {
+            "name": "region",
+            "type": "text",
+            "required": false,
+            "description": "Governing region or jurisdiction (e.g. UK, EU, US-California, Singapore, Brazil). If omitted and an uploaded MSA exists, region is inferred from the governing-law clause; otherwise the agent asks once."
+          },
+          {
+            "name": "task",
+            "type": "text",
+            "required": true,
+            "description": "One of: 'new-draft', 'redline', 'compare'."
+          },
+          {
+            "name": "uploaded_msa",
+            "type": "Document",
+            "required": false,
+            "description": "Existing MSA to redline. Required for task='redline'."
+          },
+          {
+            "name": "second_version",
+            "type": "Document",
+            "required": false,
+            "description": "Second MSA version. Required for task='compare'."
+          }
+        ],
+        "outputs": [
+          {
+            "name": "agreement",
+            "type": "DocxDocument",
+            "required": true,
+            "description": "Word document containing the new draft, the redlined version, or the side-by-side comparison."
+          },
+          {
+            "name": "negotiation_summary",
+            "type": "Markdown",
+            "required": true,
+            "description": "Cover-page summary: region, clauses reviewed, top-3 high-risk items, legal-review disclaimer."
+          }
+        ],
+        "preconditions": [
+          "docx.skill.available"
+        ],
+        "effects": [
+          "file.written:output/"
+        ]
+      },
+      "scoring": {
+        "determinism": "low",
+        "risk": "high",
+        "reversible": true,
+        "rationale": "LLM-drafted legal text; subject to hallucination and jurisdictional nuance. All output is advisory \u2014 every deliverable carries a mandatory disclaimer recommending qualified legal review before execution. Risk is high because contracts have real legal effect; mitigation is the disclaimer, placeholder convention, and \u26a0 LEGAL REVIEW REQUIRED markers on high-risk clauses."
+      },
+      "dependencies": [
+        {
+          "ref": "docx.create",
+          "optional": false
+        }
+      ],
+      "governance": {
+        "visibility": "org",
+        "rbac": [
+          "legal.author",
+          "legal.reviewer"
+        ],
+        "dataClassification": "confidential",
+        "cost": {
+          "unit": "usd-per-1k-calls",
+          "estimate": 6.0
+        },
+        "audit": {
+          "logged": true,
+          "retentionDays": 365
+        }
+      },
+      "lifecycle": {
+        "stage": "published",
+        "certifiedBy": "coe.reviewer",
+        "certifiedAt": "2026-06-29T10:00:00Z"
+      }
+    },
+    "office/docx-toolkit": {
+      "apiVersion": "skills.dev/v1",
+      "kind": "Skill",
+      "identity": {
+        "id": "office/docx-toolkit",
+        "name": "Word (DOCX) Toolkit",
+        "version": "1.0.0",
+        "description": "Create, edit, format and inspect Microsoft Word documents. Wraps python-docx so an agent can author letters, reports and policy documents with headings, tables, images and styles. Originally an Anthropic Agent Skill.",
+        "owner": {
+          "handle": "anthropics",
+          "team": "Anthropic Skills",
+          "contact": "skills@example.com"
+        },
+        "skillType": "anthropic-agent-skill",
+        "tags": [
+          "word",
+          "docx",
+          "documents",
+          "office",
+          "authoring"
+        ]
+      },
+      "capability": {
+        "summary": "Author and edit Microsoft Word documents",
+        "capabilityTags": [
+          "docx.create",
+          "docx.edit",
+          "document.author"
+        ],
+        "inputs": [
+          {
+            "name": "document",
+            "type": "DocxDocument",
+            "required": false,
+            "description": "Optional existing DOCX to edit; omit to create from scratch."
+          },
+          {
+            "name": "instructions",
+            "type": "DocAuthoringInstructions",
+            "required": true,
+            "description": "Structured edits or generation spec (headings, paragraphs, tables, styles)."
+          }
+        ],
+        "outputs": [
+          {
+            "name": "document",
+            "type": "DocxDocument",
+            "required": true,
+            "description": "Resulting .docx bytes."
+          }
+        ],
+        "preconditions": [],
+        "effects": []
+      },
+      "scoring": {
+        "determinism": "high",
+        "risk": "low",
+        "reversible": true,
+        "rationale": "Generates a new document; does not mutate external systems."
+      },
+      "dependencies": [],
+      "governance": {
+        "visibility": "org",
+        "rbac": [
+          "skills.reader"
+        ],
+        "dataClassification": "internal",
+        "cost": {
+          "unit": "usd-per-1k-calls",
+          "estimate": 0.1
+        },
+        "audit": {
+          "logged": true,
+          "retentionDays": 90
+        }
+      },
+      "lifecycle": {
+        "stage": "published",
+        "certifiedBy": "coe.reviewer",
+        "certifiedAt": "2026-06-29T10:00:00Z"
+      }
+    },
+    "office/pdf-toolkit": {
+      "apiVersion": "skills.dev/v1",
+      "kind": "Skill",
+      "identity": {
+        "id": "office/pdf-toolkit",
+        "name": "PDF Toolkit",
+        "version": "1.0.0",
+        "description": "Read, extract text and tables from, split, merge, and fill forms in PDF files. Wraps pdfplumber/pypdf/reportlab so a host agent can manipulate PDFs without learning library specifics. Anthropic-authored Agent Skill ported as a deterministic-tool manifest.",
+        "owner": {
+          "handle": "anthropics",
+          "team": "Anthropic Skills",
+          "contact": "skills@example.com"
+        },
+        "skillType": "anthropic-agent-skill",
+        "tags": [
+          "pdf",
+          "documents",
+          "office",
+          "extraction",
+          "forms"
+        ]
+      },
+      "capability": {
+        "summary": "Read, extract, modify and fill PDF documents",
+        "capabilityTags": [
+          "pdf.read",
+          "pdf.extract",
+          "pdf.write",
+          "pdf.form.fill",
+          "document.parse"
+        ],
+        "inputs": [
+          {
+            "name": "document",
+            "type": "PdfDocument",
+            "required": true,
+            "description": "PDF file (binary or URL)."
+          },
+          {
+            "name": "operation",
+            "type": "text",
+            "required": true,
+            "description": "One of: extract_text, extract_tables, fill_form, split, merge."
+          }
+        ],
+        "outputs": [
+          {
+            "name": "result",
+            "type": "PdfOperationResult",
+            "required": true,
+            "description": "Extracted text/tables, modified PDF bytes, or operation status."
+          }
+        ],
+        "preconditions": [
+          "document.readable"
+        ],
+        "effects": []
+      },
+      "scoring": {
+        "determinism": "high",
+        "risk": "low",
+        "reversible": true,
+        "rationale": "Pure file manipulation; no external state changes. Operations on a copy of the input."
+      },
+      "dependencies": [],
+      "governance": {
+        "visibility": "org",
+        "rbac": [
+          "skills.reader"
+        ],
+        "dataClassification": "confidential",
+        "cost": {
+          "unit": "usd-per-1k-calls",
+          "estimate": 0.1
+        },
+        "audit": {
+          "logged": true,
+          "retentionDays": 90
+        }
+      },
+      "lifecycle": {
+        "stage": "published",
+        "certifiedBy": "coe.reviewer",
+        "certifiedAt": "2026-06-29T10:00:00Z"
+      }
+    },
+    "office/pptx-toolkit": {
+      "apiVersion": "skills.dev/v1",
+      "kind": "Skill",
+      "identity": {
+        "id": "office/pptx-toolkit",
+        "name": "PowerPoint (PPTX) Toolkit",
+        "version": "1.0.0",
+        "description": "Generate, edit and template PowerPoint presentations. Wraps python-pptx so an agent can build slide decks with title slides, bullet content, tables, charts and images from structured input. Originally an Anthropic Agent Skill.",
+        "owner": {
+          "handle": "anthropics",
+          "team": "Anthropic Skills",
+          "contact": "skills@example.com"
+        },
+        "skillType": "anthropic-agent-skill",
+        "tags": [
+          "powerpoint",
+          "pptx",
+          "slides",
+          "office",
+          "presentations"
+        ]
+      },
+      "capability": {
+        "summary": "Generate and edit PowerPoint presentations",
+        "capabilityTags": [
+          "pptx.create",
+          "pptx.edit",
+          "presentation.author"
+        ],
+        "inputs": [
+          {
+            "name": "template",
+            "type": "PptxDocument",
+            "required": false,
+            "description": "Optional template; omit to use a default deck."
+          },
+          {
+            "name": "deck",
+            "type": "SlideDeckSpec",
+            "required": true,
+            "description": "Ordered list of slide specs (title, layout, content)."
+          }
+        ],
+        "outputs": [
+          {
+            "name": "presentation",
+            "type": "PptxDocument",
+            "required": true,
+            "description": "Resulting .pptx bytes."
+          }
+        ],
+        "preconditions": [],
+        "effects": []
+      },
+      "scoring": {
+        "determinism": "high",
+        "risk": "low",
+        "reversible": true,
+        "rationale": "Builds a new deck deterministically from the input spec."
+      },
+      "dependencies": [],
+      "governance": {
+        "visibility": "org",
+        "rbac": [
+          "skills.reader"
+        ],
+        "dataClassification": "internal",
+        "cost": {
+          "unit": "usd-per-1k-calls",
+          "estimate": 0.1
+        },
+        "audit": {
+          "logged": true,
+          "retentionDays": 90
+        }
+      },
+      "lifecycle": {
+        "stage": "published",
+        "certifiedBy": "coe.reviewer",
+        "certifiedAt": "2026-06-29T10:00:00Z"
+      }
+    },
+    "office/xlsx-toolkit": {
+      "apiVersion": "skills.dev/v1",
+      "kind": "Skill",
+      "identity": {
+        "id": "office/xlsx-toolkit",
+        "name": "Excel (XLSX) Toolkit",
+        "version": "1.0.0",
+        "description": "Read, write, analyse and chart Excel workbooks. Wraps openpyxl/pandas for cell access, named-range lookup, formula evaluation, and chart insertion. Originally an Anthropic Agent Skill; manifest provided so it is discoverable via the registry.",
+        "owner": {
+          "handle": "anthropics",
+          "team": "Anthropic Skills",
+          "contact": "skills@example.com"
+        },
+        "skillType": "anthropic-agent-skill",
+        "tags": [
+          "excel",
+          "xlsx",
+          "spreadsheet",
+          "office",
+          "tabular"
+        ]
+      },
+      "capability": {
+        "summary": "Read, write and analyse Excel workbooks",
+        "capabilityTags": [
+          "xlsx.read",
+          "xlsx.write",
+          "spreadsheet.analyse",
+          "data.tabular"
+        ],
+        "inputs": [
+          {
+            "name": "workbook",
+            "type": "XlsxDocument",
+            "required": true,
+            "description": "XLSX file (binary or URL)."
+          },
+          {
+            "name": "operation",
+            "type": "text",
+            "required": true,
+            "description": "One of: read_range, write_range, add_chart, evaluate_formulas, list_sheets."
+          }
+        ],
+        "outputs": [
+          {
+            "name": "result",
+            "type": "XlsxOperationResult",
+            "required": true,
+            "description": "Cell values, modified workbook bytes, or operation status."
+          }
+        ],
+        "preconditions": [
+          "workbook.readable"
+        ],
+        "effects": []
+      },
+      "scoring": {
+        "determinism": "high",
+        "risk": "low",
+        "reversible": true,
+        "rationale": "Read/write operates on the supplied workbook; no external systems touched."
+      },
+      "dependencies": [],
+      "governance": {
+        "visibility": "org",
+        "rbac": [
+          "skills.reader"
+        ],
+        "dataClassification": "confidential",
+        "cost": {
+          "unit": "usd-per-1k-calls",
+          "estimate": 0.1
+        },
+        "audit": {
+          "logged": true,
+          "retentionDays": 90
+        }
+      },
+      "lifecycle": {
+        "stage": "published",
+        "certifiedBy": "coe.reviewer",
+        "certifiedAt": "2026-06-29T10:00:00Z"
+      }
+    },
+    "productivity/file-organizer": {
+      "apiVersion": "skills.dev/v1",
+      "kind": "Skill",
+      "identity": {
+        "id": "productivity/file-organizer",
+        "name": "File Organizer",
+        "version": "1.0.0",
+        "description": "Bulk-classifies a directory tree by content type (docs, images, code, archives, media) and proposes a target layout with a dry-run preview before any move executes. Useful for taming Downloads folders and project workspaces.",
+        "owner": {
+          "handle": "composiohq",
+          "team": "Composio (community Skill)",
+          "contact": "skills@example.com"
+        },
+        "skillType": "anthropic-agent-skill",
+        "tags": [
+          "files",
+          "productivity",
+          "organization"
+        ]
+      },
+      "capability": {
+        "summary": "Classify and re-layout a directory tree",
+        "capabilityTags": [
+          "files.organize",
+          "files.classify",
+          "productivity.cleanup"
+        ],
+        "inputs": [
+          {
+            "name": "root",
+            "type": "FilesystemPath",
+            "required": true,
+            "description": "Directory to organise."
+          },
+          {
+            "name": "applyChanges",
+            "type": "boolean",
+            "required": false,
+            "description": "If false (default), returns a dry-run plan only."
+          }
+        ],
+        "outputs": [
+          {
+            "name": "plan",
+            "type": "FileMovePlan",
+            "required": true,
+            "description": "Source \u2192 destination mapping."
+          }
+        ],
+        "preconditions": [
+          "directory.readable"
+        ],
+        "effects": [
+          "files.moved"
+        ]
+      },
+      "scoring": {
+        "determinism": "medium",
+        "risk": "medium",
+        "reversible": true,
+        "rationale": "Dry-run by default. When applied, the plan is the reversal manifest."
+      },
+      "dependencies": [],
+      "governance": {
+        "visibility": "team",
+        "rbac": [
+          "productivity.user"
+        ],
+        "dataClassification": "internal",
+        "cost": {
+          "unit": "usd-per-1k-calls",
+          "estimate": 0.5
+        },
+        "audit": {
+          "logged": true,
+          "retentionDays": 30
+        }
+      },
+      "lifecycle": {
+        "stage": "published",
+        "certifiedBy": "coe.reviewer",
+        "certifiedAt": "2026-06-29T10:00:00Z"
+      }
+    },
+    "productivity/tailored-resume": {
+      "apiVersion": "skills.dev/v1",
+      "kind": "Skill",
+      "identity": {
+        "id": "productivity/tailored-resume",
+        "name": "Tailored Resume Generator",
+        "version": "1.0.0",
+        "description": "Customises a base resume to a specific job description: re-orders bullets by relevance, suggests rewordings against the job's keywords, and outputs both a DOCX and a tracked-changes diff for human review.",
+        "owner": {
+          "handle": "composiohq",
+          "team": "Composio (community Skill)",
+          "contact": "skills@example.com"
+        },
+        "skillType": "anthropic-agent-skill",
+        "tags": [
+          "resume",
+          "cv",
+          "productivity",
+          "careers"
+        ]
+      },
+      "capability": {
+        "summary": "Tailor a resume to a target job description",
+        "capabilityTags": [
+          "resume.tailor",
+          "document.rewrite",
+          "careers.assist"
+        ],
+        "inputs": [
+          {
+            "name": "baseResume",
+            "type": "DocxDocument",
+            "required": true,
+            "description": "Source resume."
+          },
+          {
+            "name": "jobDescription",
+            "type": "text",
+            "required": true,
+            "description": "Target job description."
+          }
+        ],
+        "outputs": [
+          {
+            "name": "tailored",
+            "type": "DocxDocument",
+            "required": true,
+            "description": "Tailored resume DOCX."
+          },
+          {
+            "name": "diff",
+            "type": "Markdown",
+            "required": true,
+            "description": "Tracked-changes summary."
+          }
+        ],
+        "preconditions": [],
+        "effects": []
+      },
+      "scoring": {
+        "determinism": "low",
+        "risk": "low",
+        "reversible": true,
+        "rationale": "LLM-mediated rewording; output reviewed by human before use."
+      },
+      "dependencies": [
+        {
+          "ref": "office/docx-toolkit",
+          "optional": false
+        }
+      ],
+      "governance": {
+        "visibility": "private",
+        "rbac": [
+          "careers.user"
+        ],
+        "dataClassification": "internal",
+        "cost": {
+          "unit": "usd-per-1k-calls",
+          "estimate": 1.5
+        },
+        "audit": {
+          "logged": true,
+          "retentionDays": 30
+        }
+      },
+      "lifecycle": {
+        "stage": "published",
+        "certifiedBy": "coe.reviewer",
+        "certifiedAt": "2026-06-29T10:00:00Z"
+      }
+    },
+    "research/competitive-ads-extract": {
+      "apiVersion": "skills.dev/v1",
+      "kind": "Skill",
+      "identity": {
+        "id": "research/competitive-ads-extract",
+        "name": "Competitive Ads Extractor",
+        "version": "1.0.0",
+        "description": "Given a competitor's name or domain, pulls their currently-running ads from public ad-library sources (Meta Ad Library, Google Transparency Centre) and structures them: copy, creative URL, audience, observed dates. Useful for marketing intelligence.",
+        "owner": {
+          "handle": "composiohq",
+          "team": "Composio (community Skill)",
+          "contact": "skills@example.com"
+        },
+        "skillType": "anthropic-agent-skill",
+        "tags": [
+          "marketing",
+          "ads",
+          "competitive-intel",
+          "research"
+        ]
+      },
+      "capability": {
+        "summary": "Extract a competitor's live ads from public ad libraries",
+        "capabilityTags": [
+          "ads.extract",
+          "competitor.intel",
+          "marketing.research"
+        ],
+        "inputs": [
+          {
+            "name": "competitor",
+            "type": "text",
+            "required": true,
+            "description": "Competitor name or domain."
+          }
+        ],
+        "outputs": [
+          {
+            "name": "ads",
+            "type": "AdRecordList",
+            "required": true,
+            "description": "Structured ad records."
+          }
+        ],
+        "preconditions": [
+          "web.reachable"
+        ],
+        "effects": []
+      },
+      "scoring": {
+        "determinism": "medium",
+        "risk": "low",
+        "reversible": true,
+        "rationale": "Read-only fetch from public ad-library APIs and pages."
+      },
+      "dependencies": [],
+      "governance": {
+        "visibility": "org",
+        "rbac": [
+          "marketing.analyst"
+        ],
+        "dataClassification": "internal",
+        "cost": {
+          "unit": "usd-per-1k-calls",
+          "estimate": 2.0
+        },
+        "audit": {
+          "logged": true,
+          "retentionDays": 180
+        }
+      },
+      "lifecycle": {
+        "stage": "published",
+        "certifiedBy": "coe.reviewer",
+        "certifiedAt": "2026-06-29T10:00:00Z"
+      }
+    },
+    "research/lead-research": {
+      "apiVersion": "skills.dev/v1",
+      "kind": "Skill",
+      "identity": {
+        "id": "research/lead-research",
+        "name": "Lead Research Assistant",
+        "version": "1.0.0",
+        "description": "Builds a structured dossier on a sales lead from a company name and (optionally) a contact name: public funding history, recent news, technology fingerprint, decision-maker LinkedIn pointers. Read-only across public sources.",
+        "owner": {
+          "handle": "composiohq",
+          "team": "Composio (community Skill)",
+          "contact": "skills@example.com"
+        },
+        "skillType": "anthropic-agent-skill",
+        "tags": [
+          "sales",
+          "research",
+          "lead",
+          "crm"
+        ]
+      },
+      "capability": {
+        "summary": "Compile a structured dossier on a sales lead",
+        "capabilityTags": [
+          "lead.research",
+          "company.profile",
+          "sales.assist"
+        ],
+        "inputs": [
+          {
+            "name": "company",
+            "type": "text",
+            "required": true,
+            "description": "Company name."
+          },
+          {
+            "name": "contact",
+            "type": "text",
+            "required": false,
+            "description": "Named contact, if any."
+          }
+        ],
+        "outputs": [
+          {
+            "name": "dossier",
+            "type": "LeadDossier",
+            "required": true,
+            "description": "Structured lead profile."
+          }
+        ],
+        "preconditions": [
+          "web.reachable"
+        ],
+        "effects": []
+      },
+      "scoring": {
+        "determinism": "low",
+        "risk": "medium",
+        "reversible": true,
+        "rationale": "Aggregates public web data; quality varies. Sources cited for verification."
+      },
+      "dependencies": [],
+      "governance": {
+        "visibility": "org",
+        "rbac": [
+          "sales.researcher"
+        ],
+        "dataClassification": "confidential",
+        "cost": {
+          "unit": "usd-per-1k-calls",
+          "estimate": 5.0
+        },
+        "audit": {
+          "logged": true,
+          "retentionDays": 365
+        }
+      },
+      "lifecycle": {
+        "stage": "published",
+        "certifiedBy": "coe.reviewer",
+        "certifiedAt": "2026-06-29T10:00:00Z"
+      }
+    }
+  }
+}

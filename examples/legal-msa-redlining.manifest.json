@@ -1,0 +1,60 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "legal/msa-redlining",
+    "name": "Legal MSA Redlining",
+    "version": "1.0.0",
+    "description": "Drafts, reviews, and redlines Master Service Agreements (MSAs) calibrated to the governing jurisdiction. Applies region-specific legal standards (UK GDPR, EU GDPR, CCPA/CPRA, APAC data laws, LATAM LGPD/LFPDPPP, MEA PDPL) to all relevant clauses and produces a Word document with tracked-change-style redline markup or a clean new draft. Always emits a Negotiation Summary cover page with risk-grouped findings and a legal-review disclaimer.",
+    "owner": {
+      "handle": "grahamhosking",
+      "team": "Skills CoE",
+      "contact": "skills@example.com"
+    },
+    "skillType": "anthropic-agent-skill",
+    "tags": ["legal", "contracts", "msa", "redline", "compliance", "gdpr"]
+  },
+  "capability": {
+    "summary": "Draft or redline a Master Service Agreement with region-specific legal standards",
+    "capabilityTags": [
+      "legal.redline",
+      "msa.draft",
+      "contract.review",
+      "regional.compliance",
+      "clause.compare"
+    ],
+    "inputs": [
+      { "name": "region", "type": "text", "required": false, "description": "Governing region or jurisdiction (e.g. UK, EU, US-California, Singapore, Brazil). If omitted and an uploaded MSA exists, region is inferred from the governing-law clause; otherwise the agent asks once." },
+      { "name": "task", "type": "text", "required": true, "description": "One of: 'new-draft', 'redline', 'compare'." },
+      { "name": "uploaded_msa", "type": "Document", "required": false, "description": "Existing MSA to redline. Required for task='redline'." },
+      { "name": "second_version", "type": "Document", "required": false, "description": "Second MSA version. Required for task='compare'." }
+    ],
+    "outputs": [
+      { "name": "agreement", "type": "DocxDocument", "required": true, "description": "Word document containing the new draft, the redlined version, or the side-by-side comparison." },
+      { "name": "negotiation_summary", "type": "Markdown", "required": true, "description": "Cover-page summary: region, clauses reviewed, top-3 high-risk items, legal-review disclaimer." }
+    ],
+    "preconditions": ["docx.skill.available"],
+    "effects": ["file.written:output/"]
+  },
+  "scoring": {
+    "determinism": "low",
+    "risk": "high",
+    "reversible": true,
+    "rationale": "LLM-drafted legal text; subject to hallucination and jurisdictional nuance. All output is advisory — every deliverable carries a mandatory disclaimer recommending qualified legal review before execution. Risk is high because contracts have real legal effect; mitigation is the disclaimer, placeholder convention, and ⚠ LEGAL REVIEW REQUIRED markers on high-risk clauses."
+  },
+  "dependencies": [
+    { "ref": "docx.create", "optional": false }
+  ],
+  "governance": {
+    "visibility": "org",
+    "rbac": ["legal.author", "legal.reviewer"],
+    "dataClassification": "confidential",
+    "cost": { "unit": "usd-per-1k-calls", "estimate": 6.0 },
+    "audit": { "logged": true, "retentionDays": 365 }
+  },
+  "lifecycle": {
+    "stage": "published",
+    "certifiedBy": "coe.reviewer",
+    "certifiedAt": "2026-06-29T10:00:00Z"
+  }
+}
