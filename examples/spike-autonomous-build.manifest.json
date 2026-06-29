@@ -1,0 +1,76 @@
+{
+  "apiVersion": "skills.dev/v1",
+  "kind": "Skill",
+  "identity": {
+    "id": "demo/spike-autonomous-build",
+    "name": "Spike Autonomous Build Demo",
+    "version": "0.1.0",
+    "description": "Test skill created by submit_skill_draft during the autonomous spike build to prove the PR-opening loop works end-to-end.",
+    "owner": {
+      "handle": "claude-code",
+      "team": "automation",
+      "contact": "claude@anthropic.com"
+    },
+    "skillType": "deterministic-tool",
+    "tags": [
+      "spike",
+      "demo"
+    ]
+  },
+  "capability": {
+    "summary": "Returns a canned hello payload",
+    "capabilityTags": [
+      "spike.demo"
+    ],
+    "inputs": [
+      {
+        "name": "name",
+        "type": "string",
+        "required": false,
+        "description": "Caller name"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "greeting",
+        "type": "string",
+        "required": true,
+        "description": "Hello message"
+      }
+    ],
+    "preconditions": [],
+    "effects": []
+  },
+  "scoring": {
+    "determinism": "high",
+    "risk": "low",
+    "reversible": true,
+    "rationale": "Read-only demo"
+  },
+  "dependencies": [],
+  "mcp": {
+    "server": "spike-tools",
+    "toolName": "hello",
+    "namespace": "example-org",
+    "transport": "streamable-http",
+    "url": "https://example.invalid/mcp"
+  },
+  "governance": {
+    "visibility": "org",
+    "rbac": [
+      "demo.user"
+    ],
+    "dataClassification": "public",
+    "cost": {
+      "unit": "usd-per-1k-calls",
+      "estimate": 0.0
+    },
+    "audit": {
+      "logged": false,
+      "retentionDays": 30
+    }
+  },
+  "lifecycle": {
+    "stage": "draft"
+  }
+}
