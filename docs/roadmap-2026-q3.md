@@ -177,13 +177,111 @@ one skill that should be retired or renamed.
 Dashboard: a day. The rest is the patience of waiting for usage. Cannot
 start until Stage B is real, because synthetic traffic teaches nothing.
 
+### Stage F — Cross-domain ontology: skills + projects + training + people
+
+(a) **Goal.** Extend the ontology beyond *skills* into adjacent
+enterprise graphs — **Projects, People, Roles, Training,
+Certifications, Teams** — and expose **multi-hop traversal** as an MCP
+tool. The single-skill graph from Stage D becomes one slice of a wider
+organisational graph, with cross-domain edges (`PERSON
+—WORKED_ON→ PROJECT —EMPLOYED→ PERSON —HOLDS_SKILL→ SKILL`,
+`PERSON —COMPLETED→ TRAINING —GRANTS→ CERTIFICATION`,
+`PROJECT —REQUIRED→ CAPABILITY —SATISFIED_BY→ SKILL`).
+
+(b) **Missing-middle thesis it advances.** The **reach** of the
+reasoning layer. Stage D answers *"who can do X?"* across skills.
+Stage F answers *"who has done X with whom, and what did that team
+know?"* across the whole org. This is the layer where the registry
+stops being a skill catalog and becomes a **first-class adjacency to
+Microsoft IQ** — Work IQ grounds agents in M365 signals (mail, files,
+chat), Fabric IQ in business entities; this layer grounds them in the
+*history of capability application*.
+
+(c) **Worked query shapes the user actually wants.**
+- *"Find a PM who joined a project that employed engineers with skills
+  in `kubernetes.tuning` and `cost.fin-ops`, and where at least one
+  team member held cert `aws.solutions-architect-pro`."*
+  → 5-hop traversal: `PERSON —has_role→ PM —worked_on→ PROJECT
+  —employed→ PERSON —holds_skill→ {kubernetes.tuning, cost.fin-ops}`,
+  joined with `PERSON —holds_cert→ aws.solutions-architect-pro` on the
+  same project.
+- *"For capability `legal.redline`, which past projects used it, who
+  authored the manifest, and which training course covers the
+  underlying EU GDPR Art. 28 clauses?"*
+  → cross-graph join of registry telemetry (Stage E) + manifest
+  authorship + training catalog.
+- *"This new RFP requires capabilities {A, B, C, D}. Which past
+  project's team had the closest skill-set match, and who from that
+  team is still available?"*
+  → vector / set-similarity over team skill-bags, intersected with
+  current availability from Work IQ.
+
+(d) **Architectural shape.**
+- **Ingestion adapters** (one per source) that normalise into the
+  shared ontology schema: GitHub (skills + commits), M365 / Entra
+  (people + roles), Project / Planner / Jira (projects), Viva Learning
+  / LMS (training + certifications), the Stage E telemetry sink
+  (invocation episodes). Each adapter writes nodes + edges into a
+  single graph store (OneLake-backed Fabric workload preferred — sits
+  next to Fabric IQ Ontology and inherits its governance).
+- **Federation, not replication, where possible.** Work IQ already
+  exposes people / context via its MCP paths; the registry's job is to
+  add *capability edges*, not duplicate Work IQ's data. Cross-domain
+  queries fan out: registry resolves capability + project +
+  certification subgraphs; Work IQ MCP resolves the live person /
+  team / availability side. The MCP tool merges results.
+- **New MCP tool.** `query_org_graph(seed, pattern, max_hops,
+  filters)` — accepts a small graph-pattern DSL (Cypher-lite),
+  enforces `max_hops` to bound cost, honours
+  `governance.dataClassification` on every edge it traverses (no
+  Restricted-class data leaks via a five-hop join). Returns ranked
+  paths with confidence + provenance per edge.
+
+(e) **The agentic payoff.** This is what makes the §4 hypothesis
+genuinely *agentic* and not just a prettier search. Once the agent
+can traverse `person → project → skill → training`, the same chassis
+supports:
+- **Capability gap analysis** at project-staffing time
+  (*"this RFP needs skills X+Y+Z; we have ⅔ in-house, here's the
+  training path to close the third"*).
+- **Reuse discovery across business units** (*"finance built a skill
+  that legal could reuse — here's the lineage and the BU that owns
+  it"*).
+- **Onboarding personalisation** (*"new joiner has skills A+B, the
+  projects in their pillar use capabilities C+D — surface the
+  relevant training and the people who hold them"*).
+
+(f) **Success criterion.** One multi-hop query end-to-end. Pick the
+five-hop PM example. A Cowork agent calls
+`query_org_graph(seed="role:PM", pattern="PM-[:WORKED_ON]->PROJECT
+-[:EMPLOYED]->PERSON-[:HOLDS_SKILL]->SKILL{tag IN
+['kubernetes.tuning','cost.fin-ops']}", max_hops=5)` and returns at
+least one ranked PM with their project list, the matching engineers,
+and provenance per edge. Sub-2-second latency on a 10k-node graph;
+honours `governance.dataClassification` (Restricted edges suppressed
+unless the calling principal is authorised).
+
+(g) **Effort.** Two to three weeks first cut. One week per adapter
+(People, Projects, Training) — most of which is mapping, not code,
+since the ontology schema already exists. A few days for the
+graph-pattern DSL and MCP tool wrapper. One week for governance
+enforcement on traversal (the part you cannot skip).
+
+(h) **Dependencies.** Stage D (`query_ontology` for the skill
+sub-graph) must be live; Stage E (telemetry) materially improves
+ranking but is not a hard blocker — the graph itself is meaningful
+without invocation history.
+
 ### Why this order
 
 A is infra-blocking — nothing else is real without it. B is the
 ABS-political milestone that justifies all subsequent effort. C is the
 cheapest way to break the toy-project smell. D is the first piece of
 genuinely new agentic behaviour and the spiritual sibling of Fabric IQ
-Ontology MCP. E is the only honest way to prove or kill the ontology bet.
+Ontology MCP. E is the only honest way to prove or kill the ontology
+bet. F is where the registry stops being a skill catalog and becomes
+the org's capability graph — the public payoff and the layer that
+makes "Skill IQ" a credible adjacency to Work IQ + Fabric IQ.
 
 ## 4. The "Work IQ for skills" hypothesis
 
@@ -245,7 +343,30 @@ agents that want to self-police; a Power BI / Fabric dashboard for the
 human Certify-gate reviewer (the CODEOWNER) so the queue is visual not
 JSON.
 
-#### 3. `predict_outcome(skill_id, context)` — success-rate inference
+#### 3. `query_org_graph(seed, pattern, max_hops)` — cross-domain multi-hop
+
+> *"Find a PM who joined a project that employed engineers with
+> skills in `kubernetes.tuning` and `cost.fin-ops`, and where at
+> least one team member held cert `aws.solutions-architect-pro`."*
+
+Five-hop traversal across **skills + projects + people + training +
+certifications**, returning ranked paths with provenance per edge.
+This is the cross-domain reach of the agentic layer — the registry's
+ontology fused with adjacent enterprise graphs (Projects, People /
+Roles, Training / Certs) so the agent can reason about *who has done
+what with whom, and what they knew*. Full design and the architectural
+trade (federate with Work IQ vs replicate) lives in **Stage F**
+below.
+
+**Surfaces as.** MCP tool. Backed by a Fabric-hosted graph workload
+(adjacent to Fabric IQ Ontology) that ingests from M365 / Entra /
+Project / Viva Learning via thin adapters. Cross-graph queries
+fan out — registry resolves capability + project + cert subgraphs;
+Work IQ MCP resolves live person / availability — and the tool merges
+results, enforcing `governance.dataClassification` on every edge it
+traverses.
+
+#### 4. `predict_outcome(skill_id, context)` — success-rate inference
 
 > *"`finance/po-match` has a 92% success rate when called after
 > `finance/invoice-extract` with `K_erp_reachable=true`, but 31% when
@@ -287,7 +408,10 @@ server reads from a remote catalog, "deploy to Container Apps" is
 deploying a toy. After Stage A, the natural follow-up in the same week is
 Stage B (the ABS live-test). Stage D — `query_ontology` — is the first
 piece of the §4 vision and should be the first thing built *after* Stage
-B clears.
+B clears. **Stage F** — cross-domain multi-hop — is the public-facing
+payoff and should be sequenced immediately after D + E land, because it
+is the layer that makes "Skill IQ" credible as an adjacency to Work IQ
+and Fabric IQ.
 
 If Stage A is already done by the time you read this: do Stage D first,
 because that is the smallest experiment that earns the project the word
