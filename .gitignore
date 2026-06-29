@@ -12,3 +12,4 @@ cowork-*.png
 
 # Pre-built plugin packages — re-build locally if you want to install
 *.zip
+infra/**/main.json

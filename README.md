@@ -203,6 +203,7 @@ call the underlying skill server directly.
 | `find_skill_by_capability(tag, published_only=True)` | `skills-registry-mcp` | "Who can do X?" Returns `SkillSummary[]` including the MCP binding. |
 | `describe_skill(skill_id)` | `skills-registry-mcp` | Full schema-validated manifest + `payloadFiles[]`. **Text payloads (SKILL.md, JSON ≤64 KB) are returned inline as `content`**; binary/oversized files retain a `skill://` URI. This is what lets a host without `skill://` resolution (e.g. Cowork) run a skill end-to-end. |
 | `list_capabilities()` | `skills-registry-mcp` | `{tag: [skill_id, …]}` inventory. |
+| `query_ontology(seed, relation, max_hops, caller_classification)` | `skills-registry-mcp` | Graph traversal over the registry. Returns paths (each hop = src/edge/dst/confidence/classification) so an agent can answer "what depends on `legal.redline`?" or "which skills produce `DocxDocument`?". Backed by DuckDB-over-parquet locally; swaps to Fabric SQL endpoint via `ONTOLOGY_BACKEND=fabric` ([runbook](docs/fabric-iq-setup.md)). |
 | `invoice_extract(document_url)` | `finance-tools-mcp` | Worked example. Returns vendor/number/dates/line-items/totals (stubbed in the spike). |
 | `submit_skill_draft(...)` | (server only) | Opens a GitHub PR. **Not surfaced inside Cowork** — see limitations doc. |
 

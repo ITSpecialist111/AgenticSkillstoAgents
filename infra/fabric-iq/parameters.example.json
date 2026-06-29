@@ -1,0 +1,24 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "value": "uksouth"
+    },
+    "storageBaseName": {
+      "value": "skillsont"
+    },
+    "filesystemName": {
+      "value": "ontology"
+    },
+    "mcpServerPrincipalObjectId": {
+      "value": "REPLACE_WITH_SP_OBJECT_ID"
+    },
+    "keyVaultBaseName": {
+      "value": "skillsont"
+    },
+    "costCenter": {
+      "value": "skills-registry"
+    }
+  }
+}

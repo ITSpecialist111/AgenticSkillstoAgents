@@ -130,10 +130,17 @@ finding the right person inside ABS.
 
 ### Stage D — Skill IQ MCP: an ontology-query tool on top of Stage 2
 
+> **Status:** in progress (2026-06-29). Local DuckDB backend + MCP tool +
+> tests + Bicep + runbook landed; Fabric SQL endpoint backend is stubbed
+> behind `ONTOLOGY_BACKEND=fabric` pending the user running
+> [`fabric-iq-setup.md`](fabric-iq-setup.md).
+
 (a) **Goal.** Add a fourth MCP tool to `mcp-server/`:
-`query_ontology(seed_capability, relation, depth)` that returns the
-neighbourhood of a capability in the graph. Backed by
-`prototype/out/ontology.json` (which the chassis already builds).
+`query_ontology(seed, relation, max_hops, caller_classification)` that
+returns the neighbourhood of any node (skill id, capability tag, data
+type, condition) in the graph, with per-hop provenance. Backed by parquet
+emitted from `prototype/chassis/fabric_export.py` — read locally via
+DuckDB today, swappable to a Fabric Lakehouse SQL endpoint via env var.
 
 (b) **Missing-middle thesis it advances.** This is where the **reasoning
 layer** starts. Today an agent can ask *"who can do X?"* (one hop). With

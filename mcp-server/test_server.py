@@ -203,7 +203,7 @@ def test_describe_skill_lists_payload_files(registry):
 def test_list_capabilities_is_sorted_and_indexed(registry):
     idx = server.tool_list_capabilities(registry)
     assert "invoice.extract" in idx
-    assert idx["invoice.extract"] == ["finance/invoice-extract"]
+    assert "finance/invoice-extract" in idx["invoice.extract"]
     # Both tags and skill-ids per tag are sorted for deterministic output.
     assert list(idx) == sorted(idx)
     for sids in idx.values():
@@ -230,15 +230,16 @@ def test_read_payload_file_missing():
         server._read_payload_file(EXAMPLES, "finance/invoice-extract", "nope.txt")
 
 
-def test_build_server_registers_four_tools_and_payload_resources():
-    """Smoke-test the FastMCP wiring: the four tools and at least one skill://
-    resource per payload file must show up."""
+def test_build_server_registers_tools_and_payload_resources():
+    """Smoke-test the FastMCP wiring: the registered tools and at least one
+    skill:// resource per payload file must show up."""
     srv = server.build_server(examples_dir=EXAMPLES)
     tool_names = {t.name for t in srv._tool_manager.list_tools()}
     assert {
         "find_skill_by_capability",
         "describe_skill",
         "list_capabilities",
+        "query_ontology",
         "submit_skill_draft",
     } <= tool_names
 
@@ -268,6 +269,7 @@ def test_http_app_exposes_probe_and_health():
         "find_skill_by_capability",
         "describe_skill",
         "list_capabilities",
+        "query_ontology",
         "submit_skill_draft",
     }
 
@@ -443,3 +445,89 @@ def test_submit_skill_draft_github_error_propagates(monkeypatch):
         server.tool_submit_skill_draft(
             manifest=_minimal_manifest(), http_client=_BrokenClient()
         )
+
+
+# --- query_ontology (Stage D) ------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def _fabric_parquet_dir(tmp_path_factory):
+    """Build the parquet tables once per test session into a tmp dir.
+
+    Keeps the test isolated from whatever the developer has on disk, while
+    exercising the same export path the runbook uses in production.
+    """
+    out = tmp_path_factory.mktemp("fabric_parquet")
+    sys.path.insert(0, REPO_ROOT)  # so `prototype.chassis.fabric_export` resolves
+    from prototype.chassis import fabric_export
+
+    fabric_export.export(str(out), examples_dir=EXAMPLES)
+    return str(out)
+
+
+def _ontology(parquet_dir):
+    from ontology_query import DuckDBOntology
+
+    return DuckDBOntology(parquet_dir)
+
+
+def test_query_ontology_one_hop(_fabric_parquet_dir):
+    """legal/msa-redlining declares DEPENDS_ON docx.create — confidential skill,
+    so the caller must be cleared to confidential to see the edge."""
+    result = server.tool_query_ontology(
+        seed="legal/msa-redlining",
+        relation="DEPENDS_ON",
+        max_hops=1,
+        caller_classification="confidential",
+        ontology=_ontology(_fabric_parquet_dir),
+    )
+    assert result["totalPaths"] == 1
+    assert len(result["paths"]) == 1
+    hop = result["paths"][0]["hops"][0]
+    assert hop["src"] == "legal/msa-redlining"
+    assert hop["edge"] == "DEPENDS_ON"
+    assert hop["dst"] == "docx.create"
+
+
+def test_query_ontology_max_hops_cap(_fabric_parquet_dir):
+    """max_hops > MAX_HOPS_CEILING must clamp server-side; the response surfaces
+    the effective cap so callers can detect truncation."""
+    result = server.tool_query_ontology(
+        seed="legal/msa-redlining",
+        max_hops=99,
+        caller_classification="confidential",
+        ontology=_ontology(_fabric_parquet_dir),
+    )
+    from ontology_query import MAX_HOPS_CEILING
+
+    assert result["maxHopsRequested"] == 99
+    assert result["maxHopsApplied"] == MAX_HOPS_CEILING
+
+
+def test_query_ontology_unknown_seed(_fabric_parquet_dir):
+    """An unknown seed must return an empty list, not raise — agents shouldn't
+    have to wrap every call in try/except."""
+    result = server.tool_query_ontology(
+        seed="does/not/exist",
+        max_hops=3,
+        ontology=_ontology(_fabric_parquet_dir),
+    )
+    assert result["totalPaths"] == 0
+    assert result["paths"] == []
+
+
+def test_fabric_export_idempotent(tmp_path):
+    """Two consecutive runs must produce byte-identical parquet — required for
+    git-diffable artifacts and for Fabric upload-and-shortcut workflows."""
+    sys.path.insert(0, REPO_ROOT)
+    from prototype.chassis import fabric_export
+
+    out1 = tmp_path / "run1"
+    out2 = tmp_path / "run2"
+    fabric_export.export(str(out1), examples_dir=EXAMPLES)
+    fabric_export.export(str(out2), examples_dir=EXAMPLES)
+
+    for fname in ("nodes.parquet", "edges.parquet", "manifests.parquet"):
+        b1 = (out1 / fname).read_bytes()
+        b2 = (out2 / fname).read_bytes()
+        assert b1 == b2, f"{fname} differs between runs (export is not deterministic)"

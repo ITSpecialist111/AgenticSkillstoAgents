@@ -6,6 +6,7 @@ write-side tool that opens a GitHub PR to register a new skill:
     find_skill_by_capability(tag, published_only=True) -> [SkillSummary]
     describe_skill(skill_id)                            -> Manifest + payloadFiles
     list_capabilities()                                 -> {tag: [skill_id, ...]}
+    query_ontology(seed, relation, max_hops)            -> {paths, totalPaths, ...}
     submit_skill_draft(manifest, payload=None, ...)     -> {pr_url, branch, ...}
 
     skill://<slug>/<rel_path>                           -> raw payload file bytes
@@ -309,6 +310,66 @@ def tool_list_capabilities(registry: lite.Registry) -> Dict[str, List[str]]:
     return {tag: sorted(sids) for tag, sids in sorted(registry.list_capabilities().items())}
 
 
+# --- query_ontology -----------------------------------------------------------
+#
+# Stage D: graph traversal over the skills registry. Reads parquet emitted by
+# ``prototype/chassis/fabric_export.py`` via DuckDB locally; the same query
+# runs against the Fabric SQL endpoint once the runbook is followed.
+
+# Classification ranking used to suppress paths the caller isn't cleared for.
+_CLASSIFICATION_RANK = {"public": 0, "internal": 1, "confidential": 2, "restricted": 3}
+
+
+def tool_query_ontology(
+    seed: str,
+    relation: Optional[str] = None,
+    max_hops: int = 3,
+    caller_classification: str = "internal",
+    *,
+    ontology: Optional[Any] = None,
+    result_limit: int = 50,
+) -> Dict[str, Any]:
+    """Return graph paths from ``seed`` up to ``max_hops`` deep.
+
+    ``relation`` filters the first hop (e.g. ``DEPENDS_ON``, ``PROVIDES``).
+    ``caller_classification`` gates paths whose max-sensitivity edge exceeds
+    the caller's clearance — defaults to ``internal`` (suppresses confidential
+    and restricted) until Stage E wires real principals.
+    """
+    from ontology_query import make_ontology, MAX_HOPS_CEILING
+
+    if ontology is None:
+        ontology = make_ontology()
+
+    requested = max(1, int(max_hops))
+    effective = min(requested, MAX_HOPS_CEILING)
+    paths = ontology.paths(seed, relation, effective)
+
+    caller_rank = _CLASSIFICATION_RANK.get(caller_classification.lower(), 1)
+    visible = [
+        p for p in paths
+        if _CLASSIFICATION_RANK.get(p.max_classification, 1) <= caller_rank
+    ]
+    suppressed = len(paths) - len(visible)
+
+    truncated = False
+    if len(visible) > result_limit:
+        visible = visible[:result_limit]
+        truncated = True
+
+    return {
+        "seed": seed,
+        "relation": relation,
+        "maxHopsRequested": requested,
+        "maxHopsApplied": effective,
+        "callerClassification": caller_classification,
+        "totalPaths": len(paths),
+        "suppressedByClassification": suppressed,
+        "truncated": truncated,
+        "paths": [p.to_dict() for p in visible],
+    }
+
+
 # --- submit_skill_draft -------------------------------------------------------
 #
 # Two-way registration: an agent (or human via Cowork) can propose a new skill
@@ -578,6 +639,30 @@ def build_server(*, examples_dir: Optional[str] = None):
 
     @server.tool(
         description=(
+            "Traverse the skills ontology graph from a seed node (skill id, capability "
+            "tag, data type, or condition). Returns paths up to max_hops deep, each "
+            "with per-hop provenance (source, edge type, target, confidence, data "
+            "classification). Optional `relation` filters the first hop "
+            "(PROVIDES, CONSUMES, PRODUCES, REQUIRES, CAUSES, DEPENDS_ON, SUPERSEDES). "
+            "Server-side hop cap = 5. Use this to answer questions like 'what depends "
+            "on legal.redline?' or 'which skills produce DocxDocument?'."
+        )
+    )
+    def query_ontology(
+        seed: str,
+        relation: Optional[str] = None,
+        max_hops: int = 3,
+        caller_classification: str = "internal",
+    ) -> Dict[str, Any]:
+        return tool_query_ontology(
+            seed=seed,
+            relation=relation,
+            max_hops=max_hops,
+            caller_classification=caller_classification,
+        )
+
+    @server.tool(
+        description=(
             "Propose a new skill by opening a GitHub PR against the registry. Pass the "
             "manifest dict (validated against schemas/skill-manifest.schema.json) and an "
             "optional `payload` mapping {'SKILL.md': '...', 'assets/foo.json': '...'}. "
@@ -669,6 +754,7 @@ def build_http_app(server=None):
                     "find_skill_by_capability",
                     "describe_skill",
                     "list_capabilities",
+                    "query_ontology",
                     "submit_skill_draft",
                 ],
                 "resources": "skill://<slug>/<path> (one per skill payload file)",
