@@ -84,6 +84,7 @@ class OntologyQuery(Protocol):
         relation: Optional[str],
         max_hops: int,
         filters: Optional[Dict[str, Any]] = None,
+        node_type_filter: Optional[List[str]] = None,
     ) -> List[Path]:
         ...
 
@@ -116,6 +117,7 @@ class DuckDBOntology:
         relation: Optional[str],
         max_hops: int,
         filters: Optional[Dict[str, Any]] = None,
+        node_type_filter: Optional[List[str]] = None,
     ) -> List[Path]:
         max_hops = max(1, min(int(max_hops), MAX_HOPS_CEILING))
         import duckdb
@@ -125,6 +127,14 @@ class DuckDBOntology:
             con.execute(
                 f"CREATE VIEW edges AS SELECT * FROM read_parquet('{self._edges_path}')"
             )
+            # Only register the nodes view if it exists AND we need it (for
+            # node_type_filter). Saves a parquet scan for the common case.
+            need_nodes = bool(node_type_filter) and os.path.exists(self._nodes_path)
+            if need_nodes:
+                con.execute(
+                    f"CREATE VIEW nodes AS SELECT * FROM read_parquet('{self._nodes_path}')"
+                )
+
             relation_clause = "AND e.edge_type = ?" if relation else ""
             params: List[Any] = [seed]
             if relation:
@@ -166,8 +176,12 @@ class DuckDBOntology:
                       AND NOT list_contains([h.dst FOR h IN w.hops], e.dst_id)
                       AND e.dst_id <> w.root
                 )
-                SELECT hops FROM walk ORDER BY depth, frontier
+                SELECT hops FROM walk{" JOIN nodes n ON n.node_id = frontier" if need_nodes else ""}
+                {"WHERE n.node_type IN (" + ",".join(["?"] * len(node_type_filter)) + ")" if need_nodes else ""}
+                ORDER BY depth, frontier
             """
+            if need_nodes:
+                params.extend(node_type_filter)
             rows = con.execute(query, params).fetchall()
         finally:
             con.close()
@@ -235,11 +249,18 @@ class FabricOntology:
         relation: Optional[str],
         max_hops: int,
         filters: Optional[Dict[str, Any]] = None,
+        node_type_filter: Optional[List[str]] = None,
     ) -> List[Path]:
         import json as _json
 
         max_hops = max(1, min(int(max_hops), MAX_HOPS_CEILING))
         relation_clause = "AND e.edge_type = ?" if relation else ""
+        node_filter_join = ""
+        node_filter_clause = ""
+        if node_type_filter:
+            placeholders = ",".join(["?"] * len(node_type_filter))
+            node_filter_join = "JOIN dbo.nodes n ON n.node_id = w.frontier"
+            node_filter_clause = f"WHERE n.node_type IN ({placeholders})"
         # FOR JSON PATH on a derived row builds a singleton array; we strip the
         # outer brackets when appending in the recursive step.
         query = f"""
@@ -283,12 +304,15 @@ class FabricOntology:
                 WHERE w.depth < ?
                   AND CHARINDEX('/' + e.dst_id + '/', w.visited) = 0
             )
-            SELECT hops_json FROM walk ORDER BY depth, frontier
+            SELECT w.hops_json FROM walk w {node_filter_join} {node_filter_clause}
+            ORDER BY w.depth, w.frontier
         """
         params: List[Any] = [seed]
         if relation:
             params.append(relation)
         params.append(max_hops)
+        if node_type_filter:
+            params.extend(node_type_filter)
 
         with self._connect() as conn:
             cur = conn.cursor()

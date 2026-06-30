@@ -1,0 +1,17 @@
+{
+  "id": "project/design-p000",
+  "kind": "Project",
+  "name": "Design Project 000",
+  "domain": "design",
+  "status": "active",
+  "startDate": "2025-03-01",
+  "endDate": null,
+  "requiredCapabilities": [
+    "marketing.asset",
+    "theme.generate"
+  ],
+  "governance": {
+    "dataClassification": "internal",
+    "visibility": "org"
+  }
+}

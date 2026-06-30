@@ -1,0 +1,17 @@
+{
+  "id": "project/design-p002",
+  "kind": "Project",
+  "name": "Design Project 002",
+  "domain": "design",
+  "status": "complete",
+  "startDate": "2024-09-01",
+  "endDate": "2025-05-01",
+  "requiredCapabilities": [
+    "design.tokens",
+    "graphic.generate"
+  ],
+  "governance": {
+    "dataClassification": "confidential",
+    "visibility": "org"
+  }
+}

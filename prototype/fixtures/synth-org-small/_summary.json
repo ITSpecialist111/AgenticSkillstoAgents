@@ -1,0 +1,21 @@
+{
+  "out_dir": "prototype/fixtures/synth-org-small",
+  "people": 10,
+  "projects": 4,
+  "training": 1,
+  "certs": 2,
+  "edges": 192,
+  "skills_source": "examples",
+  "domains": [
+    "comms",
+    "content",
+    "design",
+    "dev",
+    "finance",
+    "legal",
+    "office",
+    "productivity",
+    "research"
+  ],
+  "capability_pool_size": 67
+}

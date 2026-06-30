@@ -153,8 +153,15 @@ Then call the tool over MCP streamable HTTP at
   `query_ontology`, `filesAdded`/`prOpened` for `submit_skill_draft`. Args are
   hashed (16-char sha256 prefix), never logged in the clear. The
   find/pick/succeed panels still need building — sink is wired, dashboard is not.
-- **Stage F cross-domain ontology** — adding `Person`, `Project`,
-  `TrainingArtifact` node types and the adapters that feed them.
+- **Stage F cross-domain ontology** — **Phase 1 shipped 2026-06-30** (see
+  [`stage-f-phase1-evidence.md`](stage-f-phase1-evidence.md)): `Person`,
+  `Project`, `Training`, `Certification`, `Role`, `Team` node types and
+  ten cross-domain edges projected into the same parquet store; live in
+  Cowork via image `:v7` + plugin v0.3.0 with new `list_org_entities`
+  tool. `:v7` also swaps the 22 curated examples for the 1000-skill
+  synth catalog (2 348 nodes / 20 440 edges in production). Phase 2
+  (`query_org_graph` Cypher-lite DSL) and Phase 3 (real-source adapters
+  — Entra, Project/Planner/Jira, Viva Learning) still pending.
 - **Fabric backend** — code path exists; user runs
   `infra/fabric-iq/main.bicep` + the runbook to switch it on. The MCP
   tool shape doesn't change.

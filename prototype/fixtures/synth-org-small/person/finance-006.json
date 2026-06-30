@@ -1,0 +1,13 @@
+{
+  "id": "person/finance-006",
+  "kind": "Person",
+  "name": "Finance #006",
+  "role": "Finance",
+  "team": "Research",
+  "manager": "person/pm-000",
+  "hireDate": "2024-09-01",
+  "governance": {
+    "dataClassification": "internal",
+    "visibility": "org"
+  }
+}

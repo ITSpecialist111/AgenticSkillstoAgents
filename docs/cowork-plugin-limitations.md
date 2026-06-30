@@ -18,7 +18,7 @@ the second connector was silently dropped.
 
 **Mitigation (proved).** Split into two single-connector plugins, each with
 its own GUID and display name:
-- `cowork-plugin-registry/` → `/api/mcp` (3 read-only discovery tools)
+- `cowork-plugin-registry/` → `/api/mcp` (5 read-only discovery tools after Stage F Phase 1: `find_skill_by_capability`, `describe_skill`, `list_capabilities`, `query_ontology`, `list_org_entities`)
 - `cowork-plugin-finance/` → `/api/skills/finance-tools/mcp` (`invoice_extract`)
 
 After installing both, logs at `20:40:11` showed concurrent

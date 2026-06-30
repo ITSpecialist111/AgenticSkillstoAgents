@@ -1,0 +1,13 @@
+{
+  "id": "person/analyst-003",
+  "kind": "Person",
+  "name": "Analyst #003",
+  "role": "Analyst",
+  "team": "Marketing Cloud",
+  "manager": "person/pm-000",
+  "hireDate": "2017-01-10",
+  "governance": {
+    "dataClassification": "internal",
+    "visibility": "org"
+  }
+}

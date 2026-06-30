@@ -1,0 +1,17 @@
+{
+  "id": "cert/microsoft-legal-001",
+  "kind": "Certification",
+  "title": "Microsoft Legal Certified",
+  "issuer": "Microsoft",
+  "domain": "legal",
+  "validityYears": 1,
+  "impliesCapabilities": [
+    "regional.compliance",
+    "legal.redline",
+    "clause.compare"
+  ],
+  "governance": {
+    "dataClassification": "internal",
+    "visibility": "org"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "id": "person/pm-000",
+  "kind": "Person",
+  "name": "PM #000",
+  "role": "PM",
+  "team": "Apps",
+  "manager": null,
+  "hireDate": "2019-08-21",
+  "governance": {
+    "dataClassification": "confidential",
+    "visibility": "org"
+  }
+}

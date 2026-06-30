@@ -1,0 +1,17 @@
+{
+  "id": "project/comms-p001",
+  "kind": "Project",
+  "name": "Comms Project 001",
+  "domain": "comms",
+  "status": "active",
+  "startDate": "2025-06-01",
+  "endDate": null,
+  "requiredCapabilities": [
+    "meeting.summarise",
+    "action.extract"
+  ],
+  "governance": {
+    "dataClassification": "confidential",
+    "visibility": "org"
+  }
+}

@@ -28,17 +28,32 @@ RUN apt-get update \
 COPY mcp-server/requirements.txt /app/mcp-server/requirements.txt
 RUN pip install --no-cache-dir -r /app/mcp-server/requirements.txt
 
-# Copy the server, the chassis it imports, the schemas it validates against,
-# and the bundled example manifests (for the default REGISTRY_CATALOG_MODE=local
-# until Stage 2 is wired in).
+# Copy the server, the chassis it imports, the schemas it validates against.
+# (examples/ is replaced by a build-time synth catalog — see the RUN below.)
 COPY mcp-server/ /app/mcp-server/
 COPY prototype-lite/ /app/prototype-lite/
 COPY schemas/ /app/schemas/
-COPY examples/ /app/examples/
 
-# Parquet ontology drop for ONTOLOGY_BACKEND=local (query_ontology tool).
-# Rebuild with: python -m prototype.chassis.fabric_export --out prototype/out/fabric/
-COPY prototype/out/fabric/ /app/prototype/out/fabric/
+# Parquet ontology drop for ONTOLOGY_BACKEND=local (query_ontology tool) +
+# manifests for REGISTRY_CATALOG_MODE=local (find_skill_by_capability tool).
+# Stage F Phase 1 + scale bump (image :v7, 2026-06-30):
+#   - Generate the 1000-skill synth catalog (seed=42, deterministic).
+#   - Generate the 500-person org alongside (seed=42).
+#   - Project both into parquet (2 348 nodes / 20 440 edges).
+#   - The synth catalog becomes /app/examples so the registry tool surface
+#     sees the same 1000 skills the ontology graph indexes.
+COPY prototype/ /app/prototype/
+RUN python -m prototype.chassis.synth_skills --count 1000 \
+        --out /app/examples --seed 42 \
+    && python -m prototype.chassis.synth_org \
+        --count-people 500 --count-projects 200 \
+        --count-training 150 --count-certs 60 \
+        --out /app/prototype/out/synth/org \
+        --skills-dir /app/examples --seed 42 \
+    && python -m prototype.chassis.fabric_export \
+        --out /app/prototype/out/fabric/ \
+        --examples /app/examples \
+        --org-dir /app/prototype/out/synth/org
 
 WORKDIR /app/mcp-server
 EXPOSE 8000

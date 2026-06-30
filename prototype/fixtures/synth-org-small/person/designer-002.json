@@ -1,0 +1,13 @@
+{
+  "id": "person/designer-002",
+  "kind": "Person",
+  "name": "Designer #002",
+  "role": "Designer",
+  "team": "Data Platform",
+  "manager": "person/pm-000",
+  "hireDate": "2018-02-15",
+  "governance": {
+    "dataClassification": "internal",
+    "visibility": "org"
+  }
+}

@@ -157,13 +157,36 @@ limitations doc.)
 | [`docs/`](docs/) | Full design + spec + spike write-ups (see table below). |
 | [`*-plugin*.zip`](.) | Pre-built plugin packages ready to upload via the Teams Developer Portal. |
 
+## Screenshots — what it looks like end-to-end
+
+Captured 2026-06-30 against image `:v7` (2 348 nodes / 20 440 edges) and the
+`skills_ontology` Fabric Lakehouse. Full thesis with embedded context:
+[`docs/ontology-skills-thesis.md`](docs/ontology-skills-thesis.md).
+
+**Cowork — agent picking + composing two registry tools unprompted**
+
+| Screenshot | What it shows |
+|---|---|
+| [`cowork-task-prompt-and-tool-calls.png`](examples/screenshots/cowork-task-prompt-and-tool-calls.png) | One natural-language brief → agent fires `list_org_entities` **and** `query_ontology` in parallel against the registry connector. |
+| [`cowork-call1-list-org-entities-json.png`](examples/screenshots/cowork-call1-list-org-entities-json.png) | Raw envelope from `list_org_entities(entity_type="Person", limit=10)` — 10 people with `data_classification` per row. |
+| [`cowork-call2-person-table-and-query-args.png`](examples/screenshots/cowork-call2-person-table-and-query-args.png) | Agent's rendered Person table + the spilled `query_ontology` envelope (`totalPaths:50, suppressedByClassification:18, maxHopsApplied:4`). |
+| [`cowork-architect-skill-reach-analysis.png`](examples/screenshots/cowork-architect-skill-reach-analysis.png) | Agent's own breakdown: direct `HOLDS_SKILL` vs `WORKED_ON → EMPLOYED → HOLDS_SKILL` vs `WORKED_ON → REQUIRED → SATISFIED_BY`, including the call-out that 18 suppressed paths are the internal-clearance view. |
+
+**Fabric Lakehouse — the same parquet projection the MCP server reads**
+
+| Screenshot | What it shows |
+|---|---|
+| [`fabric-onelake-nodes-table.png`](examples/screenshots/fabric-onelake-nodes-table.png) | `skills_ontology.dbo.nodes` — node id / type / label / properties. |
+| [`fabric-onelake-edges-table.png`](examples/screenshots/fabric-onelake-edges-table.png) | `skills_ontology.dbo.edges` — src / edge_type / dst / confidence / **data_classification** (the per-edge governance fence). |
+| [`fabric-onelake-manifests-table.png`](examples/screenshots/fabric-onelake-manifests-table.png) | `skills_ontology.dbo.manifests` — flat manifest projection (id, name, version, stage, tags, owner, classification, determinism, risk). |
+
 ## Documentation
 
 | Doc | What it covers |
 |---|---|
 | [`docs/architecture.md`](docs/architecture.md) | Four-layer model, the six-gate graduation pipeline, target platform, components. |
 | [`docs/technical-spec.md`](docs/technical-spec.md) | Canonical Manifest, state machine, APIs, build. |
-| [`docs/ontology-schema.md`](docs/ontology-schema.md) | Entity-relationship model for skills/capabilities/agents (IOPE). |
+| [`docs/ontology-schema.md`](docs/ontology-schema.md) | Entity-relationship model for skills/capabilities/agents (IOPE). Stage F Phase 1 adds Person/Project/Training/Cert/Role/Team. |
 | [`docs/ontology-builder-agent.md`](docs/ontology-builder-agent.md) | The agentic code that builds/maintains the ontology — and the measurable bet. |
 | [`docs/roadmap.md`](docs/roadmap.md) | Phased graduation pipeline, milestones, success metrics. |
 | [`docs/prior-art.md`](docs/prior-art.md) | What we learned from MCP / OWL-S / MLflow / RPA CoEs and how we differ. |
@@ -175,6 +198,7 @@ limitations doc.)
 | [`docs/stage-b-runbook.md`](docs/stage-b-runbook.md) | Operational runbook for the deployed Container App. |
 | [`docs/complexity-review.md`](docs/complexity-review.md) | Why the lite + full prototypes both exist, and when to promote. |
 | [`docs/handoff.md`](docs/handoff.md) / [`docs/session-log-2026-06-28.md`](docs/session-log-2026-06-28.md) | Recent build state and session notes. |
+| [`docs/stage-f-phase1-evidence.md`](docs/stage-f-phase1-evidence.md) | Stage F Phase 1 cross-domain ontology: generators, projection output, bench results, worked Person→Skill traversal. |
 
 ## The construct (the repeatable chassis)
 
@@ -203,7 +227,8 @@ call the underlying skill server directly.
 | `find_skill_by_capability(tag, published_only=True)` | `skills-registry-mcp` | "Who can do X?" Returns `SkillSummary[]` including the MCP binding. |
 | `describe_skill(skill_id)` | `skills-registry-mcp` | Full schema-validated manifest + `payloadFiles[]`. **Text payloads (SKILL.md, JSON ≤64 KB) are returned inline as `content`**; binary/oversized files retain a `skill://` URI. This is what lets a host without `skill://` resolution (e.g. Cowork) run a skill end-to-end. |
 | `list_capabilities()` | `skills-registry-mcp` | `{tag: [skill_id, …]}` inventory. |
-| `query_ontology(seed, relation, max_hops, caller_classification)` | `skills-registry-mcp` | Graph traversal over the registry. Returns paths (each hop = src/edge/dst/confidence/classification) so an agent can answer "what depends on `legal.redline`?" or "which skills produce `DocxDocument`?". Backed by DuckDB-over-parquet locally; swaps to Fabric SQL endpoint via `ONTOLOGY_BACKEND=fabric` ([runbook](docs/fabric-iq-setup.md)). |
+| `query_ontology(seed, relation, max_hops, caller_classification, node_type_filter)` | `skills-registry-mcp` | Graph traversal over the registry. Returns paths (each hop = src/edge/dst/confidence/classification) so an agent can answer "what depends on `legal.redline`?" or "which skills produce `DocxDocument`?". Backed by DuckDB-over-parquet locally; swaps to Fabric SQL endpoint via `ONTOLOGY_BACKEND=fabric` ([runbook](docs/fabric-iq-setup.md)). With Stage F Phase 1 ([evidence](docs/stage-f-phase1-evidence.md)) seeds may be `person/…`, `project/…`, `training/…`, or `cert/…`, and `node_type_filter` constrains terminal node types (e.g. `["Skill"]`). |
+| `list_org_entities(entity_type, limit=50)` | `skills-registry-mcp` | Surfaces Stage F Phase 1 cross-domain entities (Person, Project, Training, Certification, Role, Team) so an agent can pick a seed for `query_ontology`. Read-only, paginated. |
 | `invoice_extract(document_url)` | `finance-tools-mcp` | Worked example. Returns vendor/number/dates/line-items/totals (stubbed in the spike). |
 | `submit_skill_draft(...)` | (server only) | Opens a GitHub PR. **Not surfaced inside Cowork** — see limitations doc. |
 
@@ -218,7 +243,7 @@ a live agent without rewriting.
 | Tier | Where | What's there | Refresh |
 |---|---|---|---|
 | **1. System-of-record** | This git repo — [`examples/*.manifest.json`](examples/) + payload folders `examples/<slug>/SKILL.md` | **23 manifests** at commit `1c85fef` (17 added this session: research, content, productivity, dev-loop, design, office, legal). Each manifest is JSON-Schema-validated by CI on every PR. | Per PR; CODEOWNERS-gated. |
-| **2. Container image** | [`mcp-server/Dockerfile`](mcp-server/Dockerfile) line 24 bakes `examples/` into `crcowork5a2c14.azurecr.io/skills-registry-mcp:v4` | Live image the Container App runs. With `REGISTRY_CATALOG_MODE=local` (the current setting) the registry serves directly from this baked copy — no external dependency at request time. `:v4` ships the inline-SKILL.md-content fix that unblocked Pattern B end-to-end. | Per `az acr build` + `az containerapp update`. |
+| **2. Container image** | [`mcp-server/Dockerfile`](mcp-server/Dockerfile) generates the 1000-skill synth catalog (`synth_skills --count 1000 --seed 42`) **into** `/app/examples` at build time, alongside a 500-person synth org, and projects both to parquet — baked into `crcowork5a2c14.azurecr.io/skills-registry-mcp:v7` | Live image the Container App runs (revision `ca-cowork-mcp--0000007`). With `REGISTRY_CATALOG_MODE=local` (the current setting) the registry serves the 1000 synth skills directly from this baked copy — no external dependency at request time. `:v7` swaps the 22 curated examples for the 1000 synth catalog so the at-scale ontology (2 348 nodes / 20 440 edges) is what Cowork sees in production. The curated examples are still in git (`examples/` source-of-record) and remain the basis for the synth generator's domain/capability pools. | Per `az acr build` + `az containerapp update`. |
 | **3. Public catalog blob** | Azure Storage `stcowork5a2c14` / `catalog/catalog.json`, refreshed by [`.github/workflows/publish-catalog.yml`](.github/workflows/publish-catalog.yml) | Read-only flattened catalog for out-of-band consumers and the planned Stage 2 public read API. Server can be flipped to `REGISTRY_CATALOG_MODE=remote` to fetch this with a 60 s TTL cache. | Per push to `main` touching `examples/**`. |
 
 Live FQDN serving tiers 1+2 right now:

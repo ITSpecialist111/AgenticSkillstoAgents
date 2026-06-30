@@ -1,0 +1,13 @@
+{
+  "id": "person/ops-007",
+  "kind": "Person",
+  "name": "Ops #007",
+  "role": "Ops",
+  "team": "People Ops",
+  "manager": "person/pm-000",
+  "hireDate": "2018-07-23",
+  "governance": {
+    "dataClassification": "internal",
+    "visibility": "org"
+  }
+}

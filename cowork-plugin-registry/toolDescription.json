@@ -61,19 +61,19 @@
     },
     {
       "name": "query_ontology",
-      "title": "Traverse the skills ontology",
-      "description": "Walk the org's skills knowledge-graph from a seed node along a relation (DEPENDS_ON, PROVIDES, CONSUMES, PRODUCES, REQUIRES, CAUSES, SUPERSEDES) up to max_hops (capped at 5). Use this to answer 'what does X depend on?', 'what produces this data type?', or 'what would break if I deprecated this skill?'. Returns ranked paths with per-hop data-classification so callers can see governance scope. Pass caller_classification (public|internal|confidential|restricted) to gate paths above your clearance.",
+      "title": "Traverse the skills + org ontology",
+      "description": "Walk the org's knowledge graph from a seed node along an edge type up to max_hops (capped at 5). Skill graph relations: DEPENDS_ON, PROVIDES, CONSUMES, PRODUCES, REQUIRES, CAUSES, SUPERSEDES. Stage F Phase 1 cross-domain relations: HAS_ROLE, MEMBER_OF, WORKED_ON, EMPLOYED, REQUIRED, SATISFIED_BY, HOLDS_SKILL, COMPLETED, GRANTS, HOLDS_CERT. Seeds can be a skill id ('legal/msa-redlining'), capability tag ('docx.create'), or a cross-domain id ('person/eng-042', 'project/finance-rfp-001', 'cert/aws-sap'). Returns ranked paths with per-hop data-classification so callers can see governance scope. Pass caller_classification (public|internal|confidential|restricted) to gate paths above your clearance. Pass node_type_filter to restrict terminal node types (e.g. ['Skill'] when walking from a Person to surface only the skills they can reach).",
       "inputSchema": {
         "type": "object",
         "properties": {
           "seed": {
             "type": "string",
-            "description": "Seed node id — either a skill id like 'legal/msa-redlining' or a capability tag like 'docx.create'."
+            "description": "Seed node id — skill id ('legal/msa-redlining'), capability tag ('docx.create'), or cross-domain id ('person/eng-042', 'project/finance-rfp-001', 'training/python-async', 'cert/aws-sap')."
           },
           "relation": {
             "type": "string",
             "description": "Edge type to traverse. Omit for any relation.",
-            "enum": ["DEPENDS_ON", "PROVIDES", "CONSUMES", "PRODUCES", "REQUIRES", "CAUSES", "SUPERSEDES"]
+            "enum": ["DEPENDS_ON", "PROVIDES", "CONSUMES", "PRODUCES", "REQUIRES", "CAUSES", "SUPERSEDES", "HAS_ROLE", "MEMBER_OF", "WORKED_ON", "EMPLOYED", "REQUIRED", "SATISFIED_BY", "HOLDS_SKILL", "COMPLETED", "GRANTS", "HOLDS_CERT"]
           },
           "max_hops": {
             "type": "integer",
@@ -87,9 +87,45 @@
             "description": "Caller's data clearance. Paths whose max classification exceeds this are suppressed. Default 'internal'.",
             "enum": ["public", "internal", "confidential", "restricted"],
             "default": "internal"
+          },
+          "node_type_filter": {
+            "type": "array",
+            "description": "Optional list of node types to keep at the terminal of each path. E.g. ['Skill'] from a Person seed returns only Skill endpoints. Allowed: Skill, Capability, DataType, Condition, Person, Project, Training, Certification, Role, Team.",
+            "items": {
+              "type": "string",
+              "enum": ["Skill", "Capability", "DataType", "Condition", "Person", "Project", "Training", "Certification", "Role", "Team"]
+            }
           }
         },
         "required": ["seed"]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "list_org_entities",
+      "title": "List cross-domain entities (people, projects, training, certs)",
+      "description": "Stage F Phase 1 discovery helper. Returns summaries for entities in the cross-domain ontology so an agent can pick a seed before calling query_ontology. Read-only, paginated. Use this to find a Person id before walking to their skills, or a Project id before walking to its required capabilities.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "entity_type": {
+            "type": "string",
+            "description": "Which entity type to list.",
+            "enum": ["Person", "Project", "Training", "Certification", "Role", "Team"]
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Maximum number of summaries to return. Default 50, capped at 200.",
+            "minimum": 1,
+            "maximum": 200,
+            "default": 50
+          }
+        },
+        "required": ["entity_type"]
       },
       "annotations": {
         "readOnlyHint": true,

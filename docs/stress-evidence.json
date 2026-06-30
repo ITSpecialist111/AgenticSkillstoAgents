@@ -1,0 +1,355 @@
+{
+  "endpoint": "https://<your-mcp-fqdn>.azurecontainerapps.io/api/mcp",
+  "image": "<your-acr>.azurecr.io/skills-registry-mcp:<tag>",
+  "revision": "<your-container-app-revision>",
+  "graph_scale": {
+    "nodes": 2348,
+    "edges": 20440,
+    "skills": 1000,
+    "people": 500
+  },
+  "tools_advertised": [
+    "find_skill_by_capability",
+    "describe_skill",
+    "list_capabilities",
+    "query_ontology",
+    "list_org_entities",
+    "submit_skill_draft"
+  ],
+  "person_seed": "person/analyst-003",
+  "project_seed": "project/comms-p001",
+  "tasks": [
+    {
+      "task": "T1 capability inventory at scale (1000-skill catalog)",
+      "calls": [
+        {
+          "tool": "list_capabilities",
+          "args": {},
+          "latency_ms": 93.6,
+          "summary": {}
+        },
+        {
+          "tool": "find_skill_by_capability",
+          "args": {
+            "capability_tag": "invoice.extract"
+          },
+          "latency_ms": 40.0,
+          "summary": {}
+        },
+        {
+          "tool": "find_skill_by_capability",
+          "args": {
+            "capability_tag": "msa.redline"
+          },
+          "latency_ms": 34.2,
+          "summary": {}
+        },
+        {
+          "tool": "find_skill_by_capability",
+          "args": {
+            "capability_tag": "redline.apply.t2"
+          },
+          "latency_ms": 38.7,
+          "summary": {}
+        }
+      ]
+    },
+    {
+      "task": "T2a list 10 Person entities",
+      "calls": [
+        {
+          "tool": "list_org_entities",
+          "args": {
+            "entity_type": "Person",
+            "limit": 10
+          },
+          "latency_ms": 121.1,
+          "summary": {
+            "entityCount": 10
+          }
+        }
+      ]
+    },
+    {
+      "task": "T2 cross-domain Person->Skill walk (node_type_filter)",
+      "calls": [
+        {
+          "tool": "query_ontology",
+          "args": {
+            "seed": "person/analyst-003",
+            "max_hops": 4,
+            "node_type_filter": [
+              "Skill"
+            ],
+            "caller_classification": "internal"
+          },
+          "latency_ms": 90.7,
+          "summary": {
+            "totalPaths": 250,
+            "suppressedByClassification": 83,
+            "truncated": true,
+            "maxHopsApplied": 4,
+            "maxHopsRequested": 4,
+            "seed": "person/analyst-003",
+            "callerClassification": "internal",
+            "nodeTypeFilter": [
+              "Skill"
+            ],
+            "relation": null,
+            "pathsReturned": 50,
+            "uniqueEndpoints": 0
+          }
+        }
+      ]
+    },
+    {
+      "task": "T3 governance gating across three clearances on same seed",
+      "calls": [
+        {
+          "tool": "query_ontology",
+          "args": {
+            "seed": "person/analyst-003",
+            "max_hops": 4,
+            "node_type_filter": [
+              "Skill"
+            ],
+            "caller_classification": "public"
+          },
+          "latency_ms": 71.4,
+          "summary": {
+            "totalPaths": 250,
+            "suppressedByClassification": 250,
+            "truncated": false,
+            "maxHopsApplied": 4,
+            "maxHopsRequested": 4,
+            "seed": "person/analyst-003",
+            "callerClassification": "public",
+            "nodeTypeFilter": [
+              "Skill"
+            ],
+            "relation": null,
+            "pathsReturned": 0,
+            "uniqueEndpoints": 0
+          }
+        },
+        {
+          "tool": "query_ontology",
+          "args": {
+            "seed": "person/analyst-003",
+            "max_hops": 4,
+            "node_type_filter": [
+              "Skill"
+            ],
+            "caller_classification": "internal"
+          },
+          "latency_ms": 82.6,
+          "summary": {
+            "totalPaths": 250,
+            "suppressedByClassification": 83,
+            "truncated": true,
+            "maxHopsApplied": 4,
+            "maxHopsRequested": 4,
+            "seed": "person/analyst-003",
+            "callerClassification": "internal",
+            "nodeTypeFilter": [
+              "Skill"
+            ],
+            "relation": null,
+            "pathsReturned": 50,
+            "uniqueEndpoints": 0
+          }
+        },
+        {
+          "tool": "query_ontology",
+          "args": {
+            "seed": "person/analyst-003",
+            "max_hops": 4,
+            "node_type_filter": [
+              "Skill"
+            ],
+            "caller_classification": "confidential"
+          },
+          "latency_ms": 87.5,
+          "summary": {
+            "totalPaths": 250,
+            "suppressedByClassification": 0,
+            "truncated": true,
+            "maxHopsApplied": 4,
+            "maxHopsRequested": 4,
+            "seed": "person/analyst-003",
+            "callerClassification": "confidential",
+            "nodeTypeFilter": [
+              "Skill"
+            ],
+            "relation": null,
+            "pathsReturned": 50,
+            "uniqueEndpoints": 0
+          }
+        }
+      ]
+    },
+    {
+      "task": "T4 multi-hop composition (skill DEPENDS_ON)",
+      "calls": [
+        {
+          "tool": "query_ontology",
+          "args": {
+            "seed": "legal/t2-s000",
+            "relation": "DEPENDS_ON",
+            "max_hops": 3,
+            "caller_classification": "confidential"
+          },
+          "latency_ms": 73.8,
+          "summary": {
+            "totalPaths": 60,
+            "suppressedByClassification": 8,
+            "truncated": true,
+            "maxHopsApplied": 3,
+            "maxHopsRequested": 3,
+            "seed": "legal/t2-s000",
+            "callerClassification": "confidential",
+            "nodeTypeFilter": null,
+            "relation": "DEPENDS_ON",
+            "pathsReturned": 50,
+            "uniqueEndpoints": 0
+          }
+        },
+        {
+          "tool": "query_ontology",
+          "args": {
+            "seed": "legal/t2-s000",
+            "max_hops": 3,
+            "caller_classification": "confidential"
+          },
+          "latency_ms": 75.9,
+          "summary": {
+            "totalPaths": 209,
+            "suppressedByClassification": 20,
+            "truncated": true,
+            "maxHopsApplied": 3,
+            "maxHopsRequested": 3,
+            "seed": "legal/t2-s000",
+            "callerClassification": "confidential",
+            "nodeTypeFilter": null,
+            "relation": null,
+            "pathsReturned": 50,
+            "uniqueEndpoints": 0
+          }
+        }
+      ]
+    },
+    {
+      "task": "T5 5-hop org reach from Project seed",
+      "calls": [
+        {
+          "tool": "query_ontology",
+          "args": {
+            "seed": "project/comms-p001",
+            "max_hops": 5,
+            "node_type_filter": [
+              "Skill"
+            ],
+            "caller_classification": "confidential"
+          },
+          "latency_ms": 187.1,
+          "summary": {
+            "totalPaths": 2277,
+            "suppressedByClassification": 186,
+            "truncated": true,
+            "maxHopsApplied": 5,
+            "maxHopsRequested": 5,
+            "seed": "project/comms-p001",
+            "callerClassification": "confidential",
+            "nodeTypeFilter": [
+              "Skill"
+            ],
+            "relation": null,
+            "pathsReturned": 50,
+            "uniqueEndpoints": 0
+          }
+        }
+      ]
+    },
+    {
+      "task": "T6 supersession / duplicate surfacing",
+      "calls": [
+        {
+          "tool": "query_ontology",
+          "args": {
+            "seed": "legal/t2-s000",
+            "relation": "SUPERSEDES",
+            "max_hops": 2,
+            "caller_classification": "confidential"
+          },
+          "latency_ms": 59.0,
+          "summary": {
+            "totalPaths": 0,
+            "suppressedByClassification": 0,
+            "truncated": false,
+            "maxHopsApplied": 2,
+            "maxHopsRequested": 2,
+            "seed": "legal/t2-s000",
+            "callerClassification": "confidential",
+            "nodeTypeFilter": null,
+            "relation": "SUPERSEDES",
+            "pathsReturned": 0,
+            "uniqueEndpoints": 0
+          }
+        },
+        {
+          "tool": "query_ontology",
+          "args": {
+            "seed": "dev/t2-s000",
+            "relation": "SUPERSEDES",
+            "max_hops": 2,
+            "caller_classification": "confidential"
+          },
+          "latency_ms": 56.0,
+          "summary": {
+            "totalPaths": 0,
+            "suppressedByClassification": 0,
+            "truncated": false,
+            "maxHopsApplied": 2,
+            "maxHopsRequested": 2,
+            "seed": "dev/t2-s000",
+            "callerClassification": "confidential",
+            "nodeTypeFilter": null,
+            "relation": "SUPERSEDES",
+            "pathsReturned": 0,
+            "uniqueEndpoints": 0
+          }
+        }
+      ]
+    }
+  ],
+  "latency_distribution": {
+    "task": "T7 warm-cache latency distribution (n=20)",
+    "p50_ms": 76.8,
+    "p95_ms": 83.1,
+    "min_ms": 69.9,
+    "max_ms": 88.1,
+    "mean_ms": 77.0,
+    "samples": [
+      69.9,
+      70.0,
+      71.8,
+      72.0,
+      73.0,
+      75.4,
+      76.0,
+      76.5,
+      76.5,
+      76.6,
+      77.1,
+      77.9,
+      78.3,
+      78.7,
+      78.7,
+      79.2,
+      79.8,
+      81.9,
+      83.1,
+      88.1
+    ]
+  }
+}

@@ -1,0 +1,1154 @@
+[
+  {
+    "src": "action.extract",
+    "type": "SATISFIED_BY",
+    "dst": "comms/meeting-insights",
+    "classification": "internal"
+  },
+  {
+    "src": "ads.extract",
+    "type": "SATISFIED_BY",
+    "dst": "research/competitive-ads-extract",
+    "classification": "internal"
+  },
+  {
+    "src": "ap.intake",
+    "type": "SATISFIED_BY",
+    "dst": "finance/ap-intake",
+    "classification": "internal"
+  },
+  {
+    "src": "article.write",
+    "type": "SATISFIED_BY",
+    "dst": "content/research-writer",
+    "classification": "internal"
+  },
+  {
+    "src": "branding.palette",
+    "type": "SATISFIED_BY",
+    "dst": "design/theme-factory",
+    "classification": "internal"
+  },
+  {
+    "src": "browser.automate",
+    "type": "SATISFIED_BY",
+    "dst": "dev/webapp-testing",
+    "classification": "internal"
+  },
+  {
+    "src": "careers.assist",
+    "type": "SATISFIED_BY",
+    "dst": "productivity/tailored-resume",
+    "classification": "internal"
+  },
+  {
+    "src": "changelog.generate",
+    "type": "SATISFIED_BY",
+    "dst": "dev/changelog-generator",
+    "classification": "internal"
+  },
+  {
+    "src": "clause.compare",
+    "type": "SATISFIED_BY",
+    "dst": "legal/msa-redlining",
+    "classification": "internal"
+  },
+  {
+    "src": "code.generate",
+    "type": "SATISFIED_BY",
+    "dst": "dev/mcp-builder",
+    "classification": "internal"
+  },
+  {
+    "src": "company.profile",
+    "type": "SATISFIED_BY",
+    "dst": "research/lead-research",
+    "classification": "internal"
+  },
+  {
+    "src": "competitor.intel",
+    "type": "SATISFIED_BY",
+    "dst": "research/competitive-ads-extract",
+    "classification": "internal"
+  },
+  {
+    "src": "content.draft",
+    "type": "SATISFIED_BY",
+    "dst": "content/research-writer",
+    "classification": "internal"
+  },
+  {
+    "src": "contract.review",
+    "type": "SATISFIED_BY",
+    "dst": "legal/msa-redlining",
+    "classification": "internal"
+  },
+  {
+    "src": "data.tabular",
+    "type": "SATISFIED_BY",
+    "dst": "office/xlsx-toolkit",
+    "classification": "internal"
+  },
+  {
+    "src": "design.canvas",
+    "type": "SATISFIED_BY",
+    "dst": "design/canvas",
+    "classification": "internal"
+  },
+  {
+    "src": "design.tokens",
+    "type": "SATISFIED_BY",
+    "dst": "design/theme-factory",
+    "classification": "internal"
+  },
+  {
+    "src": "dev.bootstrap",
+    "type": "SATISFIED_BY",
+    "dst": "dev/mcp-builder",
+    "classification": "internal"
+  },
+  {
+    "src": "document.author",
+    "type": "SATISFIED_BY",
+    "dst": "office/docx-toolkit",
+    "classification": "internal"
+  },
+  {
+    "src": "document.parse",
+    "type": "SATISFIED_BY",
+    "dst": "finance/invoice-extract",
+    "classification": "internal"
+  },
+  {
+    "src": "document.parse",
+    "type": "SATISFIED_BY",
+    "dst": "office/pdf-toolkit",
+    "classification": "internal"
+  },
+  {
+    "src": "document.rewrite",
+    "type": "SATISFIED_BY",
+    "dst": "productivity/tailored-resume",
+    "classification": "internal"
+  },
+  {
+    "src": "docx.create",
+    "type": "SATISFIED_BY",
+    "dst": "office/docx-toolkit",
+    "classification": "internal"
+  },
+  {
+    "src": "docx.edit",
+    "type": "SATISFIED_BY",
+    "dst": "office/docx-toolkit",
+    "classification": "internal"
+  },
+  {
+    "src": "files.classify",
+    "type": "SATISFIED_BY",
+    "dst": "productivity/file-organizer",
+    "classification": "internal"
+  },
+  {
+    "src": "files.organize",
+    "type": "SATISFIED_BY",
+    "dst": "productivity/file-organizer",
+    "classification": "internal"
+  },
+  {
+    "src": "files.rename",
+    "type": "SATISFIED_BY",
+    "dst": "finance/invoice-organizer",
+    "classification": "internal"
+  },
+  {
+    "src": "finance.filing",
+    "type": "SATISFIED_BY",
+    "dst": "finance/invoice-organizer",
+    "classification": "internal"
+  },
+  {
+    "src": "frontend.generate",
+    "type": "SATISFIED_BY",
+    "dst": "design/frontend",
+    "classification": "internal"
+  },
+  {
+    "src": "git.summarise",
+    "type": "SATISFIED_BY",
+    "dst": "dev/changelog-generator",
+    "classification": "internal"
+  },
+  {
+    "src": "graphic.generate",
+    "type": "SATISFIED_BY",
+    "dst": "design/canvas",
+    "classification": "internal"
+  },
+  {
+    "src": "invoice.extract",
+    "type": "SATISFIED_BY",
+    "dst": "finance/invoice-extract",
+    "classification": "internal"
+  },
+  {
+    "src": "invoice.match",
+    "type": "SATISFIED_BY",
+    "dst": "finance/po-match",
+    "classification": "internal"
+  },
+  {
+    "src": "invoice.organize",
+    "type": "SATISFIED_BY",
+    "dst": "finance/invoice-organizer",
+    "classification": "internal"
+  },
+  {
+    "src": "lead.research",
+    "type": "SATISFIED_BY",
+    "dst": "research/lead-research",
+    "classification": "internal"
+  },
+  {
+    "src": "legal.redline",
+    "type": "SATISFIED_BY",
+    "dst": "legal/msa-redlining",
+    "classification": "internal"
+  },
+  {
+    "src": "manifest.author",
+    "type": "SATISFIED_BY",
+    "dst": "dev/skill-creator",
+    "classification": "internal"
+  },
+  {
+    "src": "marketing.asset",
+    "type": "SATISFIED_BY",
+    "dst": "design/canvas",
+    "classification": "internal"
+  },
+  {
+    "src": "marketing.research",
+    "type": "SATISFIED_BY",
+    "dst": "research/competitive-ads-extract",
+    "classification": "internal"
+  },
+  {
+    "src": "mcp.scaffold",
+    "type": "SATISFIED_BY",
+    "dst": "dev/mcp-builder",
+    "classification": "internal"
+  },
+  {
+    "src": "meeting.summarise",
+    "type": "SATISFIED_BY",
+    "dst": "comms/meeting-insights",
+    "classification": "internal"
+  },
+  {
+    "src": "msa.draft",
+    "type": "SATISFIED_BY",
+    "dst": "legal/msa-redlining",
+    "classification": "internal"
+  },
+  {
+    "src": "pdf.extract",
+    "type": "SATISFIED_BY",
+    "dst": "office/pdf-toolkit",
+    "classification": "internal"
+  },
+  {
+    "src": "pdf.form.fill",
+    "type": "SATISFIED_BY",
+    "dst": "office/pdf-toolkit",
+    "classification": "internal"
+  },
+  {
+    "src": "pdf.read",
+    "type": "SATISFIED_BY",
+    "dst": "office/pdf-toolkit",
+    "classification": "internal"
+  },
+  {
+    "src": "pdf.write",
+    "type": "SATISFIED_BY",
+    "dst": "office/pdf-toolkit",
+    "classification": "internal"
+  },
+  {
+    "src": "person/analyst-003",
+    "type": "COMPLETED",
+    "dst": "training/dev-c000",
+    "classification": "internal"
+  },
+  {
+    "src": "person/analyst-003",
+    "type": "HAS_ROLE",
+    "dst": "role/analyst",
+    "classification": "internal"
+  },
+  {
+    "src": "person/analyst-003",
+    "type": "HOLDS_CERT",
+    "dst": "cert/aws-legal-000",
+    "classification": "internal"
+  },
+  {
+    "src": "person/analyst-003",
+    "type": "HOLDS_SKILL",
+    "dst": "finance/invoice-extract",
+    "classification": "internal"
+  },
+  {
+    "src": "person/analyst-003",
+    "type": "MEMBER_OF",
+    "dst": "team/marketing-cloud",
+    "classification": "internal"
+  },
+  {
+    "src": "person/analyst-003",
+    "type": "WORKED_ON",
+    "dst": "project/comms-p001",
+    "classification": "internal"
+  },
+  {
+    "src": "person/analyst-003",
+    "type": "WORKED_ON",
+    "dst": "project/design-p000",
+    "classification": "internal"
+  },
+  {
+    "src": "person/architect-004",
+    "type": "COMPLETED",
+    "dst": "training/dev-c000",
+    "classification": "internal"
+  },
+  {
+    "src": "person/architect-004",
+    "type": "HAS_ROLE",
+    "dst": "role/architect",
+    "classification": "internal"
+  },
+  {
+    "src": "person/architect-004",
+    "type": "HOLDS_CERT",
+    "dst": "cert/aws-legal-000",
+    "classification": "internal"
+  },
+  {
+    "src": "person/architect-004",
+    "type": "HOLDS_SKILL",
+    "dst": "dev/changelog-generator",
+    "classification": "internal"
+  },
+  {
+    "src": "person/architect-004",
+    "type": "HOLDS_SKILL",
+    "dst": "dev/mcp-builder",
+    "classification": "internal"
+  },
+  {
+    "src": "person/architect-004",
+    "type": "HOLDS_SKILL",
+    "dst": "dev/skill-creator",
+    "classification": "internal"
+  },
+  {
+    "src": "person/architect-004",
+    "type": "HOLDS_SKILL",
+    "dst": "dev/webapp-testing",
+    "classification": "internal"
+  },
+  {
+    "src": "person/architect-004",
+    "type": "MEMBER_OF",
+    "dst": "team/customer-success",
+    "classification": "internal"
+  },
+  {
+    "src": "person/architect-004",
+    "type": "WORKED_ON",
+    "dst": "project/comms-p001",
+    "classification": "internal"
+  },
+  {
+    "src": "person/architect-004",
+    "type": "WORKED_ON",
+    "dst": "project/design-p000",
+    "classification": "internal"
+  },
+  {
+    "src": "person/designer-002",
+    "type": "COMPLETED",
+    "dst": "training/dev-c000",
+    "classification": "internal"
+  },
+  {
+    "src": "person/designer-002",
+    "type": "HAS_ROLE",
+    "dst": "role/designer",
+    "classification": "internal"
+  },
+  {
+    "src": "person/designer-002",
+    "type": "HOLDS_CERT",
+    "dst": "cert/aws-legal-000",
+    "classification": "internal"
+  },
+  {
+    "src": "person/designer-002",
+    "type": "HOLDS_SKILL",
+    "dst": "comms/meeting-insights",
+    "classification": "internal"
+  },
+  {
+    "src": "person/designer-002",
+    "type": "HOLDS_SKILL",
+    "dst": "design/canvas",
+    "classification": "internal"
+  },
+  {
+    "src": "person/designer-002",
+    "type": "HOLDS_SKILL",
+    "dst": "design/frontend",
+    "classification": "internal"
+  },
+  {
+    "src": "person/designer-002",
+    "type": "HOLDS_SKILL",
+    "dst": "design/theme-factory",
+    "classification": "internal"
+  },
+  {
+    "src": "person/designer-002",
+    "type": "MEMBER_OF",
+    "dst": "team/data-platform",
+    "classification": "internal"
+  },
+  {
+    "src": "person/designer-002",
+    "type": "WORKED_ON",
+    "dst": "project/design-p000",
+    "classification": "internal"
+  },
+  {
+    "src": "person/eng-001",
+    "type": "COMPLETED",
+    "dst": "training/dev-c000",
+    "classification": "internal"
+  },
+  {
+    "src": "person/eng-001",
+    "type": "HAS_ROLE",
+    "dst": "role/eng",
+    "classification": "confidential"
+  },
+  {
+    "src": "person/eng-001",
+    "type": "HOLDS_CERT",
+    "dst": "cert/aws-legal-000",
+    "classification": "internal"
+  },
+  {
+    "src": "person/eng-001",
+    "type": "HOLDS_SKILL",
+    "dst": "dev/changelog-generator",
+    "classification": "confidential"
+  },
+  {
+    "src": "person/eng-001",
+    "type": "HOLDS_SKILL",
+    "dst": "dev/mcp-builder",
+    "classification": "confidential"
+  },
+  {
+    "src": "person/eng-001",
+    "type": "HOLDS_SKILL",
+    "dst": "dev/skill-creator",
+    "classification": "confidential"
+  },
+  {
+    "src": "person/eng-001",
+    "type": "HOLDS_SKILL",
+    "dst": "dev/webapp-testing",
+    "classification": "confidential"
+  },
+  {
+    "src": "person/eng-001",
+    "type": "MEMBER_OF",
+    "dst": "team/legal-ops",
+    "classification": "confidential"
+  },
+  {
+    "src": "person/eng-001",
+    "type": "WORKED_ON",
+    "dst": "project/comms-p001",
+    "classification": "confidential"
+  },
+  {
+    "src": "person/eng-001",
+    "type": "WORKED_ON",
+    "dst": "project/comms-p003",
+    "classification": "confidential"
+  },
+  {
+    "src": "person/eng-001",
+    "type": "WORKED_ON",
+    "dst": "project/design-p000",
+    "classification": "confidential"
+  },
+  {
+    "src": "person/eng-001",
+    "type": "WORKED_ON",
+    "dst": "project/design-p002",
+    "classification": "confidential"
+  },
+  {
+    "src": "person/finance-006",
+    "type": "COMPLETED",
+    "dst": "training/dev-c000",
+    "classification": "internal"
+  },
+  {
+    "src": "person/finance-006",
+    "type": "HAS_ROLE",
+    "dst": "role/finance",
+    "classification": "internal"
+  },
+  {
+    "src": "person/finance-006",
+    "type": "HOLDS_CERT",
+    "dst": "cert/aws-legal-000",
+    "classification": "internal"
+  },
+  {
+    "src": "person/finance-006",
+    "type": "HOLDS_SKILL",
+    "dst": "finance/ap-intake",
+    "classification": "internal"
+  },
+  {
+    "src": "person/finance-006",
+    "type": "HOLDS_SKILL",
+    "dst": "finance/invoice-extract",
+    "classification": "internal"
+  },
+  {
+    "src": "person/finance-006",
+    "type": "HOLDS_SKILL",
+    "dst": "finance/invoice-organizer",
+    "classification": "internal"
+  },
+  {
+    "src": "person/finance-006",
+    "type": "HOLDS_SKILL",
+    "dst": "finance/po-match",
+    "classification": "internal"
+  },
+  {
+    "src": "person/finance-006",
+    "type": "MEMBER_OF",
+    "dst": "team/research",
+    "classification": "internal"
+  },
+  {
+    "src": "person/finance-006",
+    "type": "WORKED_ON",
+    "dst": "project/comms-p001",
+    "classification": "internal"
+  },
+  {
+    "src": "person/finance-006",
+    "type": "WORKED_ON",
+    "dst": "project/design-p000",
+    "classification": "internal"
+  },
+  {
+    "src": "person/finance-006",
+    "type": "WORKED_ON",
+    "dst": "project/design-p002",
+    "classification": "internal"
+  },
+  {
+    "src": "person/hr-008",
+    "type": "HAS_ROLE",
+    "dst": "role/hr",
+    "classification": "internal"
+  },
+  {
+    "src": "person/hr-008",
+    "type": "HOLDS_SKILL",
+    "dst": "comms/meeting-insights",
+    "classification": "internal"
+  },
+  {
+    "src": "person/hr-008",
+    "type": "HOLDS_SKILL",
+    "dst": "legal/msa-redlining",
+    "classification": "internal"
+  },
+  {
+    "src": "person/hr-008",
+    "type": "MEMBER_OF",
+    "dst": "team/platform",
+    "classification": "internal"
+  },
+  {
+    "src": "person/hr-008",
+    "type": "WORKED_ON",
+    "dst": "project/comms-p001",
+    "classification": "internal"
+  },
+  {
+    "src": "person/hr-008",
+    "type": "WORKED_ON",
+    "dst": "project/design-p002",
+    "classification": "internal"
+  },
+  {
+    "src": "person/legal-005",
+    "type": "COMPLETED",
+    "dst": "training/dev-c000",
+    "classification": "internal"
+  },
+  {
+    "src": "person/legal-005",
+    "type": "HAS_ROLE",
+    "dst": "role/legal",
+    "classification": "internal"
+  },
+  {
+    "src": "person/legal-005",
+    "type": "HOLDS_CERT",
+    "dst": "cert/aws-legal-000",
+    "classification": "internal"
+  },
+  {
+    "src": "person/legal-005",
+    "type": "HOLDS_SKILL",
+    "dst": "comms/meeting-insights",
+    "classification": "internal"
+  },
+  {
+    "src": "person/legal-005",
+    "type": "HOLDS_SKILL",
+    "dst": "legal/msa-redlining",
+    "classification": "internal"
+  },
+  {
+    "src": "person/legal-005",
+    "type": "MEMBER_OF",
+    "dst": "team/security",
+    "classification": "internal"
+  },
+  {
+    "src": "person/legal-005",
+    "type": "WORKED_ON",
+    "dst": "project/comms-p001",
+    "classification": "internal"
+  },
+  {
+    "src": "person/legal-005",
+    "type": "WORKED_ON",
+    "dst": "project/comms-p003",
+    "classification": "internal"
+  },
+  {
+    "src": "person/legal-005",
+    "type": "WORKED_ON",
+    "dst": "project/design-p000",
+    "classification": "internal"
+  },
+  {
+    "src": "person/marketing-009",
+    "type": "COMPLETED",
+    "dst": "training/dev-c000",
+    "classification": "internal"
+  },
+  {
+    "src": "person/marketing-009",
+    "type": "HAS_ROLE",
+    "dst": "role/marketing",
+    "classification": "internal"
+  },
+  {
+    "src": "person/marketing-009",
+    "type": "HOLDS_CERT",
+    "dst": "cert/aws-legal-000",
+    "classification": "internal"
+  },
+  {
+    "src": "person/marketing-009",
+    "type": "HOLDS_SKILL",
+    "dst": "comms/meeting-insights",
+    "classification": "internal"
+  },
+  {
+    "src": "person/marketing-009",
+    "type": "HOLDS_SKILL",
+    "dst": "design/frontend",
+    "classification": "internal"
+  },
+  {
+    "src": "person/marketing-009",
+    "type": "HOLDS_SKILL",
+    "dst": "design/theme-factory",
+    "classification": "internal"
+  },
+  {
+    "src": "person/marketing-009",
+    "type": "MEMBER_OF",
+    "dst": "team/data-platform",
+    "classification": "internal"
+  },
+  {
+    "src": "person/marketing-009",
+    "type": "WORKED_ON",
+    "dst": "project/comms-p003",
+    "classification": "internal"
+  },
+  {
+    "src": "person/ops-007",
+    "type": "COMPLETED",
+    "dst": "training/dev-c000",
+    "classification": "internal"
+  },
+  {
+    "src": "person/ops-007",
+    "type": "HAS_ROLE",
+    "dst": "role/ops",
+    "classification": "internal"
+  },
+  {
+    "src": "person/ops-007",
+    "type": "HOLDS_CERT",
+    "dst": "cert/aws-legal-000",
+    "classification": "internal"
+  },
+  {
+    "src": "person/ops-007",
+    "type": "HOLDS_SKILL",
+    "dst": "dev/mcp-builder",
+    "classification": "internal"
+  },
+  {
+    "src": "person/ops-007",
+    "type": "HOLDS_SKILL",
+    "dst": "dev/skill-creator",
+    "classification": "internal"
+  },
+  {
+    "src": "person/ops-007",
+    "type": "HOLDS_SKILL",
+    "dst": "dev/webapp-testing",
+    "classification": "internal"
+  },
+  {
+    "src": "person/ops-007",
+    "type": "MEMBER_OF",
+    "dst": "team/people-ops",
+    "classification": "internal"
+  },
+  {
+    "src": "person/ops-007",
+    "type": "WORKED_ON",
+    "dst": "project/comms-p001",
+    "classification": "internal"
+  },
+  {
+    "src": "person/ops-007",
+    "type": "WORKED_ON",
+    "dst": "project/comms-p003",
+    "classification": "internal"
+  },
+  {
+    "src": "person/ops-007",
+    "type": "WORKED_ON",
+    "dst": "project/design-p000",
+    "classification": "internal"
+  },
+  {
+    "src": "person/pm-000",
+    "type": "COMPLETED",
+    "dst": "training/dev-c000",
+    "classification": "internal"
+  },
+  {
+    "src": "person/pm-000",
+    "type": "HAS_ROLE",
+    "dst": "role/pm",
+    "classification": "confidential"
+  },
+  {
+    "src": "person/pm-000",
+    "type": "HOLDS_CERT",
+    "dst": "cert/aws-legal-000",
+    "classification": "internal"
+  },
+  {
+    "src": "person/pm-000",
+    "type": "HOLDS_SKILL",
+    "dst": "comms/meeting-insights",
+    "classification": "confidential"
+  },
+  {
+    "src": "person/pm-000",
+    "type": "HOLDS_SKILL",
+    "dst": "dev/changelog-generator",
+    "classification": "confidential"
+  },
+  {
+    "src": "person/pm-000",
+    "type": "HOLDS_SKILL",
+    "dst": "dev/mcp-builder",
+    "classification": "confidential"
+  },
+  {
+    "src": "person/pm-000",
+    "type": "HOLDS_SKILL",
+    "dst": "dev/skill-creator",
+    "classification": "confidential"
+  },
+  {
+    "src": "person/pm-000",
+    "type": "MEMBER_OF",
+    "dst": "team/apps",
+    "classification": "confidential"
+  },
+  {
+    "src": "person/pm-000",
+    "type": "WORKED_ON",
+    "dst": "project/comms-p001",
+    "classification": "confidential"
+  },
+  {
+    "src": "person/pm-000",
+    "type": "WORKED_ON",
+    "dst": "project/design-p000",
+    "classification": "confidential"
+  },
+  {
+    "src": "po.reconcile",
+    "type": "SATISFIED_BY",
+    "dst": "finance/po-match",
+    "classification": "internal"
+  },
+  {
+    "src": "pptx.create",
+    "type": "SATISFIED_BY",
+    "dst": "office/pptx-toolkit",
+    "classification": "internal"
+  },
+  {
+    "src": "pptx.edit",
+    "type": "SATISFIED_BY",
+    "dst": "office/pptx-toolkit",
+    "classification": "internal"
+  },
+  {
+    "src": "presentation.author",
+    "type": "SATISFIED_BY",
+    "dst": "office/pptx-toolkit",
+    "classification": "internal"
+  },
+  {
+    "src": "productivity.cleanup",
+    "type": "SATISFIED_BY",
+    "dst": "productivity/file-organizer",
+    "classification": "internal"
+  },
+  {
+    "src": "project/comms-p001",
+    "type": "EMPLOYED",
+    "dst": "person/analyst-003",
+    "classification": "internal"
+  },
+  {
+    "src": "project/comms-p001",
+    "type": "EMPLOYED",
+    "dst": "person/architect-004",
+    "classification": "internal"
+  },
+  {
+    "src": "project/comms-p001",
+    "type": "EMPLOYED",
+    "dst": "person/eng-001",
+    "classification": "confidential"
+  },
+  {
+    "src": "project/comms-p001",
+    "type": "EMPLOYED",
+    "dst": "person/finance-006",
+    "classification": "internal"
+  },
+  {
+    "src": "project/comms-p001",
+    "type": "EMPLOYED",
+    "dst": "person/hr-008",
+    "classification": "internal"
+  },
+  {
+    "src": "project/comms-p001",
+    "type": "EMPLOYED",
+    "dst": "person/legal-005",
+    "classification": "internal"
+  },
+  {
+    "src": "project/comms-p001",
+    "type": "EMPLOYED",
+    "dst": "person/ops-007",
+    "classification": "internal"
+  },
+  {
+    "src": "project/comms-p001",
+    "type": "EMPLOYED",
+    "dst": "person/pm-000",
+    "classification": "confidential"
+  },
+  {
+    "src": "project/comms-p001",
+    "type": "REQUIRED",
+    "dst": "action.extract",
+    "classification": "confidential"
+  },
+  {
+    "src": "project/comms-p001",
+    "type": "REQUIRED",
+    "dst": "meeting.summarise",
+    "classification": "confidential"
+  },
+  {
+    "src": "project/comms-p003",
+    "type": "EMPLOYED",
+    "dst": "person/eng-001",
+    "classification": "confidential"
+  },
+  {
+    "src": "project/comms-p003",
+    "type": "EMPLOYED",
+    "dst": "person/legal-005",
+    "classification": "internal"
+  },
+  {
+    "src": "project/comms-p003",
+    "type": "EMPLOYED",
+    "dst": "person/marketing-009",
+    "classification": "internal"
+  },
+  {
+    "src": "project/comms-p003",
+    "type": "EMPLOYED",
+    "dst": "person/ops-007",
+    "classification": "internal"
+  },
+  {
+    "src": "project/comms-p003",
+    "type": "REQUIRED",
+    "dst": "action.extract",
+    "classification": "internal"
+  },
+  {
+    "src": "project/comms-p003",
+    "type": "REQUIRED",
+    "dst": "meeting.summarise",
+    "classification": "internal"
+  },
+  {
+    "src": "project/comms-p003",
+    "type": "REQUIRED",
+    "dst": "transcript.parse",
+    "classification": "internal"
+  },
+  {
+    "src": "project/design-p000",
+    "type": "EMPLOYED",
+    "dst": "person/analyst-003",
+    "classification": "internal"
+  },
+  {
+    "src": "project/design-p000",
+    "type": "EMPLOYED",
+    "dst": "person/architect-004",
+    "classification": "internal"
+  },
+  {
+    "src": "project/design-p000",
+    "type": "EMPLOYED",
+    "dst": "person/designer-002",
+    "classification": "internal"
+  },
+  {
+    "src": "project/design-p000",
+    "type": "EMPLOYED",
+    "dst": "person/eng-001",
+    "classification": "confidential"
+  },
+  {
+    "src": "project/design-p000",
+    "type": "EMPLOYED",
+    "dst": "person/finance-006",
+    "classification": "internal"
+  },
+  {
+    "src": "project/design-p000",
+    "type": "EMPLOYED",
+    "dst": "person/legal-005",
+    "classification": "internal"
+  },
+  {
+    "src": "project/design-p000",
+    "type": "EMPLOYED",
+    "dst": "person/ops-007",
+    "classification": "internal"
+  },
+  {
+    "src": "project/design-p000",
+    "type": "EMPLOYED",
+    "dst": "person/pm-000",
+    "classification": "confidential"
+  },
+  {
+    "src": "project/design-p000",
+    "type": "REQUIRED",
+    "dst": "marketing.asset",
+    "classification": "internal"
+  },
+  {
+    "src": "project/design-p000",
+    "type": "REQUIRED",
+    "dst": "theme.generate",
+    "classification": "internal"
+  },
+  {
+    "src": "project/design-p002",
+    "type": "EMPLOYED",
+    "dst": "person/eng-001",
+    "classification": "confidential"
+  },
+  {
+    "src": "project/design-p002",
+    "type": "EMPLOYED",
+    "dst": "person/finance-006",
+    "classification": "internal"
+  },
+  {
+    "src": "project/design-p002",
+    "type": "EMPLOYED",
+    "dst": "person/hr-008",
+    "classification": "internal"
+  },
+  {
+    "src": "project/design-p002",
+    "type": "REQUIRED",
+    "dst": "design.tokens",
+    "classification": "confidential"
+  },
+  {
+    "src": "project/design-p002",
+    "type": "REQUIRED",
+    "dst": "graphic.generate",
+    "classification": "confidential"
+  },
+  {
+    "src": "qa.smoke",
+    "type": "SATISFIED_BY",
+    "dst": "dev/webapp-testing",
+    "classification": "internal"
+  },
+  {
+    "src": "react.component",
+    "type": "SATISFIED_BY",
+    "dst": "design/frontend",
+    "classification": "internal"
+  },
+  {
+    "src": "regional.compliance",
+    "type": "SATISFIED_BY",
+    "dst": "legal/msa-redlining",
+    "classification": "internal"
+  },
+  {
+    "src": "registry.register",
+    "type": "SATISFIED_BY",
+    "dst": "dev/skill-creator",
+    "classification": "internal"
+  },
+  {
+    "src": "release.notes",
+    "type": "SATISFIED_BY",
+    "dst": "dev/changelog-generator",
+    "classification": "internal"
+  },
+  {
+    "src": "research.summarise",
+    "type": "SATISFIED_BY",
+    "dst": "content/research-writer",
+    "classification": "internal"
+  },
+  {
+    "src": "resume.tailor",
+    "type": "SATISFIED_BY",
+    "dst": "productivity/tailored-resume",
+    "classification": "internal"
+  },
+  {
+    "src": "sales.assist",
+    "type": "SATISFIED_BY",
+    "dst": "research/lead-research",
+    "classification": "internal"
+  },
+  {
+    "src": "skill.create",
+    "type": "SATISFIED_BY",
+    "dst": "dev/skill-creator",
+    "classification": "internal"
+  },
+  {
+    "src": "spreadsheet.analyse",
+    "type": "SATISFIED_BY",
+    "dst": "office/xlsx-toolkit",
+    "classification": "internal"
+  },
+  {
+    "src": "theme.generate",
+    "type": "SATISFIED_BY",
+    "dst": "design/theme-factory",
+    "classification": "internal"
+  },
+  {
+    "src": "training/dev-c000",
+    "type": "GRANTS",
+    "dst": "cert/aws-legal-000",
+    "classification": "internal"
+  },
+  {
+    "src": "transcript.parse",
+    "type": "SATISFIED_BY",
+    "dst": "comms/meeting-insights",
+    "classification": "internal"
+  },
+  {
+    "src": "ui.scaffold",
+    "type": "SATISFIED_BY",
+    "dst": "design/frontend",
+    "classification": "internal"
+  },
+  {
+    "src": "webapp.test",
+    "type": "SATISFIED_BY",
+    "dst": "dev/webapp-testing",
+    "classification": "internal"
+  },
+  {
+    "src": "xlsx.read",
+    "type": "SATISFIED_BY",
+    "dst": "office/xlsx-toolkit",
+    "classification": "internal"
+  },
+  {
+    "src": "xlsx.write",
+    "type": "SATISFIED_BY",
+    "dst": "office/xlsx-toolkit",
+    "classification": "internal"
+  }
+]

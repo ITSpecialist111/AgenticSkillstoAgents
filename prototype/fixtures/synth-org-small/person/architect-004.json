@@ -1,0 +1,13 @@
+{
+  "id": "person/architect-004",
+  "kind": "Person",
+  "name": "Architect #004",
+  "role": "Architect",
+  "team": "Customer Success",
+  "manager": null,
+  "hireDate": "2019-03-26",
+  "governance": {
+    "dataClassification": "internal",
+    "visibility": "org"
+  }
+}

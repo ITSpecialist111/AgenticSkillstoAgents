@@ -325,6 +325,7 @@ def tool_query_ontology(
     relation: Optional[str] = None,
     max_hops: int = 3,
     caller_classification: str = "internal",
+    node_type_filter: Optional[List[str]] = None,
     *,
     ontology: Optional[Any] = None,
     result_limit: int = 50,
@@ -332,6 +333,10 @@ def tool_query_ontology(
     """Return graph paths from ``seed`` up to ``max_hops`` deep.
 
     ``relation`` filters the first hop (e.g. ``DEPENDS_ON``, ``PROVIDES``).
+    ``node_type_filter`` (Stage F Phase 1) restricts results to paths whose
+    *terminal* node has one of the listed types (e.g. ``["Skill"]`` from a
+    Person seed). The traversal still walks every edge; the filter is applied
+    to endpoints only.
     ``caller_classification`` gates paths whose max-sensitivity edge exceeds
     the caller's clearance — defaults to ``internal`` (suppresses confidential
     and restricted) until Stage E wires real principals.
@@ -343,7 +348,7 @@ def tool_query_ontology(
 
     requested = max(1, int(max_hops))
     effective = min(requested, MAX_HOPS_CEILING)
-    paths = ontology.paths(seed, relation, effective)
+    paths = ontology.paths(seed, relation, effective, node_type_filter=node_type_filter)
 
     caller_rank = _CLASSIFICATION_RANK.get(caller_classification.lower(), 1)
     visible = [
@@ -363,10 +368,85 @@ def tool_query_ontology(
         "maxHopsRequested": requested,
         "maxHopsApplied": effective,
         "callerClassification": caller_classification,
+        "nodeTypeFilter": node_type_filter,
         "totalPaths": len(paths),
         "suppressedByClassification": suppressed,
         "truncated": truncated,
         "paths": [p.to_dict() for p in visible],
+    }
+
+
+# --- list_org_entities (Stage F Phase 1) --------------------------------------
+#
+# Discovery helper for cross-domain seeds. Reads the parquet emitted by
+# ``fabric_export --org-dir ...`` — same source the ontology query layer uses,
+# so we never go out of sync. Filters by node_type, returns summaries with the
+# properties the projection wrote into ``properties_json``.
+
+_ORG_ENTITY_TYPES = {"Person", "Project", "Training", "Certification", "Role", "Team"}
+
+
+def tool_list_org_entities(
+    entity_type: str,
+    limit: int = 50,
+    *,
+    parquet_dir: Optional[str] = None,
+) -> Dict[str, Any]:
+    """List org-graph entities of a given type. Reads ``nodes.parquet``.
+
+    Returns ``{entityType, total, returned, entities: [{id, label, properties}]}``.
+    Raises ``ValueError`` for an unknown ``entity_type`` so the MCP layer
+    surfaces it as a tool error rather than an empty result.
+    """
+    if entity_type not in _ORG_ENTITY_TYPES:
+        raise ValueError(
+            f"unknown entity_type {entity_type!r}; expected one of "
+            f"{sorted(_ORG_ENTITY_TYPES)}"
+        )
+    import json as _json
+    import duckdb
+    from ontology_query import default_parquet_dir
+
+    pq_dir = parquet_dir or os.environ.get("ONTOLOGY_PARQUET_DIR") or default_parquet_dir()
+    nodes_path = os.path.join(pq_dir, "nodes.parquet")
+    if not os.path.exists(nodes_path):
+        raise FileNotFoundError(
+            f"nodes.parquet missing in {pq_dir!r}; run fabric_export --org-dir first"
+        )
+
+    limit = max(1, min(int(limit), 500))
+    con = duckdb.connect(":memory:")
+    try:
+        total = con.execute(
+            f"SELECT COUNT(*) FROM read_parquet('{nodes_path}') WHERE node_type = ?",
+            [entity_type],
+        ).fetchone()[0]
+        rows = con.execute(
+            f"""
+            SELECT node_id, label, properties_json
+              FROM read_parquet('{nodes_path}')
+             WHERE node_type = ?
+          ORDER BY node_id
+             LIMIT ?
+            """,
+            [entity_type, limit],
+        ).fetchall()
+    finally:
+        con.close()
+
+    entities = []
+    for node_id, label, props_json in rows:
+        try:
+            props = _json.loads(props_json) if props_json else {}
+        except _json.JSONDecodeError:
+            props = {}
+        entities.append({"id": node_id, "label": label, "properties": props})
+
+    return {
+        "entityType": entity_type,
+        "total": int(total),
+        "returned": len(entities),
+        "entities": entities,
     }
 
 
@@ -675,12 +755,17 @@ def build_server(*, examples_dir: Optional[str] = None):
     @server.tool(
         description=(
             "Traverse the skills ontology graph from a seed node (skill id, capability "
-            "tag, data type, or condition). Returns paths up to max_hops deep, each "
-            "with per-hop provenance (source, edge type, target, confidence, data "
-            "classification). Optional `relation` filters the first hop "
-            "(PROVIDES, CONSUMES, PRODUCES, REQUIRES, CAUSES, DEPENDS_ON, SUPERSEDES). "
-            "Server-side hop cap = 5. Use this to answer questions like 'what depends "
-            "on legal.redline?' or 'which skills produce DocxDocument?'."
+            "tag, data type, condition, person id, project id, training id, or "
+            "certification id). Returns paths up to max_hops deep, each with per-hop "
+            "provenance (source, edge type, target, confidence, data classification). "
+            "Optional `relation` filters the first hop (PROVIDES, CONSUMES, PRODUCES, "
+            "REQUIRES, CAUSES, DEPENDS_ON, SUPERSEDES, HAS_ROLE, MEMBER_OF, WORKED_ON, "
+            "EMPLOYED, REQUIRED, SATISFIED_BY, HOLDS_SKILL, COMPLETED, GRANTS, "
+            "HOLDS_CERT). Optional `node_type_filter` restricts results to paths whose "
+            "*terminal* node matches one of the listed types (e.g. ['Skill'] from a "
+            "person seed). Server-side hop cap = 5. Use this to answer questions like "
+            "'what depends on legal.redline?', 'which skills produce DocxDocument?', or "
+            "'which skills can person/eng-042 contribute to?'."
         )
     )
     def query_ontology(
@@ -688,12 +773,14 @@ def build_server(*, examples_dir: Optional[str] = None):
         relation: Optional[str] = None,
         max_hops: int = 3,
         caller_classification: str = "internal",
+        node_type_filter: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
         args = {
             "seed": seed,
             "relation": relation,
             "max_hops": max_hops,
             "caller_classification": caller_classification,
+            "node_type_filter": node_type_filter,
         }
         with record_call(
             tel,
@@ -711,7 +798,32 @@ def build_server(*, examples_dir: Optional[str] = None):
                 relation=relation,
                 max_hops=max_hops,
                 caller_classification=caller_classification,
+                node_type_filter=node_type_filter,
             )
+            return ctx["result"]
+
+    @server.tool(
+        description=(
+            "List org-graph entities of a given type (Person, Project, Training, "
+            "Certification, Role, Team) so an agent can find seeds for query_ontology. "
+            "Returns {entityType, total, returned, entities:[{id, label, properties}]}. "
+            "Reads the parquet emitted by fabric_export --org-dir; raises if the org "
+            "graph hasn't been projected. Use this to discover starting points before "
+            "traversing the cross-domain graph."
+        )
+    )
+    def list_org_entities(entity_type: str, limit: int = 50) -> Dict[str, Any]:
+        args = {"entity_type": entity_type, "limit": limit}
+        with record_call(
+            tel,
+            tool="list_org_entities",
+            args=args,
+            extras_factory=lambda r: {
+                "total": r.get("total", 0) if r else 0,
+                "returned": r.get("returned", 0) if r else 0,
+            },
+        ) as ctx:
+            ctx["result"] = tool_list_org_entities(entity_type=entity_type, limit=limit)
             return ctx["result"]
 
     @server.tool(

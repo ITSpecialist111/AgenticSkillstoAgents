@@ -31,6 +31,24 @@ This schema is what the **Ontology Builder Agent**
 | **Scope** | `governance.*` | Visibility, RBAC, data classification — the trust boundary. |
 | **Owner** | `identity.owner.*` | Accountable maker/team (lineage, hand-off). |
 
+### Stage F Phase 1 — cross-domain entities
+
+Projected alongside the skill graph by `fabric_export.py --org-dir`. These
+six entity types extend the ontology into adjacent enterprise graphs and
+let an agent traverse `Person → Project → Capability → Skill` without
+leaving the same query layer. Per-entity sources today are synthetic
+(`prototype/chassis/synth_org.py`); Phase 3 replaces them with real
+adapters (Entra, Project/Planner, Viva Learning, etc.).
+
+| Entity | Derived from | Purpose |
+|---|---|---|
+| **Person** | org adapter (Entra in Phase 3; `synth_org` in Phase 1) | An individual maker, contributor, or stakeholder. Carries role, team, manager, `dataClassification`. |
+| **Project** | project/work adapter | A scoped delivery (RFP, programme, internal initiative). Required capabilities + employed people. |
+| **Training** | LMS adapter | A learning artifact (course, module). Covers capability tags; may grant a Certification. |
+| **Certification** | credential adapter | A holdable credential issued by some authority. Implies one or more capability tags. |
+| **Role** | derived from Person.role | A named role (PM, Eng, Architect, …). One per Person. |
+| **Team** | derived from Person.team | An organisational unit. One MEMBER_OF edge per Person. |
+
 ## Relationships
 
 ```
@@ -45,6 +63,18 @@ This schema is what the **Ontology Builder Agent**
 (Skill) ─GOVERNED_BY▶ (Scope)
 (Agent) ─MAY_COMPOSE▶ (Capability)   // capped agents bind to capabilities, not skills
 (Capability) ─DUPLICATE_OF▶ (Capability) // proposed by the Ontology Builder Agent
+
+// Stage F Phase 1 — cross-domain edges
+(Person)       ─HAS_ROLE▶     (Role)
+(Person)       ─MEMBER_OF▶    (Team)
+(Person)       ─WORKED_ON▶    (Project)
+(Project)      ─EMPLOYED▶     (Person)        // symmetric to WORKED_ON
+(Project)      ─REQUIRED▶     (Capability)
+(Capability)   ─SATISFIED_BY▶ (Skill)         // derived from PROVIDES inverse
+(Person)       ─HOLDS_SKILL▶  (Skill)
+(Person)       ─COMPLETED▶    (Training)
+(Training)     ─GRANTS▶       (Certification)
+(Person)       ─HOLDS_CERT▶   (Certification) // derived from COMPLETED + GRANTS
 ```
 
 ### Composition chaining rule

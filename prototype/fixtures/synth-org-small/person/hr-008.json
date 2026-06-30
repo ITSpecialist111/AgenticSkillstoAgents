@@ -1,0 +1,13 @@
+{
+  "id": "person/hr-008",
+  "kind": "Person",
+  "name": "HR #008",
+  "role": "HR",
+  "team": "Platform",
+  "manager": "person/pm-000",
+  "hireDate": "2016-01-19",
+  "governance": {
+    "dataClassification": "internal",
+    "visibility": "org"
+  }
+}

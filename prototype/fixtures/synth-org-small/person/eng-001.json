@@ -1,0 +1,13 @@
+{
+  "id": "person/eng-001",
+  "kind": "Person",
+  "name": "Eng #001",
+  "role": "Eng",
+  "team": "Legal Ops",
+  "manager": "person/pm-000",
+  "hireDate": "2022-09-09",
+  "governance": {
+    "dataClassification": "confidential",
+    "visibility": "org"
+  }
+}

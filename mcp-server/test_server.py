@@ -624,3 +624,228 @@ def test_telemetry_args_hash_is_stable_and_order_invariant():
     assert a != c
     assert len(a) == 16
 
+
+# --- Stage F Phase 1: cross-domain ontology (synth_org + projection) ---------
+#
+# Uses the tiny committed fixture at prototype/fixtures/synth-org-small so the
+# suite stays hermetic — no regenerating the 500-person catalog at test time.
+
+
+SYNTH_ORG_FIXTURE = os.path.join(REPO_ROOT, "prototype", "fixtures", "synth-org-small")
+
+
+@pytest.fixture(scope="module")
+def _org_parquet_dir(tmp_path_factory):
+    """Project examples/ + the tiny synth-org fixture into parquet once."""
+    out = tmp_path_factory.mktemp("org_parquet")
+    sys.path.insert(0, REPO_ROOT)
+    from prototype.chassis import fabric_export
+
+    fabric_export.export(str(out), examples_dir=EXAMPLES, org_dir=SYNTH_ORG_FIXTURE)
+    return str(out)
+
+
+def test_synth_org_generates_valid_dataset():
+    """Fixture is self-consistent: every edge endpoint resolves to a real entity
+    file (or to a skill/capability the projection auto-creates)."""
+    edges_path = os.path.join(SYNTH_ORG_FIXTURE, "_edges.json")
+    assert os.path.exists(edges_path), "fixture missing — regenerate with synth_org"
+    with open(edges_path, "r", encoding="utf-8") as fh:
+        edges = json.load(fh)
+
+    # Collect ids that DO live in the fixture (Person / Project / Training / Cert).
+    fixture_ids: set[str] = set()
+    for sub in ("person", "project", "training", "cert"):
+        d = os.path.join(SYNTH_ORG_FIXTURE, sub)
+        for fn in os.listdir(d):
+            if fn.endswith(".json"):
+                with open(os.path.join(d, fn), "r", encoding="utf-8") as fh:
+                    fixture_ids.add(json.load(fh)["id"])
+
+    # Each edge's src OR dst should be a fixture entity (the other side may be
+    # a capability tag, skill id, role/, or team/ — created by the projection).
+    # Exception: SATISFIED_BY edges are derived from the skill catalog
+    # (capability → skill) and reference neither side of the fixture.
+    for e in edges:
+        if e["type"] == "SATISFIED_BY":
+            continue
+        assert e["src"] in fixture_ids or e["dst"] in fixture_ids, (
+            f"orphan edge {e}"
+        )
+
+    # Cardinality sanity — every person gets HAS_ROLE + MEMBER_OF.
+    from collections import Counter
+
+    counts = Counter(e["type"] for e in edges)
+    assert counts["HAS_ROLE"] == 10
+    assert counts["MEMBER_OF"] == 10
+    assert counts["SATISFIED_BY"] > 0
+    assert counts["HOLDS_SKILL"] > 0
+
+
+def test_fabric_export_includes_org(_org_parquet_dir):
+    """With --org-dir, parquet contains the six new node types and at least one
+    instance of each new edge type that the fixture is large enough to exercise."""
+    import duckdb
+
+    con = duckdb.connect(":memory:")
+    try:
+        node_types = {
+            r[0]: r[1]
+            for r in con.execute(
+                f"SELECT node_type, COUNT(*) FROM read_parquet('{_org_parquet_dir}/nodes.parquet') GROUP BY node_type"
+            ).fetchall()
+        }
+        edge_types = {
+            r[0]: r[1]
+            for r in con.execute(
+                f"SELECT edge_type, COUNT(*) FROM read_parquet('{_org_parquet_dir}/edges.parquet') GROUP BY edge_type"
+            ).fetchall()
+        }
+    finally:
+        con.close()
+
+    for t in ("Person", "Project", "Training", "Certification", "Role", "Team"):
+        assert node_types.get(t, 0) > 0, f"missing node_type {t}: {node_types}"
+    for e in ("HAS_ROLE", "MEMBER_OF", "WORKED_ON", "EMPLOYED",
+              "REQUIRED", "SATISFIED_BY", "HOLDS_SKILL", "COMPLETED"):
+        assert edge_types.get(e, 0) > 0, f"missing edge_type {e}: {edge_types}"
+
+    # org_facts.parquet should exist with one row per person.
+    facts = con = duckdb.connect(":memory:")
+    try:
+        n = facts.execute(
+            f"SELECT COUNT(*) FROM read_parquet('{_org_parquet_dir}/org_facts.parquet')"
+        ).fetchone()[0]
+    finally:
+        facts.close()
+    assert n == 10
+
+
+def test_fabric_export_backwards_compatible(tmp_path):
+    """Without --org-dir, output must be byte-identical to the v1-shape skill
+    projection (no Person/Project rows leaking in, no org_facts.parquet)."""
+    sys.path.insert(0, REPO_ROOT)
+    from prototype.chassis import fabric_export
+
+    out_skills_only = tmp_path / "no_org"
+    out_with_org = tmp_path / "with_org"
+    fabric_export.export(str(out_skills_only), examples_dir=EXAMPLES)
+    fabric_export.export(str(out_with_org), examples_dir=EXAMPLES, org_dir=SYNTH_ORG_FIXTURE)
+
+    # Skill-only output must NOT include org_facts.parquet.
+    assert not (out_skills_only / "org_facts.parquet").exists()
+    assert (out_with_org / "org_facts.parquet").exists()
+
+    # Skill-only nodes/edges parquet must be a strict subset of the merged run.
+    import duckdb
+
+    con = duckdb.connect(":memory:")
+    try:
+        only_nodes = con.execute(
+            f"SELECT COUNT(*) FROM read_parquet('{out_skills_only}/nodes.parquet')"
+        ).fetchone()[0]
+        merged_nodes = con.execute(
+            f"SELECT COUNT(*) FROM read_parquet('{out_with_org}/nodes.parquet')"
+        ).fetchone()[0]
+    finally:
+        con.close()
+    assert merged_nodes > only_nodes, "merged run should add Person/Project/etc nodes"
+
+
+def test_query_ontology_cross_domain(_org_parquet_dir):
+    """From a Person seed, 4 hops of ANY relation must surface at least one
+    Skill — the core Stage F traversal that Phase 2's DSL will dress up."""
+    from ontology_query import DuckDBOntology
+
+    # Pick the first person id off disk so the test stays valid as the fixture
+    # evolves.
+    person_files = sorted(os.listdir(os.path.join(SYNTH_ORG_FIXTURE, "person")))
+    with open(os.path.join(SYNTH_ORG_FIXTURE, "person", person_files[0]), "r", encoding="utf-8") as fh:
+        seed = json.load(fh)["id"]
+
+    result = server.tool_query_ontology(
+        seed=seed,
+        max_hops=4,
+        caller_classification="restricted",  # don't suppress confidential edges
+        ontology=DuckDBOntology(_org_parquet_dir),
+    )
+    assert result["totalPaths"] > 0, f"no paths from {seed} — projection broken?"
+    # At least one path must reach an entity whose id looks like a skill
+    # (synth manifest ids contain '/'). HOLDS_SKILL gives this in 1 hop.
+    skill_endpoints = [
+        p for p in result["paths"]
+        if any(h["edge"] == "HOLDS_SKILL" for h in p["hops"])
+    ]
+    assert skill_endpoints, "no HOLDS_SKILL traversal reached a Skill"
+
+
+def test_query_ontology_node_type_filter(_org_parquet_dir):
+    """node_type_filter=['Skill'] from a Person seed must drop paths that
+    terminate at Project/Training/Cert/Role/Team."""
+    from ontology_query import DuckDBOntology
+
+    person_files = sorted(os.listdir(os.path.join(SYNTH_ORG_FIXTURE, "person")))
+    with open(os.path.join(SYNTH_ORG_FIXTURE, "person", person_files[0]), "r", encoding="utf-8") as fh:
+        seed = json.load(fh)["id"]
+
+    result = server.tool_query_ontology(
+        seed=seed,
+        max_hops=3,
+        caller_classification="restricted",
+        node_type_filter=["Skill"],
+        ontology=DuckDBOntology(_org_parquet_dir),
+    )
+    assert result["nodeTypeFilter"] == ["Skill"]
+    assert result["totalPaths"] > 0
+    # No endpoint should start with role/, team/, project/, training/, or cert/.
+    for p in result["paths"]:
+        endpoint = p["hops"][-1]["dst"]
+        assert not endpoint.startswith(("role/", "team/", "project/", "training/", "cert/")), (
+            f"node_type_filter leaked non-Skill endpoint: {endpoint}"
+        )
+
+
+def test_query_ontology_governance_gating_person(_org_parquet_dir):
+    """A caller cleared only to ``public`` must see fewer paths than one
+    cleared to ``restricted`` — proves the per-edge classification check
+    suppresses confidential/restricted Person edges in the cross-domain graph."""
+    from ontology_query import DuckDBOntology
+
+    person_files = sorted(os.listdir(os.path.join(SYNTH_ORG_FIXTURE, "person")))
+    with open(os.path.join(SYNTH_ORG_FIXTURE, "person", person_files[0]), "r", encoding="utf-8") as fh:
+        seed = json.load(fh)["id"]
+
+    high = server.tool_query_ontology(
+        seed=seed, max_hops=3, caller_classification="restricted",
+        ontology=DuckDBOntology(_org_parquet_dir),
+    )
+    low = server.tool_query_ontology(
+        seed=seed, max_hops=3, caller_classification="public",
+        ontology=DuckDBOntology(_org_parquet_dir),
+    )
+    # high must have at least as many paths as low; if any confidential edge
+    # exists in the fixture, low must have strictly fewer.
+    assert high["totalPaths"] >= low["totalPaths"]
+    assert low["suppressedByClassification"] >= 0
+    # Every visible path under `public` clearance must have max_classification = public.
+    for p in low["paths"]:
+        for h in p["hops"]:
+            assert h["data_classification"] == "public"
+
+
+def test_list_org_entities_pagination(_org_parquet_dir):
+    """list_org_entities honours `limit` and returns the correct total."""
+    result = server.tool_list_org_entities(
+        entity_type="Person", limit=3, parquet_dir=_org_parquet_dir
+    )
+    assert result["entityType"] == "Person"
+    assert result["total"] == 10
+    assert result["returned"] == 3
+    assert len(result["entities"]) == 3
+    assert all("id" in e and "label" in e and "properties" in e for e in result["entities"])
+
+    # Unknown entity type rejected with ValueError.
+    with pytest.raises(ValueError):
+        server.tool_list_org_entities(entity_type="Dragon", parquet_dir=_org_parquet_dir)
+

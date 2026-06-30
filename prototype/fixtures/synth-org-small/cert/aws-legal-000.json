@@ -1,0 +1,17 @@
+{
+  "id": "cert/aws-legal-000",
+  "kind": "Certification",
+  "title": "AWS Legal Certified",
+  "issuer": "AWS",
+  "domain": "legal",
+  "validityYears": 1,
+  "impliesCapabilities": [
+    "contract.review",
+    "msa.draft",
+    "legal.redline"
+  ],
+  "governance": {
+    "dataClassification": "internal",
+    "visibility": "org"
+  }
+}

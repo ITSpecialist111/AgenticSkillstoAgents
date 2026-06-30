@@ -1,0 +1,13 @@
+{
+  "id": "person/legal-005",
+  "kind": "Person",
+  "name": "Legal #005",
+  "role": "Legal",
+  "team": "Security",
+  "manager": "person/pm-000",
+  "hireDate": "2023-04-28",
+  "governance": {
+    "dataClassification": "internal",
+    "visibility": "org"
+  }
+}

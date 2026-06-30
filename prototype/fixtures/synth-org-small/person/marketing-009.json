@@ -1,0 +1,13 @@
+{
+  "id": "person/marketing-009",
+  "kind": "Person",
+  "name": "Marketing #009",
+  "role": "Marketing",
+  "team": "Data Platform",
+  "manager": "person/pm-000",
+  "hireDate": "2015-07-15",
+  "governance": {
+    "dataClassification": "internal",
+    "visibility": "org"
+  }
+}

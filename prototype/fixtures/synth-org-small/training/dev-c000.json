@@ -1,0 +1,18 @@
+{
+  "id": "training/dev-c000",
+  "kind": "Training",
+  "title": "Dev Course 000",
+  "provider": "LinkedIn Learning",
+  "durationHours": 4,
+  "domain": "dev",
+  "coversCapabilities": [
+    "mcp.scaffold",
+    "browser.automate",
+    "registry.register"
+  ],
+  "grantsCertification": "cert/aws-legal-000",
+  "governance": {
+    "dataClassification": "internal",
+    "visibility": "org"
+  }
+}

@@ -52,7 +52,7 @@ mirror in one place and consciously deconflict from in another.**
 
 | Layer of theirs | Layer of ours | Relationship |
 |---|---|---|
-| Work IQ MCP (10 generic tools, paths) | `mcp-server/server.py` (3 read-only tools) | **Mirror the design**: keep our tool count tiny, push variability into resource paths/inputs, not into new tools. |
+| Work IQ MCP (10 generic tools, paths) | `mcp-server/server.py` (5 read-only tools after Stage F Phase 1) | **Mirror the design**: keep our tool count tiny, push variability into resource paths/inputs, not into new tools. |
 | Work IQ Data + Context | Manifest + ontology graph | **Distinct**. Theirs is "how people work"; ours is "what skills exist and what they mean". The two are complementary, not overlapping. |
 | Work IQ Skills (Business skills, Dataverse) | Our Skill manifests | **Same word, different scope**. Their "skill" = a NL instruction layer over Dataverse/M365. Ours = a registered, governed, deterministic capability with IOPE. Do not conflate them — call ours **Capability Skills** when speaking to anyone Microsoft-fluent. |
 | Fabric IQ Ontology MCP | Our future ontology MCP tool | **Pattern to copy.** Their Fabric IQ Ontology MCP server exposes "query organizational knowledge graphs to discover entities and relationships." That is exactly what our `prototype/out/ontology.json` should expose once it's served. |
@@ -209,6 +209,30 @@ start until Stage B is real, because synthetic traffic teaches nothing.
 
 ### Stage F — Cross-domain ontology: skills + projects + training + people
 
+> **Phase 1 complete (2026-06-30) — live in Cowork.** Synthetic
+> Person/Project/Training/Certification entities + 10 new edge types
+> projected into the same parquet store the Stage D query layer
+> already reads. `query_ontology` now accepts cross-domain seeds + an
+> optional `node_type_filter`, and a new `list_org_entities` MCP tool
+> surfaces the new node types. **Scale bump same day — image `:v7`
+> (revision `ca-cowork-mcp--0000007`)** swaps the 22 curated examples
+> for the full 1000-skill synth catalog (`synth_skills --count 1000
+> --seed 42` baked into `/app/examples` at build time) alongside the
+> 500-person org, so what Cowork actually queries is the at-scale
+> graph: **2 348 nodes / 20 440 edges** in production. Plugin
+> `v0.3.0` (GUID preserved, in-place upgrade). End-to-end Cowork
+> capture (against `:v6` / 22+10) from `person/architect-004`
+> returned 50 paths (32 visible, 18 suppressed by classification,
+> `truncated=false`) across all three expected route patterns
+> (HOLDS_SKILL direct, WORKED_ON→EMPLOYED→HOLDS_SKILL colleague
+> reach, WORKED_ON→REQUIRED→SATISFIED_BY capability match). Bench at
+> the same 2 348 / 20 440 scale → 5-hop Person→Skill (filtered) p95
+> **779 ms**, well under the 2 s Stage F success criterion (most
+> agent calls use `result_limit` and complete in <50 ms). Phase 2
+> (Cypher-lite `query_org_graph` DSL) and Phase 3 (real-source
+> adapters) remain. Evidence:
+> [`stage-f-phase1-evidence.md`](stage-f-phase1-evidence.md).
+
 (a) **Goal.** Extend the ontology beyond *skills* into adjacent
 enterprise graphs — **Projects, People, Roles, Training,
 Certifications, Teams** — and expose **multi-hop traversal** as an MCP
@@ -301,6 +325,28 @@ enforcement on traversal (the part you cannot skip).
 sub-graph) must be live; Stage E (telemetry) materially improves
 ranking but is not a hard blocker — the graph itself is meaningful
 without invocation history.
+
+(i) **Phasing + status.**
+
+- **Phase 1 — data layer + projection + governance + reuse of
+  `query_ontology` for cross-domain seeds.** *Complete (2026-06-30).*
+  Ships: `prototype/chassis/synth_org.py` (synthetic People/Project/
+  Training/Cert generator); `fabric_export.py` extended with
+  `--org-dir`; `ontology_query.py` extended with `node_type_filter`;
+  `query_ontology` MCP tool extended with the same kwarg; new
+  `list_org_entities(entity_type, limit)` MCP tool; tiny committed
+  fixture at `prototype/fixtures/synth-org-small/` (10 people / 4
+  projects / 3 training / 2 certs / 192 edges); 7 new server tests
+  (43 total green); bench extended with `--include-org`. Schema bumped
+  to `ontology.parquet/v2`; backwards-compatible (no `--org-dir` →
+  byte-identical to v1).
+- **Phase 2 — `query_org_graph` Cypher-lite DSL.** Pending. Phase 1
+  proved the graph + governance + latency; Phase 2 adds the
+  pattern-match surface the §F(f) 5-hop PM success criterion needs.
+  Estimate: 4–5 days on top of Phase 1.
+- **Phase 3 — real-source adapters (GitHub, M365/Entra, Project/
+  Planner/Jira, Viva Learning) + Work IQ federation.** Pending. Most
+  of the original §F(g) two-to-three-week estimate lives here.
 
 ### Why this order
 
