@@ -90,8 +90,7 @@ resource filesystem 'Microsoft.Storage/storageAccounts/blobServices/containers@2
 }
 
 // Grant the MCP server's SP read access on the parquet drop. The Fabric SQL
-// endpoint inherits this via the OneLake shortcut, so a single role assignment
-// covers both the upload-time check and the query-time check.
+// endpoint inherits this via the OneLake shortcut for query-time access.
 var storageBlobDataReaderRoleId = '2a2b9908-6ea1-4ae2-8e65-a410df84e7d1'
 
 resource spStorageReader 'Microsoft.Authorization/roleAssignments@2022-04-01' = {

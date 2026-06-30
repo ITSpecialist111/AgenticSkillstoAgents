@@ -197,15 +197,37 @@ class DuckDBOntology:
 class FabricOntology:
     """Queries a Fabric Lakehouse SQL endpoint over the same schema.
 
-    Stubbed for now — the wiring happens once the user runs the runbook in
-    ``docs/fabric-iq-setup.md`` and uploads the parquet to OneLake. The query
-    text is byte-identical to the DuckDB path because Fabric SQL also supports
-    ``WITH RECURSIVE``; the only diff is connection + auth.
+    Connects with pyodbc using an Entra ID token from a ClientSecretCredential
+    (service principal must be a workspace Viewer with Build on the lakehouse).
+    The recursive CTE is the T-SQL equivalent of the DuckDB query — same
+    semantics, JSON-accumulated hops for cross-engine portability.
     """
 
     def __init__(self, sql_endpoint: str, *, database: str = "skills_ontology"):
         self.sql_endpoint = sql_endpoint
         self.database = database
+
+    def _connect(self):
+        import struct
+        import pyodbc
+        from azure.identity import ClientSecretCredential
+
+        cred = ClientSecretCredential(
+            tenant_id=os.environ["AZURE_TENANT_ID"],
+            client_id=os.environ["AZURE_CLIENT_ID"],
+            client_secret=os.environ["AZURE_CLIENT_SECRET"],
+        )
+        token = cred.get_token("https://database.windows.net/.default").token
+        token_bytes = token.encode("utf-16-le")
+        token_struct = struct.pack(f"<I{len(token_bytes)}s", len(token_bytes), token_bytes)
+        SQL_COPT_SS_ACCESS_TOKEN = 1256
+        conn_str = (
+            "Driver={ODBC Driver 18 for SQL Server};"
+            f"Server={self.sql_endpoint},1433;"
+            f"Database={self.database};"
+            "Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;"
+        )
+        return pyodbc.connect(conn_str, attrs_before={SQL_COPT_SS_ACCESS_TOKEN: token_struct})
 
     def paths(
         self,
@@ -214,11 +236,83 @@ class FabricOntology:
         max_hops: int,
         filters: Optional[Dict[str, Any]] = None,
     ) -> List[Path]:
-        raise NotImplementedError(
-            "Fabric backend is wired up by docs/fabric-iq-setup.md. "
-            "Once you have a SQL endpoint URI, set FABRIC_SQL_ENDPOINT and "
-            "implement this method with pyodbc + ManagedIdentityCredential."
-        )
+        import json as _json
+
+        max_hops = max(1, min(int(max_hops), MAX_HOPS_CEILING))
+        relation_clause = "AND e.edge_type = ?" if relation else ""
+        # FOR JSON PATH on a derived row builds a singleton array; we strip the
+        # outer brackets when appending in the recursive step.
+        query = f"""
+            WITH walk AS (
+                SELECT
+                    CAST(1 AS INT) AS depth,
+                    CAST(e.dst_id AS NVARCHAR(4000)) AS frontier,
+                    CAST('/' + e.src_id + '/' + e.dst_id + '/' AS NVARCHAR(4000)) AS visited,
+                    CAST(
+                        (SELECT e.src_id AS src, e.edge_type AS [edge], e.dst_id AS dst,
+                                e.confidence AS confidence,
+                                e.data_classification AS data_classification
+                         FOR JSON PATH) AS NVARCHAR(MAX)
+                    ) AS hops_json
+                FROM dbo.edges e
+                WHERE e.src_id = ? {relation_clause}
+
+                UNION ALL
+
+                SELECT
+                    w.depth + 1,
+                    CAST(e.dst_id AS NVARCHAR(4000)),
+                    CAST(w.visited + e.dst_id + '/' AS NVARCHAR(4000)),
+                    CAST(
+                        SUBSTRING(w.hops_json, 1, LEN(w.hops_json) - 1)
+                        + ','
+                        + SUBSTRING(
+                            (SELECT e.src_id AS src, e.edge_type AS [edge], e.dst_id AS dst,
+                                    e.confidence AS confidence,
+                                    e.data_classification AS data_classification
+                             FOR JSON PATH),
+                            2, LEN(CAST(
+                                (SELECT e.src_id AS src, e.edge_type AS [edge], e.dst_id AS dst,
+                                        e.confidence AS confidence,
+                                        e.data_classification AS data_classification
+                                 FOR JSON PATH) AS NVARCHAR(MAX))) - 1)
+                        AS NVARCHAR(MAX)
+                    )
+                FROM walk w
+                JOIN dbo.edges e ON e.src_id = w.frontier
+                WHERE w.depth < ?
+                  AND CHARINDEX('/' + e.dst_id + '/', w.visited) = 0
+            )
+            SELECT hops_json FROM walk ORDER BY depth, frontier
+        """
+        params: List[Any] = [seed]
+        if relation:
+            params.append(relation)
+        params.append(max_hops)
+
+        with self._connect() as conn:
+            cur = conn.cursor()
+            cur.execute(query, params)
+            rows = cur.fetchall()
+
+        results: List[Path] = []
+        for (hops_json,) in rows:
+            hops_struct = _json.loads(hops_json)
+            results.append(
+                Path(
+                    hops=[
+                        Hop(
+                            src_id=h["src"],
+                            edge_type=h["edge"],
+                            dst_id=h["dst"],
+                            confidence=float(h["confidence"]),
+                            data_classification=h["data_classification"],
+                        )
+                        for h in hops_struct
+                    ]
+                )
+            )
+        return results
 
 
 # --- selector -----------------------------------------------------------------

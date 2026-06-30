@@ -13,3 +13,14 @@ cowork-*.png
 # Pre-built plugin packages — re-build locally if you want to install
 *.zip
 infra/**/main.json
+
+# Bicep parameter files — contain tenant-specific IDs (SP object IDs, etc.)
+# Use parameters.example.json as the template; copy to parameters.json locally.
+infra/**/parameters.json
+
+# Playwright snapshot dumps from automation sessions
+adls-*.md
+auth-*.md
+lakehouse-*.md
+shortcut-*.md
+sp-*.md

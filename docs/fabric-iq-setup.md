@@ -114,7 +114,10 @@ done
 
 Now wire the parquet into Fabric via a OneLake shortcut (portal step — no API):
 
-1. In <https://app.fabric.microsoft.com/>, open your workspace.
+1. In <https://app.fabric.microsoft.com/>, open **Workspaces → + New workspace**.
+   **DO NOT use "My workspace"** — personal workspaces cannot grant service
+   principals access, which blocks the MCP server's SQL endpoint auth. Name
+   the workspace `skills-ontology-ws` and assign it the F64 trial capacity.
 2. **+ New item → Lakehouse**. Name it `skills_ontology`.
 3. In the new Lakehouse, **Files → ... → New shortcut → Azure Data Lake
    Storage Gen2**.
@@ -122,12 +125,29 @@ Now wire the parquet into Fabric via a OneLake shortcut (portal step — no API)
    `https://skillsont….dfs.core.windows.net/ontology`).
 5. Auth = **Organizational account** (your user) for the shortcut creation;
    the SP you provisioned in section 2 is what the MCP server uses at runtime.
-6. Once the shortcut shows three parquet files, click each one and pick
-   **Load to tables** so a SQL view materialises (nodes, edges, manifests).
+   Before the SP can read through the shortcut, grant your own user
+   **Storage Blob Data Reader** on the storage account (the SP role only
+   covers runtime; shortcut creation uses your delegated token).
+6. Once the shortcut shows three parquet files, right-click each one and
+   pick **Load to Tables → New table** so Delta tables materialise
+   (`nodes`, `edges`, `manifests` under `Tables/dbo`). Loads must be
+   sequential — the button is disabled while another load is in flight.
 
 The Lakehouse auto-provisions a **SQL analytics endpoint**. Open the
-Lakehouse, click the **SQL endpoint** toggle (top-right), and copy the
-connection string. That's `FABRIC_SQL_ENDPOINT`.
+Lakehouse, click the **gear icon → SQL analytics endpoint** tab, and copy
+the FQDN (looks like `<guid>.datawarehouse.fabric.microsoft.com`).
+That's `FABRIC_SQL_ENDPOINT`.
+
+Finally, **add the SP as a workspace member** so it can authenticate
+against the SQL endpoint:
+
+1. Workspace home → **Manage access** → **+ Add people or groups**.
+2. Paste the SP's display name (`skills-ontology-reader`) — it resolves to
+   the app, not a user. Assign **Viewer** role.
+3. Tenant admin must also have **Service principals can use Fabric APIs**
+   enabled (Admin portal → Tenant settings → Developer settings). If you
+   are not the tenant admin, ask them to flip this and add the SP to the
+   security group named in that setting.
 
 ---
 

@@ -134,9 +134,19 @@ finding the right person inside ABS.
 > tests + Bicep + runbook landed and verified end-to-end in Cowork
 > (image `:v5`, revision `0000005`, plugin v0.2.0). Evidence and live
 > governance-gating proof in
-> [`stage-d-evidence.md`](stage-d-evidence.md). Fabric SQL endpoint
-> backend stubbed behind `ONTOLOGY_BACKEND=fabric` pending the user
-> running [`fabric-iq-setup.md`](fabric-iq-setup.md).
+> [`stage-d-evidence.md`](stage-d-evidence.md).
+>
+> **Fabric SQL backend (2026-06-30):** `FabricOntology` implementation
+> shipped — pyodbc + ODBC Driver 18 + Entra ID token via
+> `ClientSecretCredential`, recursive T-SQL CTE with `FOR JSON PATH`
+> hop accumulation. Container image rebuilt with the driver baked in
+> (`:stage-d-fabric`). End-to-end auth plumbing proven against the
+> provisioned Fabric Lakehouse SQL endpoint; the SP-as-workspace-member
+> step is portal-only and documented in
+> [`fabric-iq-setup.md`](fabric-iq-setup.md) §3 — the lakehouse must
+> live in a shared workspace (not "My workspace", which cannot grant
+> SPs access). Flip `ONTOLOGY_BACKEND=fabric` once the workspace step
+> is done.
 
 (a) **Goal.** Add a fourth MCP tool to `mcp-server/`:
 `query_ontology(seed, relation, max_hops, caller_classification)` that
