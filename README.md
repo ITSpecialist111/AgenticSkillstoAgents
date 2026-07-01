@@ -3,6 +3,8 @@
 > Closing the missing middle between individual **Skills** and org-wide **Agents** —
 > proven end-to-end inside Microsoft Copilot Cowork.
 
+**Full thesis:** [`docs/ontology-skills-thesis.md`](docs/ontology-skills-thesis.md) — the centralization argument + live evidence.
+
 ## TL;DR
 
 This repo is a **spike that became a working system**. It demonstrates a pattern
@@ -165,12 +167,15 @@ Captured 2026-06-30 against image `:v7` (2 348 nodes / 20 440 edges) and the
 
 **Cowork — agent picking + composing two registry tools unprompted**
 
+> **Note:** Cowork screenshots are stored locally (not in git) due to tenant UI chrome.
+> See the full thesis [`docs/ontology-skills-thesis.md`](docs/ontology-skills-thesis.md) for embedded Cowork flow + full context.
+
 | Screenshot | What it shows |
 |---|---|
-| [`cowork-task-prompt-and-tool-calls.png`](examples/screenshots/cowork-task-prompt-and-tool-calls.png) | One natural-language brief → agent fires `list_org_entities` **and** `query_ontology` in parallel against the registry connector. |
-| [`cowork-call1-list-org-entities-json.png`](examples/screenshots/cowork-call1-list-org-entities-json.png) | Raw envelope from `list_org_entities(entity_type="Person", limit=10)` — 10 people with `data_classification` per row. |
-| [`cowork-call2-person-table-and-query-args.png`](examples/screenshots/cowork-call2-person-table-and-query-args.png) | Agent's rendered Person table + the spilled `query_ontology` envelope (`totalPaths:50, suppressedByClassification:18, maxHopsApplied:4`). |
-| [`cowork-architect-skill-reach-analysis.png`](examples/screenshots/cowork-architect-skill-reach-analysis.png) | Agent's own breakdown: direct `HOLDS_SKILL` vs `WORKED_ON → EMPLOYED → HOLDS_SKILL` vs `WORKED_ON → REQUIRED → SATISFIED_BY`, including the call-out that 18 suppressed paths are the internal-clearance view. |
+| `cowork-task-prompt-and-tool-calls.png` (local) | One natural-language brief → agent fires `list_org_entities` **and** `query_ontology` in parallel against the registry connector. |
+| `cowork-call1-list-org-entities-json.png` (local) | Raw envelope from `list_org_entities(entity_type="Person", limit=10)` — 10 people with `data_classification` per row. |
+| `cowork-call2-person-table-and-query-args.png` (local) | Agent's rendered Person table + the spilled `query_ontology` envelope (`totalPaths:50, suppressedByClassification:18, maxHopsApplied:4`). |
+| `cowork-architect-skill-reach-analysis.png` (local) | Agent's own breakdown: direct `HOLDS_SKILL` vs `WORKED_ON → EMPLOYED → HOLDS_SKILL` vs `WORKED_ON → REQUIRED → SATISFIED_BY`, including the call-out that 18 suppressed paths are the internal-clearance view. |
 
 **Fabric Lakehouse — the same parquet projection the MCP server reads**
 
