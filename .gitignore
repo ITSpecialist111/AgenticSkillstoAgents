@@ -7,8 +7,9 @@ prototype-lite/out/
 # Browser automation captures — may contain tenant / user / session data
 .playwright-mcp/
 
-# Cowork UI screenshots — may contain personal account / tenant chrome
-cowork-*.png
+# Cowork UI screenshots at repo root — may contain personal account / tenant chrome
+# (examples/screenshots/cowork-*.png are intentionally tracked)
+/cowork-*.png
 
 # Pre-built plugin packages — re-build locally if you want to install
 *.zip
